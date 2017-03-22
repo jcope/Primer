@@ -1,0 +1,18 @@
+Digit Width: 10
+Max Prime: 0.000000
+Total Primes: 75
+----------------------
+Grand Master Primes: 727
+Master Primes: 727
+Grand Primes: 547,563,593,641,733,769,977
+Special Primes: 599,683,739
+----------------------
+Flip Primes: 523,607,659,673
+Grand Flip Primes: 569
+Special Flip Primes: 
+----------------------
+Invert Primes: 521,571,619,631,643,691,701,823,839
+Grand Invert Primes: 601,661
+Special Invert Primes: 
+----------------------
+Null Primes: 541,557,587,613,647,743,761,811,829,887,971,991,997,1009
