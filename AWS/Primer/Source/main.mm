@@ -28,12 +28,6 @@
 //2^37 == 137,438,953,472
 //30,057,700,549
 
-#define MIN_BINARY_WIDTH 12
-#define MAX_BINARY_WIDTH 36
-//#define INPUT_FILE "/data/PrimeInputData.txt"
-#define INPUT_FILE "/Users/Jeremy/Synology/Emma/Mathematics/Primes/Primer2/PrimeInput.txt"
-#define OUTPUT_FILE "./Output/PrimerOutput.txt"
-
 using namespace std;
 
 int main(int argc, const char * argv[]) {
@@ -61,8 +55,9 @@ int main(int argc, const char * argv[]) {
         inputFile.open(INPUT_FILE);
         
         //Output file
+        NSString* outputFilePathName = [NSString stringWithFormat:@"%s/%s",OUTPUT_DIR,OUTPUT_FILE];
         ofstream outfile;
-        outfile.open(OUTPUT_FILE);
+        outfile.open([outputFilePathName cStringUsingEncoding:NSUTF8StringEncoding]);
         
         if(LOG_DATA_FILE){
             outfile<<"Digits,Number of Primes,";
@@ -109,7 +104,9 @@ int main(int argc, const char * argv[]) {
                     //NSLog(@"Primes: %@",[primeNumbers description]);
                     
                     //Analyze the Data
-                    NSString* output = [primer analyzePrimeNumberList_Threaded:primeNumbers width:binaryWidth];
+                    NSString* output = [primer analyzePrimeNumberList:primeNumbers width:binaryWidth];
+                    //NSString* output = [primer analyzePrimeNumberList_Threaded:primeNumbers width:binaryWidth];
+                    
                     
                     /* LEGACY **
 					NSString* output = [primer analyzePrimeNumberList:primeNumbers

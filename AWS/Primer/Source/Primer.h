@@ -18,7 +18,6 @@
 -(NSString*)invertedFlippedBinaryStringFromInteger:(unsigned long long)number numDigits:(int)width;
 
 //Analyze Prime Number Set
--(NSString*)analyzePrimeNumberSet:(NSDictionary*)primeNumbers;
 //
 -(NSString*)analyzePrimeNumberList:(NSArray*)primes width:(int)width;
 

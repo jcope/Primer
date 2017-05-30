@@ -95,248 +95,6 @@
     return [self flip:invert width:width];
 }
 #pragma mark - Analyze
--(NSString*)analyzePrimeNumberSet:(NSDictionary *)primeNumbers{
-    int width = [[primeNumbers objectForKey:@"width"] intValue];
-    NSArray* numbers = [primeNumbers objectForKey:@"numbers"];
-    
-    NSMutableArray* results = [NSMutableArray arrayWithCapacity:[numbers count]];
-    
-    NSMutableArray* grandPrimes = [NSMutableArray arrayWithCapacity:[numbers count]]; //Flip,Inverse,Flip/Inverse
-    NSMutableArray* masterPrimes = [NSMutableArray arrayWithCapacity:[numbers count]]; //Flip and Inverse are unique
-    NSMutableArray* specialPrimes = [NSMutableArray arrayWithCapacity:[numbers count]]; //Flip == Inverse
-    
-    NSMutableArray* flipPrimes = [NSMutableArray arrayWithCapacity:[numbers count]];
-    NSMutableArray* flipUniquePrimes = [NSMutableArray arrayWithCapacity:[numbers count]]; //Flip == self
-    NSMutableArray* invertPrimes = [NSMutableArray arrayWithCapacity:[numbers count]];
-    NSMutableArray* invertUniquePrimes = [NSMutableArray arrayWithCapacity:[numbers count]]; //Invsers == self
-    
-    
-    for(NSNumber* n in numbers){
-        int d = [n intValue];
-        NSString* decimal = [n stringValue];
-        NSString* binary = [self binaryStringFromInteger:d numDigits:width];
-        NSString* invertBinary = [self invertedBinaryStringFromInteger:d numDigits:width];
-        NSString* flipBinary = [self flippedBinaryStringFromInteger:d numDigits:width];
-        NSString* invertFlipBinary = [self invertedFlippedBinaryStringFromInteger:d numDigits:width];
-        
-        
-        [results addObject:@{@"d":decimal,
-                             @"b":binary,
-                             @"i":invertBinary,
-                             @"f":flipBinary,
-                             @"if":invertFlipBinary}];
-        
-        //Print for now
-        //NSLog(@"Decimal: %@\tBinary: %@\tInvert: %@\tFlip:%@",decimal,binary,invertBinary,flipBinary);
-    }
-    
-    NSMutableArray* searchPrimes = [NSMutableArray arrayWithArray:results];
-    NSMutableArray* tempPrimes = [NSMutableArray arrayWithCapacity:[numbers count]]; //Store Master and Grand
-    //Search for Master Primes
-    for(int index=0;index<[results count];index++){
-        NSDictionary* d = [results objectAtIndex:index];
-        
-        //Searh for an inverse
-        bool inverseFound = NO;
-        NSString* inverse = @"   ";
-        NSDictionary* invertDict = @{};
-        for(NSDictionary* di in results){
-            if([[d objectForKey:@"i"] isEqualToString:[di objectForKey:@"b"]]){
-                inverseFound = YES;
-                inverse = [di objectForKey:@"d"];
-                invertDict = di;
-            }
-        }
-        
-        //Search for a flip
-        bool flipFound = NO;
-        NSString* flip = @"   ";
-        NSDictionary* flipDict = @{};
-        for(NSDictionary* df in results){
-            if([[d objectForKey:@"f"] isEqualToString:[df objectForKey:@"b"]]){
-                flipFound = YES;
-                flip = [df objectForKey:@"d"];
-                flipDict = df;
-            }
-        }
-        
-        //Determine Results
-        if(inverseFound && flipFound){
-            if(![flip isEqualToString:inverse]){
-                [tempPrimes addObject:d];
-            }else{
-                //Only add if 'cousin' is not already tracked
-                if(![specialPrimes containsObject:flipDict] || ![specialPrimes containsObject:invertDict]){
-                    [specialPrimes addObject:d];
-                }
-            }
-            [searchPrimes removeObject:d];
-            [searchPrimes removeObject:flipDict];
-            [searchPrimes removeObject:invertDict];
-        }
-    }
-    
-    //Filter Temp Primes into Grand Primes and Master Primes
-    for(NSDictionary* d in tempPrimes){
-        //Determine if this is a grand or master prime
-        bool invertFlipFound = NO;
-        NSDictionary* invertFlipDict = @{};
-        for(NSDictionary* dif in tempPrimes){
-            if([[d objectForKey:@"if"] isEqualToString:[dif objectForKey:@"b"]]){
-                invertFlipFound = YES;
-                invertFlipDict = dif;
-            }
-        }
-        if (invertFlipFound){
-            //Only add if it's inverse flip has not already been added
-            BOOL alreadyAdded = NO;
-            for(NSDictionary* g in grandPrimes){
-                if ([[g objectForKey:@"b"] isEqualToString:[invertFlipDict objectForKey:@"b"]] ||
-                    [[g objectForKey:@"i"] isEqualToString:[invertFlipDict objectForKey:@"b"]] ||
-                    [[g objectForKey:@"f"] isEqualToString:[invertFlipDict objectForKey:@"b"]] ||
-                    [[g objectForKey:@"if"] isEqualToString:[invertFlipDict objectForKey:@"b"]]) {
-                    alreadyAdded = YES;
-                }
-            }
-            if(!alreadyAdded){
-                [grandPrimes addObject:d];
-            }
-        }else{ //InverseFlip was not found, must only be a master prime
-            [masterPrimes addObject:d];
-        }
-    }
-    
-    results = [NSMutableArray arrayWithArray:searchPrimes];
-    
-    //Search for Inverts and Flips
-    for(int index=0;index<[results count];index++){
-        NSDictionary* d = [results objectAtIndex:index];
-        //Searh for an inverse
-        bool inverseFound = NO;
-        NSString* inverse = @"   ";
-        NSDictionary* invertDict = @{};
-        for(NSDictionary* di in results){
-            if([[d objectForKey:@"i"] isEqualToString:[di objectForKey:@"b"]]){
-                inverseFound = YES;
-                inverse = [di objectForKey:@"d"];
-                invertDict = di;
-            }
-        }
-        
-        //Search for a flip
-        bool flipFound = NO;
-        NSString* flip = @"   ";
-        NSDictionary* flipDict = @{};
-        for(NSDictionary* df in results){
-            if([[d objectForKey:@"f"] isEqualToString:[df objectForKey:@"b"]]){
-                flipFound = YES;
-                flip = [df objectForKey:@"d"];
-                flipDict = df;
-            }
-        }
-        
-        if(inverseFound){
-            if([[d objectForKey:@"d"] isEqualToString:inverse]){
-                [invertUniquePrimes addObject:d];
-            }
-            else if(![invertPrimes containsObject:invertDict]){
-                [invertPrimes addObject:d];
-            }
-            [searchPrimes removeObject:d];
-            [searchPrimes removeObject:invertDict];
-        }
-        else if(flipFound){
-            if([[d objectForKey:@"d"] isEqualToString:flip]){
-                [flipUniquePrimes addObject:d];
-            }
-            else if(![flipPrimes containsObject:flipDict]){
-                [flipPrimes addObject:d];
-            }
-            [searchPrimes removeObject:d];
-            [searchPrimes removeObject:flipDict];
-        }
-    }
-    results = [NSMutableArray arrayWithArray:searchPrimes];
-    
-    
-    
-    
-    NSUInteger analyzedCnt =    [grandPrimes count]*4+\
-    [masterPrimes count]*3+[specialPrimes count]*2+\
-    [flipPrimes count]*2+[flipUniquePrimes count]+\
-    [invertPrimes count]*2+[invertUniquePrimes count]+\
-    [results count];
-    
-    if(LOG_DATA_CONSOLE){
-        //Print out the sums
-        NSLog(@"----------------------------------------");
-        NSLog(@"Digits: %d",width);
-        NSLog(@"Total Primes: %lu",[numbers count]);
-        NSLog(@"--------------------");
-        NSLog(@"Grand Primes: %lu",(unsigned long)[grandPrimes count]);
-        NSLog(@"Master Primes: %lu",(unsigned long)[masterPrimes count]);
-        NSLog(@"Special Primes: %lu",(unsigned long)[specialPrimes count]);
-        NSLog(@"--------------------");
-        NSLog(@"Flip Primes: %lu",(unsigned long)[flipPrimes count]);
-        NSLog(@"Flip Unique Primes: %lu",(unsigned long)[flipUniquePrimes count]);
-        NSLog(@"Invert Primes: %lu",(unsigned long)[invertPrimes count]);
-        NSLog(@"Invert Unique Primes: %lu",(unsigned long)[invertUniquePrimes count]);
-        NSLog(@"--------------------");
-        NSLog(@"Null Primes: %lu",(unsigned long)[results count]);
-        NSLog(@"--------------------");
-        
-        NSLog(@"Analyzed Primes: %lu",analyzedCnt);
-        NSLog(@"----------------------------------------");
-    }
-    if(LOG_DATA_FILE_VERBOSE){
-        NSMutableString* cacheOutput = [NSMutableString stringWithCapacity:100];
-        NSString* fileName = [NSString stringWithFormat:@"%d_PrimerOutput.txt",width];
-        
-        NSStringEncoding enc = NSUTF8StringEncoding;
-        NSString* dataBreak = @"\n----------------------";
-        //Generate and write all outputs
-        [cacheOutput appendFormat:@"Digit Width: %d",width];
-        [cacheOutput appendFormat:@"\nMax Prime: %Lf",powl(2, width-1)];
-        [cacheOutput appendFormat:@"\nTotal Primes: %lu",[numbers count]];
-        [cacheOutput appendString:dataBreak];
-        //Grand/Master/Special
-        [cacheOutput appendFormat:@"\nGrand Primes: %@",[grandPrimes decimalDescription]];
-        [cacheOutput appendFormat:@"\nMaster Primes: %@",[masterPrimes decimalDescription]];
-        [cacheOutput appendFormat:@"\nSpecial Primes: %@",[specialPrimes decimalDescription]];
-        [cacheOutput appendString:dataBreak];
-        //Flip/Invert
-        [cacheOutput appendFormat:@"\nFlip Primes: %@",[flipPrimes decimalDescription]];
-        [cacheOutput appendFormat:@"\nFlipUnique Primes: %@",[flipUniquePrimes decimalDescription]];
-        [cacheOutput appendFormat:@"\nInvert Primes: %@",[invertPrimes decimalDescription]];
-        [cacheOutput appendFormat:@"\nInvertUnique Primes: %@",[invertUniquePrimes decimalDescription]];
-        [cacheOutput appendString:dataBreak];
-        //Null Primes
-        [cacheOutput appendFormat:@"\nNull Primes: %@",[results decimalDescription]];
-        
-        //Write to file
-        [cacheOutput appendToFile:fileName encoding:enc];
-    }
-    
-    //Create the output string
-    NSMutableString* output = [[NSMutableString alloc] init];
-
-    //Digits,Number of Primes,Grand Primes,Master Primes,Special Primes,Flip Primes,Unique Flip Primes,Invert Primes,Unique Invert Primes,Null Primes
-    [output appendFormat:@"%d,",width];
-    [output appendFormat:@"%lu,",(unsigned long)[numbers count]];
-    
-    [output appendFormat:@"%lu,",(unsigned long)[grandPrimes count]];
-    [output appendFormat:@"%lu,",(unsigned long)[masterPrimes count]];
-    [output appendFormat:@"%lu,",(unsigned long)[specialPrimes count]];
-    
-    [output appendFormat:@"%lu,",(unsigned long)[flipPrimes count]];
-    [output appendFormat:@"%lu,",(unsigned long)[flipUniquePrimes count]];
-    [output appendFormat:@"%lu,",(unsigned long)[invertPrimes count]];
-    [output appendFormat:@"%lu,",(unsigned long)[invertUniquePrimes count]];
-    
-    [output appendFormat:@"%lu",(unsigned long)[results count]];
-    
-    return output;
-}
 #define NUM_THREADS 4
 -(NSString*)analyzePrimeNumberList_Threaded:(NSArray*)primes width:(int)width{
     //Store the primes in data controlled storage
@@ -388,8 +146,9 @@
     
     NSMutableArray* primeList = [NSMutableArray arrayWithArray:primes];
     
-    NSMutableArray* masterPrimes = [NSMutableArray arrayWithCapacity:[primes count]]; //Flip and Inverse are unique
     NSMutableArray* grandMasterPrimes = [NSMutableArray arrayWithCapacity:[primes count]]; //Flip,Inverse,Flip/Invert
+    NSMutableArray* masterPrimes = [NSMutableArray arrayWithCapacity:[primes count]]; //Flip and Inverse are unique
+    NSMutableArray* grandPrimes = [NSMutableArray arrayWithCapacity:[primes count]]; //Flip/Invert
     NSMutableArray* specialPrimes = [NSMutableArray arrayWithCapacity:[primes count]]; //Flip == Invert
     
     NSMutableArray* flipPrimes = [NSMutableArray arrayWithCapacity:[primes count]]; //Flip
@@ -398,9 +157,8 @@
     
     NSMutableArray* invertPrimes = [NSMutableArray arrayWithCapacity:[primes count]]; //Invert
     NSMutableArray* grandInvertPrimes = [NSMutableArray arrayWithCapacity:[primes count]]; //Invert, Flip/Invert
-    NSMutableArray* specialInvertPrimes = [NSMutableArray arrayWithCapacity:[primes count]]; //Invert == self
-    
-    NSMutableArray* grandPrimes = [NSMutableArray arrayWithCapacity:[primes count]]; //Flip/Invert
+    //NSMutableArray* specialInvertPrimes = [NSMutableArray arrayWithCapacity:[primes count]]; //Invert == self [NOTE: Does not exist, cannot invert to self]
+ 
     NSMutableArray* nullPrimes = [NSMutableArray arrayWithCapacity:[primes count]]; //None of the above
     
     while([primeList count] > 0){
@@ -415,12 +173,14 @@
         bool hasInvertFlip = [primeList containsObject:@(primeInvertFlip)];
         */
         
+        //TODO: Add only the lowest value
+        
         bool hasInvert = [self containsPrime:primeList prime:@(primeInvert)];
         bool hasFlip = [self containsPrime:primeList prime:@(primeFlip)];
         bool hasInvertFlip = [self containsPrime:primeList prime:@(primeInvertFlip)];
         //Categorize the prime
-        //Master Primes (ie flip and invert)
-        if(hasInvert && hasFlip){
+        //Master Primes (ie flip and invert) (but not self)
+        if(hasInvert && hasFlip && prime != primeFlip){
             if(primeInvert == primeFlip){ //Special
                 [specialPrimes addObject:@(prime)];
             }
@@ -433,14 +193,11 @@
         }
         //Invert
         else if(hasInvert){
-            if(prime == primeInvert){ //Special Invert
-                [specialInvertPrimes addObject:@(prime)];
+            if(hasInvertFlip && primeInvertFlip != primeInvert){ //Grand Invert
+                [grandInvertPrimes addObject:@(prime)];
             }
-            else if(hasInvertFlip){ //Grand Flip
-                [grandFlipPrimes addObject:@(prime)];
-            }
-            else{ //Flip
-                [flipPrimes addObject:@(prime)];
+            else{ //Invert
+                [invertPrimes addObject:@(prime)];
             }
         }
         //Flip
@@ -448,11 +205,11 @@
             if(prime == primeFlip){ //Special Flip
                 [specialFlipPrimes addObject:@(prime)];
             }
-            else if(hasInvertFlip){ //Grand Invert
-                [grandInvertPrimes addObject:@(prime)];
+            else if(hasInvertFlip){ //Grand Flip
+                [grandFlipPrimes addObject:@(prime)];
             }
-            else{ //Invert
-                [invertPrimes addObject:@(prime)];
+            else{ //Flip
+                [flipPrimes addObject:@(prime)];
             }
         }
         //InvertFlip
@@ -477,18 +234,20 @@
     
     NSUInteger analyzedCnt =    [grandMasterPrimes count]*4+\
                                 [masterPrimes count]*3+[specialPrimes count]*2+\
-                                [flipPrimes count]*2+[grandFlipPrimes count]*3+[specialInvertPrimes count]+\
+                                [flipPrimes count]*2+[grandFlipPrimes count]*3+\
                                 [invertPrimes count]*2+[grandInvertPrimes count]*3+[specialFlipPrimes count]+\
                                 [grandPrimes count]*2+\
                                 [nullPrimes count];
     
+    //NSAssert(analyzedCnt==[primes count],@"Mismatch in number of primes analyzed versus counted!!");
+    
     if(LOG_DATA_CONSOLE){
-        //Print out the sums
+        //Print out the sumsx
         NSLog(@"----------------------------------------");
         NSLog(@"Digits: %d",width);
         NSLog(@"Total Primes: %lu",[primes count]);
         NSLog(@"--------------------");
-        NSLog(@"Grand Master Primes: %lu",(unsigned long)[grandPrimes count]);
+        NSLog(@"Grand Master Primes: %lu",(unsigned long)[grandMasterPrimes count]);
         NSLog(@"Master Primes: %lu",(unsigned long)[masterPrimes count]);
         NSLog(@"Grand Primes: %lu",(unsigned long)[grandPrimes count]);
         NSLog(@"Special Primes: %lu",(unsigned long)[specialPrimes count]);
@@ -499,7 +258,7 @@
         NSLog(@"--------------------");
         NSLog(@"Invert Primes: %lu",(unsigned long)[invertPrimes count]);
         NSLog(@"Grand Invert Primes: %lu",(unsigned long)[grandInvertPrimes count]);
-        NSLog(@"Special Invert Primes: %lu",(unsigned long)[specialInvertPrimes count]);
+        //NSLog(@"Special Invert Primes: %lu",(unsigned long)[specialInvertPrimes count]);
         NSLog(@"--------------------");
         NSLog(@"Null Primes: %lu",(unsigned long)[nullPrimes count]);
         NSLog(@"--------------------");
@@ -508,17 +267,17 @@
     }
     if(LOG_DATA_FILE_VERBOSE){
         NSMutableString* cacheOutput = [NSMutableString stringWithCapacity:100];
-        NSString* fileName = [NSString stringWithFormat:@"Output/%d_PrimerOutput.txt",width];
+        NSString* fileName = [NSString stringWithFormat:@"%s/%d_PrimerOutput.txt",OUTPUT_DIR,width];
         
         NSStringEncoding enc = NSUTF8StringEncoding;
         NSString* dataBreak = @"\n----------------------";
         //Generate and write all outputs
         [cacheOutput appendFormat:@"Digit Width: %d",width];
-        [cacheOutput appendFormat:@"\nMax Prime: %Lf",powl(2, width-1)];
+        [cacheOutput appendFormat:@"\nMax Prime: %.Lf",powl(2, width)-1];
         [cacheOutput appendFormat:@"\nTotal Primes: %lu",[primes count]];
         [cacheOutput appendString:dataBreak];
         //Grand/Master/Special
-        [cacheOutput appendFormat:@"\nGrand Master Primes: %@",[masterPrimes ullDescription]];
+        [cacheOutput appendFormat:@"\nGrand Master Primes: %@",[grandMasterPrimes ullDescription]];
         [cacheOutput appendFormat:@"\nMaster Primes: %@",[masterPrimes ullDescription]];
         [cacheOutput appendFormat:@"\nGrand Primes: %@",[grandPrimes ullDescription]];
         [cacheOutput appendFormat:@"\nSpecial Primes: %@",[specialPrimes ullDescription]];
@@ -531,7 +290,7 @@
         //Invert
         [cacheOutput appendFormat:@"\nInvert Primes: %@",[invertPrimes ullDescription]];
         [cacheOutput appendFormat:@"\nGrand Invert Primes: %@",[grandInvertPrimes ullDescription]];
-        [cacheOutput appendFormat:@"\nSpecial Invert Primes: %@",[specialInvertPrimes ullDescription]];
+        //[cacheOutput appendFormat:@"\nSpecial Invert Primes: %@",[specialInvertPrimes ullDescription]];
         [cacheOutput appendString:dataBreak];
         //Null Primes
         [cacheOutput appendFormat:@"\nNull Primes: %@",[nullPrimes ullDescription]];
@@ -539,7 +298,7 @@
         //Write to file
         [cacheOutput appendToFile:fileName encoding:enc];
     }
-    
+
     //Create the output string
     NSMutableString* output = [[NSMutableString alloc] init];
     
@@ -562,7 +321,7 @@
     
     [output appendFormat:@"%lu,",(unsigned long)[grandInvertPrimes count]];
     [output appendFormat:@"%lu,",(unsigned long)[invertPrimes count]];
-    [output appendFormat:@"%lu,",(unsigned long)[specialInvertPrimes count]];
+    //[output appendFormat:@"%lu,",(unsigned long)[specialInvertPrimes count]];
     
     [output appendFormat:@"%lu",(unsigned long)[nullPrimes count]];
     

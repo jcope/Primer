@@ -10,10 +10,23 @@
 #define Config_h
 
 
-#define LOG_RAW_DATA 0
-#define LOG_DATA_CONSOLE 0
+#define LOG_RAW_DATA 1
+#define LOG_DATA_CONSOLE 1
 #define LOG_DATA_FILE 1
 #define LOG_DATA_FILE_VERBOSE 1
+#define LOG_DATA_FILE_VERBOSE_FULL 1
+
+
+#define MIN_BINARY_WIDTH 7
+#define MAX_BINARY_WIDTH 9
+//#define INPUT_FILE "/data/PrimeInputData.txt"
+//#define OUTPUT_FILE "./Output/PrimerOutput.txt"
+#define INPUT_FILE "/Users/Jeremy/Projects/Primer/PrimeInput.txt"
+
+#define OUTPUT_FILE "PrimerOutput.txt"
+
+#define OUTPUT_DIR "/Users/Jeremy/Projects/Primer/Output"
+
 
 
 #endif /* Config_h */
