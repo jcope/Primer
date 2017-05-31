@@ -17,8 +17,8 @@
 #define LOG_DATA_FILE_VERBOSE_FULL 1
 
 
-#define MIN_BINARY_WIDTH 7
-#define MAX_BINARY_WIDTH 9
+#define MIN_BINARY_WIDTH 3
+#define MAX_BINARY_WIDTH 12
 //#define INPUT_FILE "/data/PrimeInputData.txt"
 //#define OUTPUT_FILE "./Output/PrimerOutput.txt"
 #define INPUT_FILE "/Users/Jeremy/Projects/Primer/PrimeInput.txt"
