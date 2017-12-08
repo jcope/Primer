@@ -285,23 +285,17 @@
         NSLog(@"----------------------------------------");
         NSLog(@"Digits: %d",width);
         NSLog(@"Total Primes: %lu",[primes count]);
+        NSLog(@"Analyzed Primes: %lu",analyzedCnt);
         NSLog(@"--------------------");
         NSLog(@"Grand Master Primes: %lu",(unsigned long)[grandMasterPrimes count]);
-        NSLog(@"--------------------");
         NSLog(@"Master Primes: %lu",(unsigned long)[masterPrimes count]);
         NSLog(@"Special Master Primes: %lu",(unsigned long)[specialMasterPrimes count]);
-        NSLog(@"--------------------");
         NSLog(@"Grand Primes: %lu",(unsigned long)[grandPrimes count]);
         NSLog(@"Speical Grand Primes: %lu",(unsigned long)[specialGrandPrimes count]);
-        NSLog(@"--------------------");
         NSLog(@"Flip Primes: %lu",(unsigned long)[flipPrimes count]);
         NSLog(@"Special Flip Primes: %lu",(unsigned long)[specialFlipPrimes count]);
-        NSLog(@"--------------------");
         NSLog(@"Invert Primes: %lu",(unsigned long)[invertPrimes count]);
-        NSLog(@"--------------------");
         NSLog(@"Null Primes: %lu",(unsigned long)[nullPrimes count]);
-        NSLog(@"--------------------");
-        NSLog(@"Analyzed Primes: %lu",analyzedCnt);
         NSLog(@"----------------------------------------");
     }
     if(LOG_DATA_FILE_VERBOSE){

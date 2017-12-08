@@ -34,6 +34,7 @@ int main(int argc, const char * argv[]) {
     @autoreleasepool {
 	    //Print Current Time
         time_t     now = time(0);
+        time_t     startTime;
         struct tm  tstruct;
         char       buf[80];
         tstruct = *localtime(&now);
@@ -76,15 +77,17 @@ int main(int argc, const char * argv[]) {
         
         //Filter out the minimums
         unsigned long long min;
-        min = pow(2,MIN_BINARY_WIDTH)-1;
+        min = pow(2,MIN_BINARY_WIDTH-1)-1;
         while(data<=min){
             inputFile>>data;
         }
         NSLog(@"Starting with Prime: %lld",data);
         
         
-        for(int binaryWidth=2;binaryWidth<MAX_BINARY_WIDTH;binaryWidth++){ //Cyclce through all the different buckets
+        for(int binaryWidth=MIN_BINARY_WIDTH;binaryWidth<MAX_BINARY_WIDTH;binaryWidth++){ //Cyclce through all the different buckets
             max = pow(2,binaryWidth)-1; //Calculate the max bucket
+            NSLog(@"****************************");
+            NSLog(@"Binary width: %d",binaryWidth);
             NSLog(@"Analyzing for max: %lld",max);
             BOOL analyze = false;
             while(!analyze && !endOfFile){
@@ -100,9 +103,9 @@ int main(int argc, const char * argv[]) {
                 }
                 
                 if(analyze && [primeNumbers count] > 0){ //Bucket is full, go analyze
-                    NSLog(@"Count: %lu",(unsigned long)[primeNumbers count]);
+                    NSLog(@"Count: %lu primes (between %.f and %lld)",(unsigned long)[primeNumbers count],pow(2,binaryWidth-1),max);
                     //NSLog(@"Primes: %@",[primeNumbers description]);
-                    
+                    startTime = time(0);
                     //Analyze the Data
                     NSString* output = [primer analyzePrimeNumberList:primeNumbers width:binaryWidth];
                     //NSString* output = [primer analyzePrimeNumberList_Threaded:primeNumbers width:binaryWidth];
@@ -116,7 +119,9 @@ int main(int argc, const char * argv[]) {
                     
                     //Output the Data
                     outfile<<[output cStringUsingEncoding:NSUTF8StringEncoding]<<endl;
+                    double totalTime = difftime(time(0),startTime);
                     
+                    NSLog(@"Total Time: %.f seconds",totalTime);
                     //Reset the buckets
                     [primeNumbers removeAllObjects];
                 }
