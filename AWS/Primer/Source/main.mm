@@ -41,7 +41,7 @@ int main(int argc, const char * argv[]) {
         // Visit http://en.cppreference.com/w/cpp/chrono/c/strftime
         // for more information about date/time format
         strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
-        std::cout << "Start Time:" << buf << std::endl;
+        std::cout << "Start Time: " << buf << std::endl;
 
         //Setup
         Primer* primer = [[Primer alloc] init];
@@ -105,23 +105,17 @@ int main(int argc, const char * argv[]) {
                 if(analyze && [primeNumbers count] > 0){ //Bucket is full, go analyze
                     NSLog(@"Count: %lu primes (between %.f and %lld)",(unsigned long)[primeNumbers count],pow(2,binaryWidth-1),max);
                     //NSLog(@"Primes: %@",[primeNumbers description]);
-                    startTime = time(0);
+                    
                     //Analyze the Data
-                    NSString* output = [primer analyzePrimeNumberList:primeNumbers width:binaryWidth];
-                    //NSString* output = [primer analyzePrimeNumberList_Threaded:primeNumbers width:binaryWidth];
-                    
-                    
-                    /* LEGACY **
-					NSString* output = [primer analyzePrimeNumberList:primeNumbers
-                                                                width:binaryWidth];
-                    NSLog(@"%@",output);
-                    */
+                    startTime = time(0);
+                    //NSString* output = [primer analyzePrimeNumberList:primeNumbers width:binaryWidth];
+                    NSString* output = [primer analyzePrimeNumberList_Threaded:primeNumbers width:binaryWidth];                 
                     
                     //Output the Data
                     outfile<<[output cStringUsingEncoding:NSUTF8StringEncoding]<<endl;
                     double totalTime = difftime(time(0),startTime);
-                    
                     NSLog(@"Total Time: %.f seconds",totalTime);
+                    
                     //Reset the buckets
                     [primeNumbers removeAllObjects];
                 }
@@ -137,7 +131,7 @@ int main(int argc, const char * argv[]) {
         // Visit http://en.cppreference.com/w/cpp/chrono/c/strftime
         // for more information about date/time format
         strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
-        std::cout << "End Time:" << buf << std::endl;
+        std::cout << "End Time: " << buf << std::endl;
         
     }
     return 0;

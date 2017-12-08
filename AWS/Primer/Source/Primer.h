@@ -10,6 +10,25 @@
 
 @interface Primer : NSObject
 
+typedef enum{
+    grandMasterPRIME,
+    
+    masterPRIME,
+    specialMasterPRIME,
+    
+    grandPRIME,
+    specialGrandPRIME,
+    
+    flipPRIME,
+    specialFlipPRIME,
+    
+    invertPRIME,
+    
+    nullPRIME,
+    
+    unknownPRIME,
+}primeType;
+
 //Tranformation on Prime Numbers
 -(NSString*)binaryStringFromInteger:(unsigned long long)number numDigits:(int)width;
 
@@ -18,7 +37,7 @@
 -(NSString*)invertedFlippedBinaryStringFromInteger:(unsigned long long)number numDigits:(int)width;
 
 //Analyze Prime Number Set
-//
+//Sequential
 -(NSString*)analyzePrimeNumberList:(NSArray*)primes width:(int)width;
 
 //Threads

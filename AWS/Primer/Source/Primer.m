@@ -12,8 +12,25 @@
 #import "NSArray+PrimeDesc.h"
 
 @interface Primer ()
+@property NSArray* primeList;
 @property NSLock *dataLock;
-@property NSUInteger threadCount;
+@property int threadCount;
+@property int primeWidth;
+
+@property NSMutableSet* grandMasterPrimes; //Flip, Inverse, and FlipInverse unique primes
+
+@property NSMutableSet* masterPrimes; //Flip and Inverse are unique
+@property NSMutableSet* specialMasterPrimes; //Flip and inverse are prime, but equal
+
+@property NSMutableSet* grandPrimes; //Flip/Invert
+@property NSMutableSet* specialGrandPrimes; //Flip/Invert; Flip == Invert
+
+@property NSMutableSet* flipPrimes; //Flip
+@property NSMutableSet* specialFlipPrimes; //Flip == self
+
+@property NSMutableSet* invertPrimes; //Invert
+
+@property NSMutableSet* nullPrimes; //None of the above
 @end
 
 
@@ -21,10 +38,23 @@
 
 -(instancetype)init{
     if (self = [super init]) {
+        _primeList = [[NSArray alloc] init];
         _dataLock = [[NSLock alloc] init];
         _threadCount = 0;
+        _primeWidth = 0;
     }
     return self;
+}
+-(void)initBuckets{
+    _grandMasterPrimes = [[NSMutableSet alloc] init];
+    _masterPrimes = [[NSMutableSet alloc] init];
+    _specialMasterPrimes = [[NSMutableSet alloc] init];
+    _grandPrimes = [[NSMutableSet alloc] init];
+    _specialGrandPrimes = [[NSMutableSet alloc] init];
+    _flipPrimes = [[NSMutableSet alloc] init];
+    _specialFlipPrimes = [[NSMutableSet alloc] init];
+    _invertPrimes = [[NSMutableSet alloc] init];
+    _nullPrimes = [[NSMutableSet alloc] init];
 }
 #pragma mark - Transform
 #pragma mark String
@@ -95,9 +125,13 @@
     return [self flip:invert width:width];
 }
 #pragma mark - Analyze
-#define NUM_THREADS 4
+#pragma mark Threaded
+#define NUM_THREADS 1
 -(NSString*)analyzePrimeNumberList_Threaded:(NSArray*)primes width:(int)width{
     //Store the primes in data controlled storage
+    _primeList = primes;
+    _primeWidth = width;
+    [self initBuckets];
     
     NSUInteger range = [primes count] / NUM_THREADS;
     NSUInteger lowerRange = 0;
@@ -126,23 +160,166 @@
     while(_threadCount>0){
         
     }
+    
+     NSUInteger analyzedCnt =    [_grandMasterPrimes count]*4+\
+    
+    [_masterPrimes count]*3+[_specialMasterPrimes count]*2+\
+    
+    [_grandPrimes count]*2+[_specialGrandPrimes count]*1+\
+    
+    [_flipPrimes count]*2+[_specialFlipPrimes count]*1+\
+    [_invertPrimes count]*2+\
+    [_nullPrimes count];
+    
+    NSAssert(analyzedCnt == [_primeList count],@"Mismatch in number of primes analyzed versus counted!!");
+    
     return @"";
 }
 -(void)analyzePrimeNumberList_Search:(NSArray*)primesSubset{
+    NSLog(@"Analyzing %lu primes out of %lu",(unsigned long)[primesSubset count],(unsigned long)[_primeList count]);
+    
     //For now just print out the prime subset
     for(NSNumber* p in primesSubset){
         unsigned long long prime = [p unsignedLongLongValue];
+        unsigned long long storagePrime = 0;
+        primeType pType = [self calculatePrimeType:prime storagePrime:&storagePrime];
+        
+        NSNumber* sPrime = @(storagePrime);
+        if(pType == grandMasterPRIME) [_grandMasterPrimes addObject:sPrime];
+        else if(pType == masterPRIME) [_masterPrimes addObject:sPrime];
+        else if(pType == specialMasterPRIME) [_specialMasterPrimes addObject:sPrime];
+        else if(pType == grandPRIME) [_grandPrimes addObject:sPrime];
+        else if(pType == specialGrandPRIME) [_specialGrandPrimes addObject:sPrime];
+        else if(pType == flipPRIME) [_flipPrimes addObject:sPrime];
+        else if(pType == specialFlipPRIME) [_specialFlipPrimes addObject:sPrime];
+        else if(pType == invertPRIME) [_invertPrimes addObject:sPrime];
+        else if(pType == nullPRIME) [_nullPrimes addObject:sPrime];
+        else NSAssert(false,@"Unknown Type");
         //NSLog(@"%llu",prime);
+        
     }
     
+
     
     [_dataLock lock];
     _threadCount--;
     [_dataLock unlock];
     
 }
-
-
+-(primeType)calculatePrimeType:(unsigned long long)prime storagePrime:(unsigned long long*)sPrime{
+    primeType retPrimeType = unknownPRIME;
+    unsigned long long retStoragePrime;
+    
+    unsigned long long primeInvert = [self invert:prime width:_primeWidth];
+    unsigned long long primeFlip = [self flip:prime width:_primeWidth];
+    unsigned long long primeInvertFlip = [self invertFlip:prime width:_primeWidth];
+    
+    
+    bool hasInvert = [self containsPrime:_primeList prime:@(primeInvert)];
+    bool hasFlip = [self containsPrime:_primeList prime:@(primeFlip)];
+    bool hasInvertFlip = [self containsPrime:_primeList prime:@(primeInvertFlip)];
+    
+    //Count the number of primes in the set
+    int primeSetCnt = 1; //Start with atleast 1 prime (initial entry)
+    if(hasInvert)primeSetCnt++;
+    if(hasFlip)primeSetCnt++;
+    if(hasInvertFlip)primeSetCnt++;
+    
+    //TODO: Add only the lowest value
+    unsigned long long basePrime = 0;
+    basePrime = [self calculateBasePrime:prime
+                             invertPrime:(hasInvert?primeInvert:0)
+                               flipPrime:(hasFlip?primeInvertFlip:0)
+                         invertFlipPrime:(hasInvertFlip?primeInvertFlip:0)];
+    basePrime = prime;
+    
+    //Categorize the prime
+    if(primeSetCnt == 1){
+        retPrimeType = nullPRIME;
+        retStoragePrime = prime;
+    }
+    else if (primeSetCnt == 2){
+        //Flip, Invert, Special Flip, Grand, Special Grand
+        if(hasFlip){
+            if(prime == primeFlip){
+                retPrimeType = specialFlipPRIME;
+                retStoragePrime = prime;
+            }
+            else{
+                retPrimeType = flipPRIME;
+                //Store the smaller prime
+                retStoragePrime = (prime<primeFlip?prime:primeFlip);
+            }
+        }
+        else if(hasInvert){
+            retPrimeType = invertPRIME;
+            //Store the smaller prime
+            retStoragePrime = (prime<primeInvert?prime:primeInvert);
+        }
+        else if(hasInvertFlip){
+            if(prime == primeInvertFlip){
+                retPrimeType = specialGrandPRIME;
+                retStoragePrime = prime;
+            }
+            else{
+                retPrimeType = grandPRIME;
+                //Store the smaller prime
+                retStoragePrime = (prime<primeInvertFlip?prime:primeInvertFlip);
+            }
+        }
+        else{
+            NSAssert(false,@"Reached poor logic choice 23.");
+        }
+        
+    }
+    else if(primeSetCnt == 3){
+        //Master, Special Master
+        if(hasInvert && hasFlip){
+            //Store Prime
+            retPrimeType = masterPRIME;
+            retStoragePrime = prime;
+        }
+        else if(hasInvert && hasInvertFlip){
+            //Store Invert
+            retPrimeType = masterPRIME;
+            retStoragePrime = primeInvert;
+        }
+        else if(hasFlip && hasInvertFlip){
+            //Store Flip
+            retPrimeType = masterPRIME;
+            retStoragePrime = primeFlip;
+        }
+        else{
+            NSAssert(false,@"Reached poor logic choice 93.");
+        }
+    }
+    else if(primeSetCnt == 4){
+        //Grand Master, Special Master
+        if(primeFlip == primeInvert ||
+           prime == primeFlip ||
+           prime == primeInvert){
+            //Store the smallest of prime v primeFlip v primeInvert
+            unsigned long long smallest = prime;
+            smallest = smallest<primeInvert?smallest:primeInvert;
+            smallest = smallest<primeFlip?smallest:primeFlip;
+            //Note: May include two types..
+            retPrimeType = specialMasterPRIME;
+            retStoragePrime = smallest;
+        }
+        else{
+            unsigned long long smallest = prime;
+            smallest = smallest<primeInvert?smallest:primeInvert;
+            smallest = smallest<primeFlip?smallest:primeFlip;
+            smallest = smallest<primeInvertFlip?smallest:primeInvertFlip;
+            //Store the smallest out of all 4
+            retPrimeType = grandMasterPRIME;
+            retStoragePrime = smallest;
+        }
+    }
+    *sPrime = retStoragePrime;
+    return retPrimeType;
+}
+#pragma mark Sequential
 //Returns formatted summary
 -(NSString*)analyzePrimeNumberList:(NSArray*)primes width:(int)width{
     
@@ -278,7 +455,8 @@
                                 [invertPrimes count]*2+\
                                 [nullPrimes count];
     
-    NSAssert(analyzedCnt==[primes count],@"Mismatch in number of primes analyzed versus counted!!");
+    NSAssert(analyzedCnt == [primes count],@"Mismatch in number of primes analyzed versus counted!!");
+    
     
     if(LOG_DATA_CONSOLE){
         //Print out the sumsx
