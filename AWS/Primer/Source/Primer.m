@@ -215,6 +215,18 @@
             else{
                 [grandPrimes addObject:@(basePrime)];
             }
+            else if(hasInvertFlip){
+                if(prime == primeInvertFlip){
+                    [specialGrandPrimes addObject:@(prime)];
+                }
+                else{
+                    [grandPrimes addObject:@(prime)];
+                }
+            }
+            else{
+                NSAssert(false,@"Reached poor logic choice 23.");
+            }
+            
         }
         
         //Flip (+Special)
@@ -250,6 +262,7 @@
         //if(hasInvertFlip) [primeList removeObject:@(primeInvertFlip)];
     }
     
+        
     //Format the Output
     
     
@@ -260,7 +273,7 @@
                                 [invertPrimes count]*2+\
                                 [nullPrimes count];
     
-    //NSAssert(analyzedCnt==[primes count],@"Mismatch in number of primes analyzed versus counted!!");
+    NSAssert(analyzedCnt==[primes count],@"Mismatch in number of primes analyzed versus counted!!");
     
     if(LOG_DATA_CONSOLE){
         //Print out the sumsx
@@ -348,7 +361,6 @@
     [output appendFormat:@"%lu,",(unsigned long)[specialFlipPrimes count]];
     
     [output appendFormat:@"%lu,",(unsigned long)[invertPrimes count]];
-    //[output appendFormat:@"%lu,",(unsigned long)[specialInvertPrimes count]];
     
     [output appendFormat:@"%lu",(unsigned long)[nullPrimes count]];
     
