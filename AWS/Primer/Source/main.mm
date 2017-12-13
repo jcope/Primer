@@ -31,7 +31,8 @@
 using namespace std;
 
 int main(int argc, const char * argv[]) {
-    @autoreleasepool {
+    @autoreleasepool{
+    
 	    //Print Current Time
         time_t     now = time(0);
         time_t     startTime;
@@ -54,6 +55,8 @@ int main(int argc, const char * argv[]) {
         //Test input file
         ifstream inputFile;
         inputFile.open(INPUT_FILE);
+        
+        if(inputFile.is_open()){
         
         //Output file
         NSString* outputFilePathName = [NSString stringWithFormat:@"%s/%s",OUTPUT_DIR,OUTPUT_FILE];
@@ -109,7 +112,8 @@ int main(int argc, const char * argv[]) {
                     //Analyze the Data
                     startTime = time(0);
                     //NSString* output = [primer analyzePrimeNumberList:primeNumbers width:binaryWidth];
-                    NSString* output = [primer analyzePrimeNumberList_Threaded:primeNumbers width:binaryWidth];                 
+                    //NSString* output = [primer analyzePrimeNumberList_Threaded:primeNumbers width:binaryWidth];
+                    NSString* output = [primer analyzePrimeNumberList_NoThread:primeNumbers width:binaryWidth];
                     
                     //Output the Data
                     outfile<<[output cStringUsingEncoding:NSUTF8StringEncoding]<<endl;
@@ -132,7 +136,10 @@ int main(int argc, const char * argv[]) {
         // for more information about date/time format
         strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
         std::cout << "End Time: " << buf << std::endl;
-        
+        }
+        else{
+            std::cout << "Could not open input file: "<<INPUT_FILE<<endl;
+        }
     }
     return 0;
 }

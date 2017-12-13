@@ -11,50 +11,57 @@
 #import "NSString+FileIO.h"
 #import "NSArray+PrimeDesc.h"
 
-@interface Primer ()
-@property NSArray* primeList;
-@property NSLock *dataLock;
-@property int threadCount;
-@property int primeWidth;
-
-@property NSMutableSet* grandMasterPrimes; //Flip, Inverse, and FlipInverse unique primes
-
-@property NSMutableSet* masterPrimes; //Flip and Inverse are unique
-@property NSMutableSet* specialMasterPrimes; //Flip and inverse are prime, but equal
-
-@property NSMutableSet* grandPrimes; //Flip/Invert
-@property NSMutableSet* specialGrandPrimes; //Flip/Invert; Flip == Invert
-
-@property NSMutableSet* flipPrimes; //Flip
-@property NSMutableSet* specialFlipPrimes; //Flip == self
-
-@property NSMutableSet* invertPrimes; //Invert
-
-@property NSMutableSet* nullPrimes; //None of the above
+@interface Primer()
+//@property NSArray* primeList;
 @end
-
 
 @implementation Primer
 
+@synthesize m_primeWidth;
+@synthesize m_threadCount;
+
+@synthesize m_primeList;
+/*
+@synthesize threadCount = _threadCount;
+@synthesize primeWidth = _primeWidth;
+*/
+@synthesize m_grandMasterPrimes;
+@synthesize m_masterPrimes;
+@synthesize m_specialMasterPrimes;
+@synthesize m_grandPrimes;
+@synthesize m_specialGrandPrimes;
+@synthesize m_flipPrimes;
+@synthesize m_specialFlipPrimes;
+@synthesize m_invertPrimes;
+@synthesize m_nullPrimes;
+
 -(instancetype)init{
     if (self = [super init]) {
-        _primeList = [[NSArray alloc] init];
-        _dataLock = [[NSLock alloc] init];
-        _threadCount = 0;
-        _primeWidth = 0;
+        self.m_primeList = [[NSArray alloc] init];
+        //_dataLock = [[NSLock alloc] init];
+        self.m_threadCount = 0;
+        self.m_primeWidth = 0;
     }
     return self;
 }
+/*
+-(NSArray*)primeList{
+    return self.primeList;
+}
+-(void)setPrimeList:(NSArray *)primeList{
+    self.primeList = primeList;
+}
+ */
 -(void)initBuckets{
-    _grandMasterPrimes = [[NSMutableSet alloc] init];
-    _masterPrimes = [[NSMutableSet alloc] init];
-    _specialMasterPrimes = [[NSMutableSet alloc] init];
-    _grandPrimes = [[NSMutableSet alloc] init];
-    _specialGrandPrimes = [[NSMutableSet alloc] init];
-    _flipPrimes = [[NSMutableSet alloc] init];
-    _specialFlipPrimes = [[NSMutableSet alloc] init];
-    _invertPrimes = [[NSMutableSet alloc] init];
-    _nullPrimes = [[NSMutableSet alloc] init];
+    self.m_grandMasterPrimes = [[NSMutableSet alloc] init];
+    self.m_masterPrimes = [[NSMutableSet alloc] init];
+    self.m_specialMasterPrimes = [[NSMutableSet alloc] init];
+    self.m_grandPrimes = [[NSMutableSet alloc] init];
+    self.m_specialGrandPrimes = [[NSMutableSet alloc] init];
+    self.m_flipPrimes = [[NSMutableSet alloc] init];
+    self.m_specialFlipPrimes = [[NSMutableSet alloc] init];
+    self.m_invertPrimes = [[NSMutableSet alloc] init];
+    self.m_nullPrimes = [[NSMutableSet alloc] init];
 }
 #pragma mark - Transform
 #pragma mark String
@@ -127,10 +134,23 @@
 #pragma mark - Analyze
 #pragma mark Threaded
 #define NUM_THREADS 1
+-(NSString*)analyzePrimeNumberList_NoThread:(NSArray*)primes width:(int)width{
+    //Store the primes in data controlled storage
+    self.m_primeList = primes;
+    self.m_primeWidth = width;
+    [self initBuckets];
+    [self analyzePrimeNumberList_Search:primes];
+    
+    [self verifyCount]; //Will Assert if false
+    NSString* result = [self outputResults];
+    
+    return result;
+}
+
 -(NSString*)analyzePrimeNumberList_Threaded:(NSArray*)primes width:(int)width{
     //Store the primes in data controlled storage
-    _primeList = primes;
-    _primeWidth = width;
+    self.m_primeList = primes;
+    self.m_primeWidth = width;
     [self initBuckets];
     
     NSUInteger range = [primes count] / NUM_THREADS;
@@ -151,33 +171,37 @@
         [self performSelectorInBackground:@selector(analyzePrimeNumberList_Search:)
                                withObject:subset];
     
-        [_dataLock lock];
-        _threadCount++;
-        [_dataLock unlock];
+        //[_dataLock lock];
+        self.m_threadCount++;
+        //[_dataLock unlock];
         lowerRange+=range;
     }
     //Wait until all threads are done
-    while(_threadCount>0){
+    while(self.m_threadCount>0){
         
     }
+    [self verifyCount]; //Will Assert if false
+    NSString* result = [self outputResults];
     
-     NSUInteger analyzedCnt =    [_grandMasterPrimes count]*4+\
+    return result;
+}
+-(void)verifyCount{
+    NSUInteger analyzedCnt =
     
-    [_masterPrimes count]*3+[_specialMasterPrimes count]*2+\
+    [self.m_grandMasterPrimes count]*4+\
+    //Master
+    [self.m_masterPrimes count]*3+[self.m_specialMasterPrimes count]*2+\
+    //Grand
+    [self.m_grandPrimes count]*2+[self.m_specialGrandPrimes count]*1+\
+    //
+    [self.m_flipPrimes count]*2+[self.m_specialFlipPrimes count]*1+\
+    [self.m_invertPrimes count]*2+\
+    [self.m_nullPrimes count];
     
-    [_grandPrimes count]*2+[_specialGrandPrimes count]*1+\
-    
-    [_flipPrimes count]*2+[_specialFlipPrimes count]*1+\
-    [_invertPrimes count]*2+\
-    [_nullPrimes count];
-    
-    NSAssert(analyzedCnt == [_primeList count],@"Mismatch in number of primes analyzed versus counted!!");
-    
-    return @"";
+    NSAssert(analyzedCnt == [self.m_primeList count],@"Mismatch in number of primes analyzed versus counted!!");
 }
 -(void)analyzePrimeNumberList_Search:(NSArray*)primesSubset{
-    NSLog(@"Analyzing %lu primes out of %lu",(unsigned long)[primesSubset count],(unsigned long)[_primeList count]);
-    
+    NSLog(@"Analyzing %lu primes out of %lu",(unsigned long)[primesSubset count],(unsigned long)[self.m_primeList count]);
     //For now just print out the prime subset
     for(NSNumber* p in primesSubset){
         unsigned long long prime = [p unsignedLongLongValue];
@@ -185,39 +209,34 @@
         primeType pType = [self calculatePrimeType:prime storagePrime:&storagePrime];
         
         NSNumber* sPrime = @(storagePrime);
-        if(pType == grandMasterPRIME) [_grandMasterPrimes addObject:sPrime];
-        else if(pType == masterPRIME) [_masterPrimes addObject:sPrime];
-        else if(pType == specialMasterPRIME) [_specialMasterPrimes addObject:sPrime];
-        else if(pType == grandPRIME) [_grandPrimes addObject:sPrime];
-        else if(pType == specialGrandPRIME) [_specialGrandPrimes addObject:sPrime];
-        else if(pType == flipPRIME) [_flipPrimes addObject:sPrime];
-        else if(pType == specialFlipPRIME) [_specialFlipPrimes addObject:sPrime];
-        else if(pType == invertPRIME) [_invertPrimes addObject:sPrime];
-        else if(pType == nullPRIME) [_nullPrimes addObject:sPrime];
+        if(pType == grandMasterPRIME) [self.m_grandMasterPrimes addObject:sPrime];
+        else if(pType == masterPRIME) [self.m_masterPrimes addObject:sPrime];
+        else if(pType == specialMasterPRIME) [self.m_specialMasterPrimes addObject:sPrime];
+        else if(pType == grandPRIME) [self.m_grandPrimes addObject:sPrime];
+        else if(pType == specialGrandPRIME) [self.m_specialGrandPrimes addObject:sPrime];
+        else if(pType == flipPRIME) [self.m_flipPrimes addObject:sPrime];
+        else if(pType == specialFlipPRIME) [self.m_specialFlipPrimes addObject:sPrime];
+        else if(pType == invertPRIME) [self.m_invertPrimes addObject:sPrime];
+        else if(pType == nullPRIME) [self.m_nullPrimes addObject:sPrime];
         else NSAssert(false,@"Unknown Type");
-        //NSLog(@"%llu",prime);
-        
     }
     
-
-    
-    [_dataLock lock];
-    _threadCount--;
-    [_dataLock unlock];
-    
+    //[_dataLock lock];
+    self.m_threadCount--;
+    //[_dataLock unlock];
 }
 -(primeType)calculatePrimeType:(unsigned long long)prime storagePrime:(unsigned long long*)sPrime{
     primeType retPrimeType = unknownPRIME;
     unsigned long long retStoragePrime;
     
-    unsigned long long primeInvert = [self invert:prime width:_primeWidth];
-    unsigned long long primeFlip = [self flip:prime width:_primeWidth];
-    unsigned long long primeInvertFlip = [self invertFlip:prime width:_primeWidth];
+    unsigned long long primeInvert = [self invert:prime width:self.m_primeWidth];
+    unsigned long long primeFlip = [self flip:prime width:self.m_primeWidth];
+    unsigned long long primeInvertFlip = [self invertFlip:prime width:self.m_primeWidth];
     
     
-    bool hasInvert = [self containsPrime:_primeList prime:@(primeInvert)];
-    bool hasFlip = [self containsPrime:_primeList prime:@(primeFlip)];
-    bool hasInvertFlip = [self containsPrime:_primeList prime:@(primeInvertFlip)];
+    bool hasInvert = [self containsPrime:self.m_primeList prime:@(primeInvert)];
+    bool hasFlip = [self containsPrime:self.m_primeList prime:@(primeFlip)];
+    bool hasInvertFlip = [self containsPrime:self.m_primeList prime:@(primeInvertFlip)];
     
     //Count the number of primes in the set
     int primeSetCnt = 1; //Start with atleast 1 prime (initial entry)
@@ -269,6 +288,7 @@
         }
         else{
             NSAssert(false,@"Reached poor logic choice 23.");
+            retStoragePrime = 0;
         }
         
     }
@@ -291,6 +311,7 @@
         }
         else{
             NSAssert(false,@"Reached poor logic choice 93.");
+            retStoragePrime = 0;
         }
     }
     else if(primeSetCnt == 4){
@@ -316,8 +337,108 @@
             retStoragePrime = smallest;
         }
     }
+    else{
+        NSAssert(false,@"Reached poor logic choice 126.");
+        retStoragePrime = 0;
+    }
     *sPrime = retStoragePrime;
     return retPrimeType;
+}
+-(NSString*)outputResults{
+    if(LOG_DATA_CONSOLE){
+        //Print out the sumsx
+        NSLog(@"----------------------------------------");
+        NSLog(@"Digits: %d",m_primeWidth);
+        NSLog(@"Total Primes: %lu",[m_primeList count]);
+        NSLog(@"--------------------");
+        NSLog(@"Grand Master Primes: %lu",(unsigned long)[m_grandMasterPrimes count]);
+        NSLog(@"Master Primes: %lu",(unsigned long)[m_masterPrimes count]);
+        NSLog(@"Special Master Primes: %lu",(unsigned long)[m_specialMasterPrimes count]);
+        NSLog(@"Grand Primes: %lu",(unsigned long)[m_grandPrimes count]);
+        NSLog(@"Speical Grand Primes: %lu",(unsigned long)[m_specialGrandPrimes count]);
+        NSLog(@"Flip Primes: %lu",(unsigned long)[m_flipPrimes count]);
+        NSLog(@"Special Flip Primes: %lu",(unsigned long)[m_specialFlipPrimes count]);
+        NSLog(@"Invert Primes: %lu",(unsigned long)[m_invertPrimes count]);
+        NSLog(@"Null Primes: %lu",(unsigned long)[m_nullPrimes count]);
+        NSLog(@"----------------------------------------");
+    }
+    if(LOG_DATA_FILE_VERBOSE){
+        NSMutableString* cacheOutput = [NSMutableString stringWithCapacity:100];
+        NSString* fileName = [NSString stringWithFormat:@"%s/%d_%s",OUTPUT_DIR,m_primeWidth,OUTPUT_FILE];
+        
+        NSStringEncoding enc = NSUTF8StringEncoding;
+        NSString* dataBreak = @"\n----------------------";
+        //Generate and write all outputs
+        [cacheOutput appendFormat:@"Digit Width: %d",m_primeWidth];
+        [cacheOutput appendFormat:@"\nMax Prime: %.Lf",powl(2, m_primeWidth)-1];
+        [cacheOutput appendFormat:@"\nTotal Primes: %lu",[m_primeList count]];
+        [cacheOutput appendString:dataBreak];
+        //Grand/Master/Special
+        [cacheOutput appendFormat:@"\nGrand Master Primes: %@",[self ullDescription:m_grandMasterPrimes]];
+        [cacheOutput appendString:dataBreak];
+        [cacheOutput appendFormat:@"\nMaster Primes: %@",[self ullDescription:m_masterPrimes]];
+        [cacheOutput appendFormat:@"\nSpecial Master Primes: %@",[self ullDescription:m_specialMasterPrimes]];
+        [cacheOutput appendString:dataBreak];
+        [cacheOutput appendFormat:@"\nGrand Primes: %@",[self ullDescription:m_grandPrimes]];
+        [cacheOutput appendFormat:@"\nSpecial Grand Primes: %@",[self ullDescription:m_specialGrandPrimes]];
+        [cacheOutput appendString:dataBreak];
+        //Flip
+        [cacheOutput appendFormat:@"\nFlip Primes: %@",[self ullDescription:m_flipPrimes]];
+        [cacheOutput appendFormat:@"\nSpecial Flip Primes: %@",[self ullDescription:m_specialFlipPrimes]];
+        [cacheOutput appendString:dataBreak];
+        //Invert
+        [cacheOutput appendFormat:@"\nInvert Primes: %@",[self ullDescription:m_invertPrimes]];
+        [cacheOutput appendString:dataBreak];
+        //Null Primes
+        [cacheOutput appendFormat:@"\nNull Primes: %@",[self ullDescription:m_nullPrimes]];
+        
+        //Write to file
+        [cacheOutput appendToFile:fileName encoding:enc];
+    }
+    
+    
+    //Create the output string
+    NSMutableString* output = [[NSMutableString alloc] init];
+    
+    
+    //Digits,Number of Primes,
+    //Grand Master Primes,
+    //Master Primes, Special Master Primes,
+    //Grand Primes, Special Grand Primes,
+    //Flip Primes, Special Flip Primes,
+    //Invert Primes,
+    //Null Primes
+    [output appendFormat:@"%d,",m_primeWidth];
+    [output appendFormat:@"%lu,",(unsigned long)[m_primeList count]];
+    
+    [output appendFormat:@"%lu,",(unsigned long)[m_grandMasterPrimes count]];
+    
+    [output appendFormat:@"%lu,",(unsigned long)[m_masterPrimes count]];
+    [output appendFormat:@"%lu,",(unsigned long)[m_specialMasterPrimes count]];
+    
+    [output appendFormat:@"%lu,",(unsigned long)[m_grandPrimes count]];
+    [output appendFormat:@"%lu,",(unsigned long)[m_specialGrandPrimes count]];
+    
+    [output appendFormat:@"%lu,",(unsigned long)[m_flipPrimes count]];
+    [output appendFormat:@"%lu,",(unsigned long)[m_specialFlipPrimes count]];
+    
+    [output appendFormat:@"%lu,",(unsigned long)[m_invertPrimes count]];
+    
+    [output appendFormat:@"%lu",(unsigned long)[m_nullPrimes count]];
+    
+    return output;
+}
+-(NSString*)ullDescription:(NSSet*)set{
+    NSString* retStr = @"";
+    NSMutableString* dataOutput = [NSMutableString stringWithCapacity:20];
+    for(NSNumber* prime in set){
+        unsigned long long value = [prime unsignedLongLongValue];
+        [dataOutput appendFormat:@"%llu,",value];
+    }
+    if([dataOutput length]>0){ //If dataOutput was generated
+        retStr = [dataOutput substringToIndex:[dataOutput length]-1]; //Trim away last ','
+    }
+    return retStr;
 }
 #pragma mark Sequential
 //Returns formatted summary
@@ -478,7 +599,7 @@
     }
     if(LOG_DATA_FILE_VERBOSE){
         NSMutableString* cacheOutput = [NSMutableString stringWithCapacity:100];
-        NSString* fileName = [NSString stringWithFormat:@"%s/%d_PrimerOutput.txt",OUTPUT_DIR,width];
+        NSString* fileName = [NSString stringWithFormat:@"%s/%d_%s",OUTPUT_DIR,width,OUTPUT_FILE];
         
         NSStringEncoding enc = NSUTF8StringEncoding;
         NSString* dataBreak = @"\n----------------------";

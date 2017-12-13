@@ -18,15 +18,37 @@
 
 
 #define MIN_BINARY_WIDTH 3
-#define MAX_BINARY_WIDTH 16
-//#define INPUT_FILE "/data/PrimeInputData.txt"
-//#define OUTPUT_FILE "./Output/PrimerOutput.txt"
-#define INPUT_FILE "/Users/Jeremy/Projects/Primer/PrimeInput.txt"
+#define MAX_BINARY_WIDTH 34
+
 
 #define OUTPUT_FILE "PrimerOutput.txt"
 
-#define OUTPUT_DIR "/Users/Jeremy/Projects/Primer/Output"
 
+//2^ ()
+//35 = 34359738368
+//34 = 17179869184
+//30057700549
+
+//32 = 4294967296
+
+//29 = 536870912
+//28 = 268435456
+//27 = 134217728
+
+
+//AWS
+//#define INPUT_FILE "/data/PrimeInputData.txt" //Very Large, Up to [30057700549, 2^(34)+]
+//#define INPUT_FILE "./PrimeInput.txt" //Sample Size, Up to [179424673, 2^(27)+]
+//#define OUTPUT_DIR "./Output/"
+
+//MAC
+//#define INPUT_FILE "/Volumes/Untitled/Primer/PrimeInput.txt" //Very Large
+//#define INPUT_FILE "/Users/Jeremy/Projects/Primer/PrimeInput.txt" //Sample Size
+//#define OUTPUT_DIR "/Users/Jeremy/Projects/Primer/Output"
+
+//USB
+#define INPUT_FILE "/Volumes/Untitled/Primer/PrimeInput.txt" //Very Large
+#define OUTPUT_DIR "/Volumes/Untitled/Primer/Output"
 
 
 #endif /* Config_h */
