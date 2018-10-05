@@ -32,7 +32,7 @@ using namespace std;
 
 int main(int argc, const char * argv[]) {
     @autoreleasepool{
-    
+        
 	    //Print Current Time
         time_t     now = time(0);
         time_t     startTime;
@@ -52,6 +52,8 @@ int main(int argc, const char * argv[]) {
         //[primer runPerformaceTest];
         //exit(0);
         
+        
+        
         //Test input file
         ifstream inputFile;
         inputFile.open(INPUT_FILE);
@@ -65,9 +67,11 @@ int main(int argc, const char * argv[]) {
         
         if(LOG_DATA_FILE){
             outfile<<"Digits,Number of Primes,";
-            outfile<<"Grand Master Primes,Master Primes,Grand Primes,Special Primes,";
-            outfile<<"Flip Primes,Grand Flip Primes,Special Flip Primes,";
-            outfile<<"Invert Primes,Grand Invert Primes,Special Invert Primes,";
+            outfile<<"Grand Master Primes,";
+            outfile<<"Master Primes,Special Master Primes,";
+            outfile<<"Grand Primes,Special Grand Primes,";
+            outfile<<"Flip Primes,Special Flip Primes,";
+            outfile<<"Invert Primes,";
             outfile<<"Null Primes"<<endl;
         }
         
@@ -109,11 +113,18 @@ int main(int argc, const char * argv[]) {
                     NSLog(@"Count: %lu primes (between %.f and %lld)",(unsigned long)[primeNumbers count],pow(2,binaryWidth-1),max);
                     //NSLog(@"Primes: %@",[primeNumbers description]);
                     
+                    //What effect does randomizing the data have on our algorithm?
+                    //Answer: Algorithm uses binary search, so assumes list is in order
+                    //primeNumbers = [Primer randomSortArray:primeNumbers];
+                    
                     //Analyze the Data
                     startTime = time(0);
                     //NSString* output = [primer analyzePrimeNumberList:primeNumbers width:binaryWidth];
                     //NSString* output = [primer analyzePrimeNumberList_Threaded:primeNumbers width:binaryWidth];
                     NSString* output = [primer analyzePrimeNumberList_NoThread:primeNumbers width:binaryWidth];
+                    
+                    //Flip* investigation
+                    //NSString* output = [primer analyzePrimeNumberListForFlip_NoThread:primeNumbers width:binaryWidth];
                     
                     //Output the Data
                     outfile<<[output cStringUsingEncoding:NSUTF8StringEncoding]<<endl;
@@ -140,6 +151,95 @@ int main(int argc, const char * argv[]) {
         else{
             std::cout << "Could not open input file: "<<INPUT_FILE<<endl;
         }
+
+    }//AutoRelease pool.
+    return 0;
+}
+
+int main_Random(int argc, const char * argv[]) {
+
+    int loopCnt = 10;
+    while(loopCnt<128){
+    
+    @autoreleasepool{
+        
+        //Print Current Time
+        time_t     now = time(0);
+        time_t     startTime;
+        struct tm  tstruct;
+        char       buf[80];
+        tstruct = *localtime(&now);
+        // Visit http://en.cppreference.com/w/cpp/chrono/c/strftime
+        // for more information about date/time format
+        strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
+        std::cout << "Start Time: " << buf << std::endl;
+        
+        //Setup
+        Primer* primer = [[Primer alloc] init];
+        [primer verifyMachine];
+        [primer runDataTest];
+        
+        //Output file
+        NSString* outputFilePathName = [NSString stringWithFormat:@"%s/Random OutputLoop/%d%s",OUTPUT_DIR,loopCnt,OUTPUT_FILE];
+        ofstream outfile;
+        outfile.open([outputFilePathName cStringUsingEncoding:NSUTF8StringEncoding]);
+        
+        outfile<<"Digits,Number of Primes,";
+        outfile<<"Grand Master Primes,";
+        outfile<<"Master Primes,Special Master Primes,";
+        outfile<<"Grand Primes,Special Grand Primes,";
+        outfile<<"Flip Primes,Special Flip Primes,";
+        outfile<<"Invert Primes,";
+        outfile<<"Null Primes"<<endl;
+        
+        NSArray* primeNumbers = [[NSArray alloc] init];
+        
+        long long max;
+        long long data=0;
+
+        //Filter out the minimums
+        unsigned long long min;
+        min = pow(2,MIN_BINARY_WIDTH-1)-1;
+        NSLog(@"Starting with Prime: %lld",data);
+        
+        for(int binaryWidth=MIN_BINARY_WIDTH;binaryWidth<MAX_BINARY_WIDTH;binaryWidth++){ //Cyclce through all the different buckets
+            max = pow(2,binaryWidth)-1; //Calculate the max bucket
+            NSLog(@"****************************");
+            NSLog(@"Binary width: %d",binaryWidth);
+            NSLog(@"Analyzing for max: %lld",max);
+            
+            unsigned long long primeCount = [primer primeNumbersPerGroup:binaryWidth];
+            primeNumbers = [primer createRandomInput:binaryWidth numPrimes:primeCount];
+            
+            NSLog(@"Count: %lu primes (between %.f and %lld)",(unsigned long)[primeNumbers count],pow(2,binaryWidth-1),max);
+            
+            //Analyze the Data
+            startTime = time(0);
+            //NSString* output = [primer analyzePrimeNumberList:primeNumbers width:binaryWidth];
+            //NSString* output = [primer analyzePrimeNumberList_Threaded:primeNumbers width:binaryWidth];
+            NSString* output = [primer analyzePrimeNumberList_NoThread:primeNumbers width:binaryWidth];
+            
+            //Output the Data
+            outfile<<[output cStringUsingEncoding:NSUTF8StringEncoding]<<endl;
+            double totalTime = difftime(time(0),startTime);
+            NSLog(@"Total Time: %.f seconds",totalTime);
+            
+        }
+        outfile.close();
+        //[primer dealloc];
+        //[primeNumbers dealloc];
+        
+        //Print the End Time
+        now = time(0);
+        tstruct = *localtime(&now);
+        // Visit http://en.cppreference.com/w/cpp/chrono/c/strftime
+        // for more information about date/time format
+        strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
+        std::cout << "End Time: " << buf << std::endl;
+
+    }//AutoRelease Pool.
+      loopCnt++;
     }
     return 0;
 }
+

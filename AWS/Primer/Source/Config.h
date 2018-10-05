@@ -13,16 +13,17 @@
 #define LOG_RAW_DATA 1
 #define LOG_DATA_CONSOLE 1
 #define LOG_DATA_FILE 1
-#define LOG_DATA_FILE_VERBOSE 1
+#define LOG_DATA_FILE_VERBOSE 0
 #define LOG_DATA_FILE_VERBOSE_FULL 1
 
 
 #define MIN_BINARY_WIDTH 3
-#define MAX_BINARY_WIDTH 34
+#define MAX_BINARY_WIDTH 32
 
 
 #define OUTPUT_FILE "PrimerOutput.txt"
 
+#define BINARY_SEARCH 1 //Only use if we know the input will be ordered
 
 //2^ ()
 //35 = 34359738368
@@ -43,12 +44,12 @@
 
 //MAC
 //#define INPUT_FILE "/Volumes/Untitled/Primer/PrimeInput.txt" //Very Large
-//#define INPUT_FILE "/Users/Jeremy/Projects/Primer/PrimeInput.txt" //Sample Size
-//#define OUTPUT_DIR "/Users/Jeremy/Projects/Primer/Output"
+#define INPUT_FILE "/Users/Jeremy/Projects/Primer/PrimeInput.txt" //Sample Size
+#define OUTPUT_DIR "/Users/Jeremy/Projects/Primer/Output"
 
 //USB
-#define INPUT_FILE "/Volumes/Untitled/Primer/PrimeInput.txt" //Very Large
-#define OUTPUT_DIR "/Volumes/Untitled/Primer/Output"
+//#define INPUT_FILE "/Volumes/Untitled/Primer/PrimeInput.txt" //Very Large
+//#define OUTPUT_DIR "/Volumes/Untitled/Primer/Output"
 
 
 #endif /* Config_h */

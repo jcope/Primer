@@ -673,9 +673,6 @@
                                           return [obj1 compare:obj2];
                                       }];
     */
-    NSInteger findIndex = [sortedArray binarySearch:prime];
-    if(findIndex != NSNotFound){
-        foundPrime = true;
     }
     return foundPrime;
 }

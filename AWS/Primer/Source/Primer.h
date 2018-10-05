@@ -66,7 +66,14 @@ typedef enum{
 //Tests
 -(void)runDataTest;
 -(void)runPerformaceTest;
+//Data generation
+-(NSArray*)createRandomInput:(int)digits numPrimes:(unsigned long long)bucketSize;
+-(unsigned long long)primeNumbersPerGroup:(int)width;
 
++(NSMutableArray *)randomSortArray:(NSMutableArray *)array;
+
+//Flip Tests
+-(NSString*)analyzePrimeNumberListForFlip_NoThread:(NSArray*)primes width:(int)width;
 
 //@property NSLock *dataLock;
 @property int m_threadCount;
