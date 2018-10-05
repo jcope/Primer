@@ -664,6 +664,7 @@
 }
 -(BOOL)containsPrime:(NSArray*)sortedArray prime:(NSNumber*)prime{
     BOOL foundPrime = false;
+
     /*
     NSRange searchRange = NSMakeRange(0, [sortedArray count]);
     NSUInteger findIndex = [sortedArray indexOfObject:prime
@@ -673,6 +674,14 @@
                                           return [obj1 compare:obj2];
                                       }];
     */
+    if(BINARY_SEARCH){
+        NSInteger findIndex = [sortedArray binarySearch:prime];
+        if(findIndex != NSNotFound){
+            foundPrime = true;
+        }
+    }
+    else{
+        foundPrime = [sortedArray containsObject:prime];
     }
     return foundPrime;
 }
@@ -769,5 +778,87 @@
             NSLog(@"%llu,%@,%@",index,result,result2);
         }
     }
+}
+#pragma mark Data Generation- for random input testing
+-(NSArray*)createRandomInput:(int)digits numPrimes:(unsigned long long)bucketSize{
+    //Calculate a min, max, number of elements
+    unsigned long long initNumb = powl(2,digits-1);
+    unsigned long long maxNumb = powl(2, digits)-1;
+    //Creat array with all available candidtate (between min/max, not even)
+    NSMutableArray* pool = [NSMutableArray arrayWithCapacity:maxNumb-initNumb];
+    for(unsigned long long number = initNumb+1; number<=maxNumb; number = number+2){
+        [pool addObject:@(number)];
+    }
+    //Randomize the mutable array
+    pool = [Primer randomSortArray:pool];
+    NSRange randomRange;
+    randomRange.location = 0;
+    randomRange.length = bucketSize;
+    NSArray* randomList = [pool subarrayWithRange:randomRange];
+    NSArray* sortedList = [Primer sortArrayAscending:randomList];
+    //NSLog([randomList description]);
+    return sortedList;
+}
+-(unsigned long long)primeNumbersPerGroup:(int)width{
+    NSArray* primeCount = @[@(2),@(2),@(5),@(7),@(13),@(23),@(43),@(75),@(137),
+                            @(255),@(464),@(872),@(1612),@(3030),@(5709),@(10749),@(20390),
+                            @(38635),@(73586),@(140336),@(268216),@(513708),@(985818),@(1894120),
+                            @(3645744),@(7027290),@(13561907),@(26207278),@(50697537),@(98182656)];
+    int index = width - 3; //We only analyze starting with width = 3 digits
+    NSAssert(index<[primeCount count],@"Unsupported length");
+    unsigned long long retVal = [primeCount[index] unsignedLongLongValue];
+    return retVal;
+}
+#pragma mark - Array Utilities
++(NSMutableArray *)randomSortArray:(NSMutableArray *)array {
+    srandom((unsigned int)time(NULL));
+    for (NSInteger x = 0; x < [array count]; x++) {
+        NSInteger randInt = (arc4random() % ([array count] - x)) + x;
+        [array exchangeObjectAtIndex:x withObjectAtIndex:randInt];
+    }
+    return array;
+}
++(NSArray *)sortArrayAscending:(NSArray *)array{
+    NSArray* sortedArray = [array sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        if ([obj1 unsignedLongLongValue] > [obj2 unsignedLongLongValue]) {
+            return (NSComparisonResult)NSOrderedDescending;
+        }
+        if ([obj1 unsignedLongLongValue] < [obj2 unsignedLongLongValue]) {
+            return (NSComparisonResult)NSOrderedAscending;
+        }
+        return (NSComparisonResult)NSOrderedSame;
+    }];
+    return sortedArray;
+}
+#pragma mark - Flip(*) investigation
+-(NSString*)analyzePrimeNumberListForFlip_NoThread:(NSArray*)primes width:(int)width{
+    //Store the primes in data controlled storage
+    self.m_primeList = primes;
+    self.m_primeWidth = width;
+    [self initBuckets];
+    NSString* result = [self analyzePrimeNumberListForSpecialFlips:primes];
+    
+    return result;
+}
+-(NSString*)analyzePrimeNumberListForSpecialFlips:(NSArray*)primesSubset{
+    NSString* result;
+    int count = 0;
+    for(NSNumber* p in primesSubset){
+        unsigned long long prime = [p unsignedLongLongValue];
+        unsigned long long primeInvert = [self invert:prime width:self.m_primeWidth];
+        unsigned long long primeFlip = [self flip:prime width:self.m_primeWidth];
+        unsigned long long primeInvertFlip = [self invertFlip:prime width:self.m_primeWidth];
+        
+        bool hasInvert = [self containsPrime:self.m_primeList prime:@(primeInvert)];
+        bool hasFlip = [self containsPrime:self.m_primeList prime:@(primeFlip)];
+        bool hasInvertFlip = [self containsPrime:self.m_primeList prime:@(primeInvertFlip)];
+        
+        //If this meets the condiditon for a flip*
+        if(prime == primeFlip && hasFlip == true && hasInvert == false && hasInvertFlip == false){
+            count++;
+        }
+    }
+    result = [NSString stringWithFormat:@"%d,%d",self.m_primeWidth,count];
+    return result;
 }
 @end
