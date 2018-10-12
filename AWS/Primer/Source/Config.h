@@ -17,8 +17,8 @@
 #define LOG_DATA_FILE_VERBOSE_FULL 1
 
 
-#define MIN_BINARY_WIDTH 3
-#define MAX_BINARY_WIDTH 32
+#define MIN_BINARY_WIDTH 32
+#define MAX_BINARY_WIDTH 36
 
 
 #define OUTPUT_FILE "PrimerOutput.txt"
@@ -26,9 +26,13 @@
 #define BINARY_SEARCH 1 //Only use if we know the input will be ordered
 
 //2^ ()
+
+
+//     99999999977
+
 //35 = 34359738368
 //34 = 17179869184
-//30057700549
+//     30057700549
 
 //32 = 4294967296
 
@@ -43,8 +47,8 @@
 //#define OUTPUT_DIR "./Output/"
 
 //MAC
-//#define INPUT_FILE "/Volumes/Untitled/Primer/PrimeInput.txt" //Very Large
-#define INPUT_FILE "/Users/Jeremy/Projects/Primer/PrimeInput.txt" //Sample Size
+#define INPUT_FILE "/Volumes/Untitled/Primer/PrimeInput.txt" //Very Large
+//#define INPUT_FILE "/Users/Jeremy/Projects/Primer/PrimeInput.txt" //Sample Size
 #define OUTPUT_DIR "/Users/Jeremy/Projects/Primer/Output"
 
 //USB

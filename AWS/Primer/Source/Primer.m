@@ -53,6 +53,7 @@
 }
  */
 -(void)initBuckets{
+    /*
     self.m_grandMasterPrimes = [[NSMutableSet alloc] init];
     self.m_masterPrimes = [[NSMutableSet alloc] init];
     self.m_specialMasterPrimes = [[NSMutableSet alloc] init];
@@ -62,6 +63,36 @@
     self.m_specialFlipPrimes = [[NSMutableSet alloc] init];
     self.m_invertPrimes = [[NSMutableSet alloc] init];
     self.m_nullPrimes = [[NSMutableSet alloc] init];
+    */
+    self.m_grandMasterPrimes = [[NSMutableArray alloc] init];
+    self.m_masterPrimes = [[NSMutableArray alloc] init];
+    self.m_specialMasterPrimes = [[NSMutableArray alloc] init];
+    self.m_grandPrimes = [[NSMutableArray alloc] init];
+    self.m_specialGrandPrimes = [[NSMutableArray alloc] init];
+    self.m_flipPrimes = [[NSMutableArray alloc] init];
+    self.m_specialFlipPrimes = [[NSMutableArray alloc] init];
+    self.m_invertPrimes = [[NSMutableArray alloc] init];
+    self.m_nullPrimes = [[NSMutableArray alloc] init];
+}
+-(void)removeDuplicates{
+    NSOrderedSet *orderedSet = [NSOrderedSet orderedSetWithArray:self.m_grandMasterPrimes];
+    self.m_grandMasterPrimes = [NSMutableArray arrayWithArray:[orderedSet array]];
+    orderedSet = [NSOrderedSet orderedSetWithArray:self.m_masterPrimes];
+    self.m_masterPrimes = [NSMutableArray arrayWithArray:[orderedSet array]];
+    orderedSet = [NSOrderedSet orderedSetWithArray:self.m_specialMasterPrimes];
+    self.m_specialMasterPrimes = [NSMutableArray arrayWithArray:[orderedSet array]];
+    orderedSet = [NSOrderedSet orderedSetWithArray:self.m_grandPrimes];
+    self.m_grandPrimes = [NSMutableArray arrayWithArray:[orderedSet array]];
+    orderedSet = [NSOrderedSet orderedSetWithArray:self.m_specialGrandPrimes];
+    self.m_specialGrandPrimes = [NSMutableArray arrayWithArray:[orderedSet array]];
+    orderedSet = [NSOrderedSet orderedSetWithArray:self.m_flipPrimes];
+    self.m_flipPrimes = [NSMutableArray arrayWithArray:[orderedSet array]];
+    orderedSet = [NSOrderedSet orderedSetWithArray:self.m_specialFlipPrimes];
+    self.m_specialFlipPrimes = [NSMutableArray arrayWithArray:[orderedSet array]];
+    orderedSet = [NSOrderedSet orderedSetWithArray:self.m_invertPrimes];
+    self.m_invertPrimes = [NSMutableArray arrayWithArray:[orderedSet array]];
+    orderedSet = [NSOrderedSet orderedSetWithArray:self.m_nullPrimes];
+    self.m_nullPrimes = [NSMutableArray arrayWithArray:[orderedSet array]];
 }
 #pragma mark - Transform
 #pragma mark String
@@ -140,6 +171,7 @@
     self.m_primeWidth = width;
     [self initBuckets];
     [self analyzePrimeNumberList_Search:primes];
+    [self removeDuplicates];
     
     [self verifyCount]; //Will Assert if false
     NSString* result = [self outputResults];
@@ -245,12 +277,14 @@
     if(hasInvertFlip)primeSetCnt++;
     
     //TODO: Add only the lowest value
+    /*
     unsigned long long basePrime = 0;
     basePrime = [self calculateBasePrime:prime
                              invertPrime:(hasInvert?primeInvert:0)
                                flipPrime:(hasFlip?primeInvertFlip:0)
                          invertFlipPrime:(hasInvertFlip?primeInvertFlip:0)];
     basePrime = prime;
+    */
     
     //Categorize the prime
     if(primeSetCnt == 1){
@@ -374,23 +408,23 @@
         [cacheOutput appendFormat:@"\nTotal Primes: %lu",[m_primeList count]];
         [cacheOutput appendString:dataBreak];
         //Grand/Master/Special
-        [cacheOutput appendFormat:@"\nGrand Master Primes: %@",[self ullDescription:m_grandMasterPrimes]];
+        [cacheOutput appendFormat:@"\nGrand Master Primes: %@",[self ullDescription_array:m_grandMasterPrimes]];
         [cacheOutput appendString:dataBreak];
-        [cacheOutput appendFormat:@"\nMaster Primes: %@",[self ullDescription:m_masterPrimes]];
-        [cacheOutput appendFormat:@"\nSpecial Master Primes: %@",[self ullDescription:m_specialMasterPrimes]];
+        [cacheOutput appendFormat:@"\nMaster Primes: %@",[self ullDescription_array:m_masterPrimes]];
+        [cacheOutput appendFormat:@"\nSpecial Master Primes: %@",[self ullDescription_array:m_specialMasterPrimes]];
         [cacheOutput appendString:dataBreak];
-        [cacheOutput appendFormat:@"\nGrand Primes: %@",[self ullDescription:m_grandPrimes]];
-        [cacheOutput appendFormat:@"\nSpecial Grand Primes: %@",[self ullDescription:m_specialGrandPrimes]];
+        [cacheOutput appendFormat:@"\nGrand Primes: %@",[self ullDescription_array:m_grandPrimes]];
+        [cacheOutput appendFormat:@"\nSpecial Grand Primes: %@",[self ullDescription_array:m_specialGrandPrimes]];
         [cacheOutput appendString:dataBreak];
         //Flip
-        [cacheOutput appendFormat:@"\nFlip Primes: %@",[self ullDescription:m_flipPrimes]];
-        [cacheOutput appendFormat:@"\nSpecial Flip Primes: %@",[self ullDescription:m_specialFlipPrimes]];
+        [cacheOutput appendFormat:@"\nFlip Primes: %@",[self ullDescription_array:m_flipPrimes]];
+        [cacheOutput appendFormat:@"\nSpecial Flip Primes: %@",[self ullDescription_array:m_specialFlipPrimes]];
         [cacheOutput appendString:dataBreak];
         //Invert
-        [cacheOutput appendFormat:@"\nInvert Primes: %@",[self ullDescription:m_invertPrimes]];
+        [cacheOutput appendFormat:@"\nInvert Primes: %@",[self ullDescription_array:m_invertPrimes]];
         [cacheOutput appendString:dataBreak];
         //Null Primes
-        [cacheOutput appendFormat:@"\nNull Primes: %@",[self ullDescription:m_nullPrimes]];
+        [cacheOutput appendFormat:@"\nNull Primes: %@",[self ullDescription_array:m_nullPrimes]];
         
         //Write to file
         [cacheOutput appendToFile:fileName encoding:enc];
@@ -432,6 +466,18 @@
     NSString* retStr = @"";
     NSMutableString* dataOutput = [NSMutableString stringWithCapacity:20];
     for(NSNumber* prime in set){
+        unsigned long long value = [prime unsignedLongLongValue];
+        [dataOutput appendFormat:@"%llu,",value];
+    }
+    if([dataOutput length]>0){ //If dataOutput was generated
+        retStr = [dataOutput substringToIndex:[dataOutput length]-1]; //Trim away last ','
+    }
+    return retStr;
+}
+-(NSString*)ullDescription_array:(NSArray*)array{
+    NSString* retStr = @"";
+    NSMutableString* dataOutput = [NSMutableString stringWithCapacity:20];
+    for(NSNumber* prime in array){
         unsigned long long value = [prime unsignedLongLongValue];
         [dataOutput appendFormat:@"%llu,",value];
     }
@@ -717,6 +763,27 @@
     result = [self invertedFlippedBinaryStringFromInteger:515 numDigits:10];
     NSAssert([result isEqualToString:@"1011111111"],@"Inverted Flipped Binary String Conversion Failed");
     
+    
+    //4306063679d = 100000000101010010101000100111111b
+    result = [self binaryStringFromInteger:4306063679 numDigits:33];
+    NSAssert([result isEqualToString:@"100000000101010010101000100111111"],@"Binary String Conversion Failed");
+    result = [self invertedBinaryStringFromInteger:4306063679 numDigits:33];
+    NSAssert([result isEqualToString:@"111111111010101101010111011000001"],@"Inverted Binary String Conversion Failed");
+    result = [self flippedBinaryStringFromInteger:4306063679 numDigits:33];
+    NSAssert([result isEqualToString:@"111111001000101010010101000000001"],@"Flipped Binary String Conversion Failed");
+    result = [self invertedFlippedBinaryStringFromInteger:4306063679 numDigits:33];
+    NSAssert([result isEqualToString:@"100000110111010101101010111111111"],@"Inverted Flipped Binary String Conversion Failed");
+
+    unsigned long long primeInvert = [self invert:4306063679 width:33];
+    unsigned long long primeFlip = [self flip:4306063679 width:33];
+    unsigned long long primeInvertFlip = [self invertFlip:4306063679 width:33];
+    NSAssert(primeInvert == 8578838209,@"Invalid invert conversion!");
+    NSAssert(primeFlip == 8473881089,@"Invalid flip conversion!");
+    NSAssert(primeInvertFlip == 4411020799,@"Invalid invertFlip conversion!");
+    
+    
+    
+
     //Test longest string conversion
     //18446744073709551613d = 1111111111111111111111111111111111111111111111111111111111111101b
     result = [self binaryStringFromInteger:18446744073709551613U numDigits:64];
@@ -725,6 +792,13 @@
     NSAssert([result isEqualToString:@"1000000000000000000000000000000000000000000000000000000000000011"],@"Binary String Conversion Failed");
     result = [self flippedBinaryStringFromInteger:18446744073709551613U numDigits:64];
     NSAssert([result isEqualToString:@"1011111111111111111111111111111111111111111111111111111111111111"],@"Binary String Conversion Failed");
+   
+    primeInvert = [self invert:18446744073709551613U width:64];
+    primeFlip = [self flip:18446744073709551613U width:64];
+    primeInvertFlip = [self invertFlip:18446744073709551613U width:64];
+    NSAssert(primeInvert == 9223372036854775811U,@"Invalid invert conversion!");
+    NSAssert(primeFlip == 13835058055282163711U,@"Invalid flip conversion!");
+    NSAssert(primeInvertFlip == 13835058055282163713U,@"Invalid invertFlip conversion!");
     
     
     //Test unsigned long long conversion
