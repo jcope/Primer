@@ -28,24 +28,6 @@
     NSMutableArray* m_nullPrimes; //None of the above
 }
 
-typedef enum{
-    grandMasterPRIME,
-    
-    masterPRIME,
-    specialMasterPRIME,
-    
-    grandPRIME,
-    specialGrandPRIME,
-    
-    flipPRIME,
-    specialFlipPRIME,
-    
-    invertPRIME,
-    
-    nullPRIME,
-    
-    unknownPRIME,
-}primeType;
 
 //Tranformation on Prime Numbers
 -(NSString*)binaryStringFromInteger:(unsigned long long)number numDigits:(int)width;

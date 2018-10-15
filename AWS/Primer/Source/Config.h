@@ -17,7 +17,7 @@
 #define LOG_DATA_FILE_VERBOSE_FULL 1
 
 
-#define MIN_BINARY_WIDTH 32
+#define MIN_BINARY_WIDTH 3
 #define MAX_BINARY_WIDTH 36
 
 
@@ -47,13 +47,32 @@
 //#define OUTPUT_DIR "./Output/"
 
 //MAC
-#define INPUT_FILE "/Volumes/Untitled/Primer/PrimeInput.txt" //Very Large
-//#define INPUT_FILE "/Users/Jeremy/Projects/Primer/PrimeInput.txt" //Sample Size
-#define OUTPUT_DIR "/Users/Jeremy/Projects/Primer/Output"
+//#define INPUT_FILE "/Volumes/Untitled/Primer/PrimeInput.txt" //Very Large
+#define INPUT_FILE "/Users/Jeremy/Projects/Primer/PrimeInput.txt" //Sample Size
+#define OUTPUT_DIR "/Users/Jeremy/Projects/Primer/Output/"
 
 //USB
 //#define INPUT_FILE "/Volumes/Untitled/Primer/PrimeInput.txt" //Very Large
 //#define OUTPUT_DIR "/Volumes/Untitled/Primer/Output"
 
+//Move to primer once the cpp conversion is complete
+typedef enum{
+    grandMasterPRIME,
+    
+    masterPRIME,
+    specialMasterPRIME,
+    
+    grandPRIME,
+    specialGrandPRIME,
+    
+    flipPRIME,
+    specialFlipPRIME,
+    
+    invertPRIME,
+    
+    nullPRIME,
+    
+    unknownPRIME,
+}primeType;
 
 #endif /* Config_h */

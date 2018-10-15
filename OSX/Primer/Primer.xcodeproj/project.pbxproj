@@ -12,6 +12,7 @@
 		3F9D09441DD51DEF00074276 /* NSArray+PrimeDesc.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F9D093E1DD51D8D00074276 /* NSArray+PrimeDesc.m */; };
 		3F9D09451DD51DEF00074276 /* NSString+FileIO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F9D09401DD51D8D00074276 /* NSString+FileIO.m */; };
 		3F9D09461DD51DEF00074276 /* Primer.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F9D09421DD51D8D00074276 /* Primer.m */; };
+		3FCFE2C3217050E9004AC4C8 /* PrimerTool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3FCFE2C1217050E9004AC4C8 /* PrimerTool.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -38,6 +39,10 @@
 		3F9D09401DD51D8D00074276 /* NSString+FileIO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSString+FileIO.m"; sourceTree = "<group>"; };
 		3F9D09411DD51D8D00074276 /* Primer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Primer.h; sourceTree = "<group>"; };
 		3F9D09421DD51D8D00074276 /* Primer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Primer.m; sourceTree = "<group>"; };
+		3FCFE2BF21704D6E004AC4C8 /* primesieve.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = primesieve.hpp; sourceTree = "<group>"; };
+		3FCFE2C021704D6E004AC4C8 /* primesieve.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = primesieve.h; sourceTree = "<group>"; };
+		3FCFE2C1217050E9004AC4C8 /* PrimerTool.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PrimerTool.cpp; path = ../../AWS/Primer/Source/PrimerTool.cpp; sourceTree = "<group>"; };
+		3FCFE2C2217050E9004AC4C8 /* PrimerTool.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = PrimerTool.hpp; path = ../../AWS/Primer/Source/PrimerTool.hpp; sourceTree = "<group>"; };
 		3FDCF41C216D62410012237F /* project.pbxproj */ = {isa = PBXFileReference; lastKnownFileType = text.pbxproject; name = project.pbxproj; path = Primer.xcodeproj/project.pbxproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -56,6 +61,8 @@
 		3F9D09251DD514A800074276 = {
 			isa = PBXGroup;
 			children = (
+				3FCFE2C1217050E9004AC4C8 /* PrimerTool.cpp */,
+				3FCFE2C2217050E9004AC4C8 /* PrimerTool.hpp */,
 				3F697A781FB9030000C424C3 /* output */,
 				3F9D09381DD51D8D00074276 /* Primer */,
 				3F9D092F1DD514A900074276 /* Products */,
@@ -74,6 +81,7 @@
 		3F9D09381DD51D8D00074276 /* Primer */ = {
 			isa = PBXGroup;
 			children = (
+				3FCFE2BD21704D6E004AC4C8 /* 3rdParty */,
 				3F9D09391DD51D8D00074276 /* Build */,
 				3F9D093A1DD51D8D00074276 /* Source */,
 			);
@@ -101,6 +109,23 @@
 				3F9D09421DD51D8D00074276 /* Primer.m */,
 			);
 			path = Source;
+			sourceTree = "<group>";
+		};
+		3FCFE2BD21704D6E004AC4C8 /* 3rdParty */ = {
+			isa = PBXGroup;
+			children = (
+				3FCFE2BE21704D6E004AC4C8 /* include */,
+			);
+			path = 3rdParty;
+			sourceTree = "<group>";
+		};
+		3FCFE2BE21704D6E004AC4C8 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				3FCFE2BF21704D6E004AC4C8 /* primesieve.hpp */,
+				3FCFE2C021704D6E004AC4C8 /* primesieve.h */,
+			);
+			path = include;
 			sourceTree = "<group>";
 		};
 		3FDCF41B216D62410012237F /* Frameworks */ = {
@@ -170,6 +195,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3F9D09431DD51DEF00074276 /* main.mm in Sources */,
+				3FCFE2C3217050E9004AC4C8 /* PrimerTool.cpp in Sources */,
 				3F9D09441DD51DEF00074276 /* NSArray+PrimeDesc.m in Sources */,
 				3F9D09451DD51DEF00074276 /* NSString+FileIO.m in Sources */,
 				3F9D09461DD51DEF00074276 /* Primer.m in Sources */,
