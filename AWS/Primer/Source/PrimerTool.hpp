@@ -35,6 +35,9 @@ public:
     string analyzePrimes(vector<unsigned long long>primes, int width);
     string outputResults();
     string setDescription(set <unsigned long long, less <unsigned long long> > primeSet);
+    string analyzePrimes_FlipSpecial(vector<unsigned long long>primes, int width);
+    vector<unsigned long long> createRandomInput(int digits, unsigned long long bucketSize);
+    unsigned long long primeNumbersPerGroup(int width);
     
 private:                      // begin private section
     int m_primeWidth;
@@ -60,6 +63,9 @@ private:                      // begin private section
     
     void log(string s);
     void assertLog(bool test,string s);
+    
+    string analyzeFlipSpecial();
+    
 };
 
 

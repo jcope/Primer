@@ -79,7 +79,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "40"
             endingLineNumber = "40"
-            landmarkName = "PrimerTool::analyzePrimes(vector&lt;unsigned long long&gt;primes, int width)"
+            landmarkName = "PrimerTool::initBuckets()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

@@ -13,9 +13,11 @@
 #include <sstream>
 #include <algorithm>
 #include <math.h>
+#include <ctime>        // std::time
+#include <cstdlib>      // std::rand, std::srand
 
 PrimerTool::PrimerTool(){
-    
+    srand ( unsigned ( time(0) ) );
 }    
 PrimerTool::~PrimerTool(){
     
@@ -154,7 +156,7 @@ string PrimerTool::setDescription(set <unsigned long long, less <unsigned long l
     return retStr;
 }
 void PrimerTool::analyzePrimeNumberList(){
-    std::for_each(m_primeList.begin(), m_primeList.end(), [this](unsigned long long& prime){
+    for_each(m_primeList.begin(), m_primeList.end(), [this](unsigned long long& prime){
         unsigned long long storagePrime = 0;
         primeType pType = calculatePrimeType(prime,&storagePrime);
 
@@ -407,4 +409,64 @@ unsigned long long PrimerTool::flip(unsigned long long number, int width){
  unsigned long long PrimerTool::invertFlip(unsigned long long number,int width){
     unsigned long long invertValue = invert(number,width);
     return flip(invertValue,width);
+}
+#pragma mark - Random investigation
+vector<unsigned long long>
+PrimerTool::createRandomInput(int digits, unsigned long long bucketSize){
+    //Calculate a min, max, number of elements
+    unsigned long long initNumb = powl(2,digits-1);
+    unsigned long long maxNumb = powl(2, digits)-1;
+    //Creat array with all available candidtate (between min/max, not even)
+    vector<unsigned long long> numberPool;
+    for(unsigned long long number = initNumb+1; number<=maxNumb; number = number+2){
+        numberPool.push_back(number);
+    }
+
+    random_shuffle ( numberPool.begin(), numberPool.end() );    //Randomize
+    vector<unsigned long long> primePool(numberPool.begin(),numberPool.begin()+bucketSize); //Take Subset
+    sort(primePool.begin(),primePool.end());    //Order
+    return primePool;
+}
+unsigned long long PrimerTool::primeNumbersPerGroup(int width){
+    unsigned long long values[] = {2,2,5,7,13,23,43,75,137,
+                                   255,464,872,1612,3030,5709,10749,20390,
+                                   38635,73586,140336,268216,513708,985818,1894120,
+                                   3645744,7027290,13561907,26207278,50697537,98182656};
+    int index = width - 3; //We only analyze starting with width = 3 digits
+    //assertLog(index< values.size(),@"Unsupported length");
+    unsigned long long retVal = values[index];
+    return retVal;
+}
+
+#pragma mark - Flip(*) investigation
+string PrimerTool::analyzePrimes_FlipSpecial(vector<unsigned long long>primes, int width){
+    //Store the primes in data controlled storage
+    m_primeList = primes;
+    m_primeWidth = width;
+    initBuckets();
+    
+    string result = analyzeFlipSpecial();
+    
+    return result;
+}
+string PrimerTool::analyzeFlipSpecial(){
+    string result;
+    int count = 0;
+    for_each(m_primeList.begin(), m_primeList.end(), [this,&count](unsigned long long& prime){
+        unsigned long long primeInvert = invert(prime, m_primeWidth);
+        unsigned long long primeFlip = flip(prime, m_primeWidth);
+        unsigned long long primeInvertFlip = invertFlip(prime, m_primeWidth);
+        
+        
+        bool hasInvert = containsPrime(primeInvert);
+        bool hasFlip = containsPrime(primeFlip);
+        bool hasInvertFlip = containsPrime(primeInvertFlip);
+        
+        //If this meets the condiditon for a flip*
+        if(prime == primeFlip && hasFlip == true && hasInvert == false && hasInvertFlip == false){
+            count++;
+        }
+    });
+    result = to_string(m_primeWidth)+","+to_string(count);
+    return result;
 }
