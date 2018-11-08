@@ -25,6 +25,9 @@ public:
     //Main utility function
     string analyzePrimes(vector<unsigned long long>primes, int width);
     
+    //Twin Primes
+    string analyzePrimes_Twins(vector<unsigned long long>primes, int width);
+    
     //Verify FlipSpecial Conjecture
     string analyzePrimes_FlipSpecial(vector<unsigned long long>primes, int width);
     //Random Analysis
@@ -53,15 +56,18 @@ private:                      // begin private section
     unsigned long long invert(unsigned long long number, int width);
     unsigned long long flip(unsigned long long number, int width);
     unsigned long long invertFlip(unsigned long long number, int width);
-    
+    int common_bits(unsigned long long a, unsigned long long b);
+    int countBits(unsigned long long a);
     
     void initBuckets();
     bool containsPrime(unsigned long long prime);
    
     void analyzePrimeNumberList();
     string analyzeFlipSpecial();
+    string analyzeTwins();
     
     primeType calculatePrimeType(unsigned long long prime, unsigned long long* sPrime);
+    bool isTwinPrime(unsigned long long prime1, unsigned long long prime2, int width);
     
     void verifyCount();
     

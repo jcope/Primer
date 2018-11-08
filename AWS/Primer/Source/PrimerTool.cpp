@@ -36,7 +36,7 @@ void PrimerTool::initBuckets(){
 
 string PrimerTool::analyzePrimes(vector<unsigned long long>primes, int width){
     //Store the primes in data controlled storage
-     m_primeList = primes;
+    m_primeList = primes;
     m_primeWidth = width;
     initBuckets();
     
@@ -385,6 +385,23 @@ void PrimerTool::runDataTest(){
     longResult = invertFlip(27,5);
     assertLog(21 == longResult,"Invert/Flip Failed");
     
+    //Twins
+    bool result;
+    result = isTwinPrime(23, 31, 5);
+    assertLog(result,"Twin Test Failed");
+    result = isTwinPrime(23, 27, 5); //Should not be a twin prime
+    assertLog(result==false,"Twin Test Failed2");
+    
+    result = isTwinPrime(53, 37, 6);
+    assertLog(result,"Twin Test Failed3");
+    result = isTwinPrime(53, 59, 6); //Should not be a twin prime
+    assertLog(result==false,"Twin Test Failed4");
+    
+    result = isTwinPrime(89, 93, 7);
+    assertLog(result,"Twin Test Failed5");
+    result = isTwinPrime(89, 113, 7); //Should not be a twin prime
+    assertLog(result==false,"Twin Test Failed6");
+    
     log("Data Test Passed.");
 }
 
@@ -470,3 +487,44 @@ string PrimerTool::analyzeFlipSpecial(){
     result = to_string(m_primeWidth)+","+to_string(count);
     return result;
 }
+#pragma mark - Twin Prime investigation
+string PrimerTool::analyzePrimes_Twins(vector<unsigned long long>primes, int width){
+    //Store the primes in data controlled storage
+    m_primeList = primes;
+    m_primeWidth = width;
+    initBuckets();
+    
+    string result = analyzeTwins();
+    
+    return result;
+}
+string PrimerTool::analyzeTwins(){
+    string result;
+    int count = 0;
+    for_each(m_primeList.begin(), m_primeList.end(), [this,&count](unsigned long long& primeA){
+        for_each(m_primeList.begin(), m_primeList.end(), [this,&count,&primeA](unsigned long long& primeB){
+            if(primeA != primeB){
+                if(isTwinPrime(primeA, primeB, m_primeWidth)) count++;
+            }
+        });
+    });
+    result = to_string(m_primeWidth)+","+to_string(count/2);
+    return result;
+}
+bool PrimerTool::isTwinPrime(unsigned long long prime1, unsigned long long prime2, int width){
+    //Twin prime is defined as having only one binary digit different
+    //In the case of primer research, we neglect MSB and LSB
+    unsigned long long mask = powl(2,width-1) - 1;
+    unsigned long long primeA = (prime1 & mask) >> 1;
+    unsigned long long primeB = (prime2 & mask) >> 1;
+    //int result = common_bits(primeA, primeB);
+    unsigned long long temp = primeA^primeB;
+    int result = countBits(temp);
+    return (result == 1);
+}
+//Recursively count the number of bits that are 1
+int PrimerTool::countBits(unsigned long long a){
+    if (a == 0) return 0;
+    return ((a&1) == 1) + countBits(a>>1);
+}
+

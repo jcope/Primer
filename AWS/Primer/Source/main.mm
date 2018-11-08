@@ -43,8 +43,7 @@ int main(int argc, const char * argv[]) {
         printTime("Start Time: ");
 
         PrimerTool* pTool = new PrimerTool();
-        pTool->verifyMachine();
-        pTool->runDataTest();
+        pTool->testPrimer();
         
         primesieve::iterator it;
         uint64_t _prime = it.next_prime(); //Read the initial prime
@@ -95,7 +94,8 @@ int main(int argc, const char * argv[]) {
             //Analyze
             cout<<"Count: "<<_primeList.size()<< " primes (between "<< uint64_t(powl(2,binaryWidth-1)) <<" and "<< max <<")"<<endl;
             startTime = time(0);
-            string output = pTool->analyzePrimes(_primeList,binaryWidth);
+            //string output = pTool->analyzePrimes(_primeList,binaryWidth);
+            string output = pTool->analyzePrimes_Twins(_primeList,binaryWidth);
             outfile<<output<<endl;
             double totalTime = difftime(time(0),startTime);
             cout<<"Total Time: "<<totalTime<<" seconds."<<endl;
