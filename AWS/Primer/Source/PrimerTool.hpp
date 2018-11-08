@@ -20,24 +20,17 @@ class PrimerTool   {
 public:
     PrimerTool();
     ~PrimerTool();
-
     void testPrimer();
-    //Verification
-    void verifyMachine();
-    //Tests
-    void runDataTest();
-    void runPerformaceTest();
-    primeType calculatePrimeType(unsigned long long prime, unsigned long long* sPrime);
-    bool containsPrime(unsigned long long prime);
-    void verifyCount();
-    void analyzePrimeNumberList();
-    void initBuckets();
+    
+    //Main utility function
     string analyzePrimes(vector<unsigned long long>primes, int width);
-    string outputResults();
-    string setDescription(set <unsigned long long, less <unsigned long long> > primeSet);
+    
+    //Verify FlipSpecial Conjecture
     string analyzePrimes_FlipSpecial(vector<unsigned long long>primes, int width);
+    //Random Analysis
     vector<unsigned long long> createRandomInput(int digits, unsigned long long bucketSize);
     unsigned long long primeNumbersPerGroup(int width);
+    
     
 private:                      // begin private section
     int m_primeWidth;
@@ -61,11 +54,27 @@ private:                      // begin private section
     unsigned long long flip(unsigned long long number, int width);
     unsigned long long invertFlip(unsigned long long number, int width);
     
-    void log(string s);
-    void assertLog(bool test,string s);
     
+    void initBuckets();
+    bool containsPrime(unsigned long long prime);
+   
+    void analyzePrimeNumberList();
     string analyzeFlipSpecial();
     
+    primeType calculatePrimeType(unsigned long long prime, unsigned long long* sPrime);
+    
+    void verifyCount();
+    
+    string outputResults();
+    string setDescription(set <unsigned long long, less <unsigned long long> > primeSet);
+    
+    void log(string s);
+    void assertLog(bool test,string s);
+    //Verification
+    void verifyMachine();
+    //Tests
+    void runDataTest();
+    void runPerformaceTest();
 };
 
 

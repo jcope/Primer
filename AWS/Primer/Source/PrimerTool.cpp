@@ -22,11 +22,6 @@ PrimerTool::PrimerTool(){
 PrimerTool::~PrimerTool(){
     
 }
-
-void PrimerTool::testPrimer(){
-    verifyMachine();
-    runDataTest();
-}
 void PrimerTool::initBuckets(){
     m_grandMasterPrimes.clear();
     m_masterPrimes.clear();
@@ -339,6 +334,11 @@ void PrimerTool::verifyMachine(){
     cout<<"Upper Limit: "<<maxNumber<<endl;
 }
 #pragma mark - Tests
+void PrimerTool::testPrimer(){
+    verifyMachine();
+    runDataTest();
+}
+
 #pragma mark Data Verification
 void PrimerTool::runDataTest(){
     
