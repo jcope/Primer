@@ -33,7 +33,8 @@ public:
     //Random Analysis
     vector<unsigned long long> createRandomInput(int digits, unsigned long long bucketSize);
     unsigned long long primeNumbersPerGroup(int width);
-    
+    //Verify MasterSpecial Conjecture
+    string analyzePrimes_MasterSpecial(vector<unsigned long long>primes, int width);
     
 private:                      // begin private section
     int m_primeWidth;
@@ -64,6 +65,7 @@ private:                      // begin private section
    
     void analyzePrimeNumberList();
     string analyzeFlipSpecial();
+    string analyzeMasterSpecial();
     string analyzeTwins();
     
     primeType calculatePrimeType(unsigned long long prime, unsigned long long* sPrime);

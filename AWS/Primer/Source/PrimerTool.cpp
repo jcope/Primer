@@ -237,7 +237,7 @@ primeType PrimerTool::calculatePrimeType(unsigned long long prime, unsigned long
         
     }
     else if(primeSetCnt == 3){
-        //Master, Special Master
+        //Master
         if(hasInvert && hasFlip){
             //Store Prime
             retPrimeType = masterPRIME;
@@ -485,6 +485,62 @@ string PrimerTool::analyzeFlipSpecial(){
         }
     });
     result = to_string(m_primeWidth)+","+to_string(count);
+    return result;
+}
+#pragma mark - Master(*) investigation
+string PrimerTool::analyzePrimes_MasterSpecial(vector<unsigned long long>primes, int width){
+    //Store the primes in data controlled storage
+    m_primeList = primes;
+    m_primeWidth = width;
+    initBuckets();
+    
+    string result = analyzeMasterSpecial();
+    
+    return result;
+}
+string PrimerTool::analyzeMasterSpecial(){
+    string result;
+
+    set <unsigned long long, less <unsigned long long> > masterSpecialPrimes; //Flip == self
+    set <unsigned long long, less <unsigned long long> > masterSpecialPrimes_Flip; //Flip == self
+    
+    set <unsigned long long, less <unsigned long long> > masterSpecialPrimes_even; //Flip == self
+    
+    for_each(m_primeList.begin(), m_primeList.end(), [this,&masterSpecialPrimes,&masterSpecialPrimes_Flip,&masterSpecialPrimes_even](unsigned long long& prime){
+        unsigned long long primeInvert = invert(prime, m_primeWidth);
+        unsigned long long primeFlip = flip(prime, m_primeWidth);
+        unsigned long long primeInvertFlip = invertFlip(prime, m_primeWidth);
+        
+        //Use the smallest value as the storage prime
+        unsigned long long storagePrime = prime;
+        storagePrime = storagePrime<primeInvert?storagePrime:primeInvert;
+        storagePrime = storagePrime<primeFlip?storagePrime:primeFlip;
+        
+        bool hasInvert = containsPrime(primeInvert);
+        bool hasFlip = containsPrime(primeFlip);
+        bool hasInvertFlip = containsPrime(primeInvertFlip);
+        
+        //If this meets the condiditon for a Master*
+        if(hasInvert && hasFlip && hasInvertFlip){
+            if(prime == primeInvertFlip){
+                masterSpecialPrimes_Flip.insert(storagePrime);
+            }
+            else if(prime == primeInvert || prime == primeFlip){
+                masterSpecialPrimes.insert(storagePrime);
+            }
+        }
+        //Lets do a different type of analysis
+        //Are there any even digits and flip(x)=x, flip is noop?
+        //Seems to only occur for odds
+        if(m_primeWidth%2==0){
+            if(prime == primeFlip){
+                masterSpecialPrimes_even.insert(storagePrime);
+            }
+        }
+    });
+    unsigned long count = masterSpecialPrimes.size()+masterSpecialPrimes_Flip.size();
+    result = to_string(m_primeWidth)+","+to_string(count)+","+to_string(masterSpecialPrimes.size())+","+to_string(masterSpecialPrimes_Flip.size())+","+to_string(masterSpecialPrimes_even.size());
+    
     return result;
 }
 #pragma mark - Twin Prime investigation

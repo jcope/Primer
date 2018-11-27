@@ -94,8 +94,10 @@ int main(int argc, const char * argv[]) {
             //Analyze
             cout<<"Count: "<<_primeList.size()<< " primes (between "<< uint64_t(powl(2,binaryWidth-1)) <<" and "<< max <<")"<<endl;
             startTime = time(0);
-            //string output = pTool->analyzePrimes(_primeList,binaryWidth);
-            string output = pTool->analyzePrimes_Twins(_primeList,binaryWidth);
+            string output = pTool->analyzePrimes(_primeList,binaryWidth);
+            //string output = pTool->analyzePrimes_Twins(_primeList,binaryWidth);
+            //string output = pTool->analyzePrimes_MasterSpecial(_primeList,binaryWidth);
+            
             outfile<<output<<endl;
             double totalTime = difftime(time(0),startTime);
             cout<<"Total Time: "<<totalTime<<" seconds."<<endl;
