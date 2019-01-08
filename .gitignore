@@ -2,3 +2,4 @@ PrimerOutput.txt
 output/*
 *.xcuserstate
 *.o
+.DS_Store
