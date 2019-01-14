@@ -13,6 +13,8 @@
 #include <vector>
 #include <set>
 
+typedef unsigned long long pType;
+
 using namespace std;
 
 class PrimerTool   {

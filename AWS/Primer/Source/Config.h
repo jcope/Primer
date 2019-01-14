@@ -18,7 +18,7 @@
 
 
 #define MIN_BINARY_WIDTH 3
-#define MAX_BINARY_WIDTH 36
+#define MAX_BINARY_WIDTH 32
 
 
 #define OUTPUT_FILE "PrimerOutput.txt"

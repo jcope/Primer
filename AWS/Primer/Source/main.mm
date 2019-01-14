@@ -34,11 +34,16 @@
 //2^37 == 137,438,953,472
 //30,057,700,549
 
+#define RANDOM 1
+
 using namespace std;
-void testPrimeLibs(void);
 void printTime(string s);
 
 int main(int argc, const char * argv[]) {
+    //if random looping analysis
+    int loopCnt = 0;
+    while(loopCnt < 128){
+    
     @autoreleasepool{
         printTime("Start Time: ");
 
@@ -51,8 +56,12 @@ int main(int argc, const char * argv[]) {
         
         //Write to file
         string outputFileName = string(OUTPUT_DIR)+string(OUTPUT_FILE);
+        if(RANDOM){
+            outputFileName = string(OUTPUT_DIR)+"/RandomLoop/"+to_string(loopCnt)+string(OUTPUT_FILE);
+        }
         ofstream outfile;
         outfile.open(outputFileName);
+        
         if(LOG_DATA_FILE){
             outfile<<"Digits,Number of Primes,";
             outfile<<"Grand Master Primes,";
@@ -80,6 +89,7 @@ int main(int argc, const char * argv[]) {
             cout<<"****************************"<<endl;
             cout<<"Binary width: "<<binaryWidth<<endl;
             cout<<"Analyzing for max: "<<binaryWidth<<endl;
+            if(! RANDOM){
             BOOL analyze = false;
             //Collect the data
             while(!analyze){
@@ -90,6 +100,10 @@ int main(int argc, const char * argv[]) {
                 else{
                     analyze = true;
                 }
+            }
+            }else{
+            unsigned long long primeCount = pTool->primeNumbersPerGroup(binaryWidth);
+            _primeList = pTool->createRandomInput(binaryWidth, primeCount);
             }
             //Analyze
             cout<<"Count: "<<_primeList.size()<< " primes (between "<< uint64_t(powl(2,binaryWidth-1)) <<" and "<< max <<")"<<endl;
@@ -104,10 +118,14 @@ int main(int argc, const char * argv[]) {
             
             //Clean up for next run
             _primeList.clear();
+            
         }
+        outfile.close();
         printTime("End Time: ");
         
     }//Autorelease poool
+    if(RANDOM) loopCnt++;
+    }
     return 0;
 }
 void printTime(string s){
