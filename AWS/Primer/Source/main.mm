@@ -45,19 +45,21 @@ int main(int argc, const char * argv[]) {
     while(loopCnt < 128){
     
     @autoreleasepool{
-        printTime("Start Time: ");
 
         PrimerTool* pTool = new PrimerTool();
         //pTool->testPrimer();
+        
+        
+        pTool->createBinaryFile(34);
         bool found = false;
         found = pTool->searchBinaryFile(34, 9323381141);
-        
         cout<<"The number "<<9323381141<<" was ";
         if(!found){ cout<<"NOT ";}
         cout<<"found."<<endl;
         
-        
         return 0;
+        
+        printTime("Start Time: ");
         
         primesieve::iterator it;
         uint64_t _prime = it.next_prime(); //Read the initial prime

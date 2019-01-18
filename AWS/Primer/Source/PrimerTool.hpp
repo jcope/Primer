@@ -23,8 +23,6 @@ public:
     PrimerTool();
     ~PrimerTool();
     void testPrimer();
-    void testBinarySearch_file();
-    void testBinarySearch_createfile();
     
     bool searchBinaryFile(int width,pType number);
     void createBinaryFile(int width);
