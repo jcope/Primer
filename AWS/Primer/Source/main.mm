@@ -34,7 +34,7 @@
 //2^37 == 137,438,953,472
 //30,057,700,549
 
-#define RANDOM 1
+#define RANDOM 0
 
 using namespace std;
 void printTime(string s);
@@ -48,11 +48,20 @@ int main(int argc, const char * argv[]) {
         printTime("Start Time: ");
 
         PrimerTool* pTool = new PrimerTool();
-        pTool->testPrimer();
+        //pTool->testPrimer();
+        bool found = false;
+        found = pTool->searchBinaryFile(34, 9323381141);
+        
+        cout<<"The number "<<9323381141<<" was ";
+        if(!found){ cout<<"NOT ";}
+        cout<<"found."<<endl;
+        
+        
+        return 0;
         
         primesieve::iterator it;
         uint64_t _prime = it.next_prime(); //Read the initial prime
-        vector<unsigned long long> _primeList;
+        vector<pType> _primeList;
         
         //Write to file
         string outputFileName = string(OUTPUT_DIR)+string(OUTPUT_FILE);
@@ -102,7 +111,7 @@ int main(int argc, const char * argv[]) {
                 }
             }
             }else{
-            unsigned long long primeCount = pTool->primeNumbersPerGroup(binaryWidth);
+            pType primeCount = pTool->primeNumbersPerGroup(binaryWidth);
             _primeList = pTool->createRandomInput(binaryWidth, primeCount);
             }
             //Analyze

@@ -23,60 +23,65 @@ public:
     PrimerTool();
     ~PrimerTool();
     void testPrimer();
+    void testBinarySearch_file();
+    void testBinarySearch_createfile();
+    
+    bool searchBinaryFile(int width,pType number);
+    void createBinaryFile(int width);
     
     //Main utility function
-    string analyzePrimes(vector<unsigned long long>primes, int width);
+    string analyzePrimes(vector<pType>primes, int width);
     
     //Twin Primes
-    string analyzePrimes_Twins(vector<unsigned long long>primes, int width);
+    string analyzePrimes_Twins(vector<pType>primes, int width);
     
     //Verify FlipSpecial Conjecture
-    string analyzePrimes_FlipSpecial(vector<unsigned long long>primes, int width);
+    string analyzePrimes_FlipSpecial(vector<pType>primes, int width);
     //Random Analysis
-    vector<unsigned long long> createRandomInput(int digits, unsigned long long bucketSize);
-    unsigned long long primeNumbersPerGroup(int width);
+    vector<pType> createRandomInput(int digits, pType bucketSize);
+    pType primeNumbersPerGroup(int width);
     //Verify MasterSpecial Conjecture
-    string analyzePrimes_MasterSpecial(vector<unsigned long long>primes, int width);
+    string analyzePrimes_MasterSpecial(vector<pType>primes, int width);
     
 private:                      // begin private section
     int m_primeWidth;
-    vector<unsigned long long> m_primeList;
+    vector<pType> m_primeList;
     
-    set <unsigned long long, less <unsigned long long> > m_grandMasterPrimes; //Flip, Inverse, and FlipInverse unique primes
-    set <unsigned long long, less <unsigned long long> > m_masterPrimes; //Flip and Inverse are unique
-    set <unsigned long long, less <unsigned long long> > m_specialMasterPrimes; //Flip and inverse are prime, but equal
+    set <pType, less <pType> > m_grandMasterPrimes; //Flip, Inverse, and FlipInverse unique primes
+    set <pType, less <pType> > m_masterPrimes; //Flip and Inverse are unique
+    set <pType, less <pType> > m_specialMasterPrimes; //Flip and inverse are prime, but equal
     
-    set <unsigned long long, less <unsigned long long> > m_grandPrimes; //Flip/Invert
-    set <unsigned long long, less <unsigned long long> > m_specialGrandPrimes; //Flip/Invert; Flip == Invert
+    set <pType, less <pType> > m_grandPrimes; //Flip/Invert
+    set <pType, less <pType> > m_specialGrandPrimes; //Flip/Invert; Flip == Invert
     
-    set <unsigned long long, less <unsigned long long> > m_flipPrimes; //Flip
-    set <unsigned long long, less <unsigned long long> > m_specialFlipPrimes; //Flip == self
+    set <pType, less <pType> > m_flipPrimes; //Flip
+    set <pType, less <pType> > m_specialFlipPrimes; //Flip == self
     
-    set <unsigned long long, less <unsigned long long> > m_invertPrimes; //Invert
+    set <pType, less <pType> > m_invertPrimes; //Invert
     
-    set <unsigned long long, less <unsigned long long> > m_nullPrimes; //None of the above
+    set <pType, less <pType> > m_nullPrimes; //None of the above
     
-    unsigned long long invert(unsigned long long number, int width);
-    unsigned long long flip(unsigned long long number, int width);
-    unsigned long long invertFlip(unsigned long long number, int width);
-    int common_bits(unsigned long long a, unsigned long long b);
-    int countBits(unsigned long long a);
+    pType invert(pType number, int width);
+    pType flip(pType number, int width);
+    pType invertFlip(pType number, int width);
+    int common_bits(pType a, pType b);
+    int countBits(pType a);
     
     void initBuckets();
-    bool containsPrime(unsigned long long prime);
+    bool containsPrime(pType prime);
    
     void analyzePrimeNumberList();
     string analyzeFlipSpecial();
     string analyzeMasterSpecial();
     string analyzeTwins();
     
-    primeType calculatePrimeType(unsigned long long prime, unsigned long long* sPrime);
-    bool isTwinPrime(unsigned long long prime1, unsigned long long prime2, int width);
+    primeType calculatePrimeType(pType prime, pType* sPrime);
+    bool isTwinPrime(pType prime1, pType prime2, int width);
     
     void verifyCount();
     
     string outputResults();
-    string setDescription(set <unsigned long long, less <unsigned long long> > primeSet);
+    string setDescription(set <pType, less <pType> > primeSet);
     
     void log(string s);
     void assertLog(bool test,string s);

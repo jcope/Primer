@@ -9,12 +9,14 @@
 #include "PrimerTool.hpp"
 #include <stdio.h>
 #include <iostream>
+#include <iomanip> // std::setw
 #include <fstream>
 #include <sstream>
 #include <algorithm>
 #include <math.h>
 #include <ctime>        // std::time
 #include <cstdlib>      // std::rand, std::srand
+#include <primesieve.hpp>
 
 PrimerTool::PrimerTool(){
     srand ( unsigned ( time(0) ) );
@@ -34,7 +36,7 @@ void PrimerTool::initBuckets(){
     m_nullPrimes.clear();
 }
 
-string PrimerTool::analyzePrimes(vector<unsigned long long>primes, int width){
+string PrimerTool::analyzePrimes(vector<pType>primes, int width){
     //Store the primes in data controlled storage
     m_primeList = primes;
     m_primeWidth = width;
@@ -141,9 +143,9 @@ string PrimerTool::outputResults(){
 
     return str;
 }
-string PrimerTool::setDescription(set <unsigned long long, less <unsigned long long> > primeSet){
+string PrimerTool::setDescription(set <pType, less <pType> > primeSet){
     string retStr = "";
-    set<unsigned long long>::iterator it;
+    set<pType>::iterator it;
     for (it=primeSet.begin(); it!=primeSet.end(); ++it)
         retStr+=to_string(*it)+",";
     //Remove trailing comma
@@ -151,8 +153,8 @@ string PrimerTool::setDescription(set <unsigned long long, less <unsigned long l
     return retStr;
 }
 void PrimerTool::analyzePrimeNumberList(){
-    for_each(m_primeList.begin(), m_primeList.end(), [this](unsigned long long& prime){
-        unsigned long long storagePrime = 0;
+    for_each(m_primeList.begin(), m_primeList.end(), [this](pType& prime){
+        pType storagePrime = 0;
         primeType pType = calculatePrimeType(prime,&storagePrime);
 
         if(pType == grandMasterPRIME) m_grandMasterPrimes.insert(storagePrime);
@@ -167,18 +169,21 @@ void PrimerTool::analyzePrimeNumberList(){
         else assertLog(false,"Unknown Type");
     });
 }
-primeType PrimerTool::calculatePrimeType(unsigned long long prime, unsigned long long* sPrime){
+primeType PrimerTool::calculatePrimeType(pType prime, pType* sPrime){
     primeType retPrimeType = unknownPRIME;
-    unsigned long long retStoragePrime;
+    pType retStoragePrime;
     
-    unsigned long long primeInvert = invert(prime, m_primeWidth);
-    unsigned long long primeFlip = flip(prime, m_primeWidth);
-    unsigned long long primeInvertFlip = invertFlip(prime, m_primeWidth);
+    pType primeInvert = invert(prime, m_primeWidth);
+    pType primeFlip = flip(prime, m_primeWidth);
+    pType primeInvertFlip = invertFlip(prime, m_primeWidth);
     
     
     bool hasInvert = containsPrime(primeInvert);
     bool hasFlip = containsPrime(primeFlip);
     bool hasInvertFlip = containsPrime(primeInvertFlip);
+    
+    
+    
     
     //Count the number of primes in the set
     int primeSetCnt = 1; //Start with atleast 1 prime (initial entry)
@@ -188,7 +193,7 @@ primeType PrimerTool::calculatePrimeType(unsigned long long prime, unsigned long
     
     //TODO: Add only the lowest value
     /*
-     unsigned long long basePrime = 0;
+     pType basePrime = 0;
      basePrime = [self calculateBasePrime:prime
      invertPrime:(hasInvert?primeInvert:0)
      flipPrime:(hasFlip?primeInvertFlip:0)
@@ -264,7 +269,7 @@ primeType PrimerTool::calculatePrimeType(unsigned long long prime, unsigned long
            prime == primeFlip ||
            prime == primeInvert){
             //Store the smallest of prime v primeFlip v primeInvert
-            unsigned long long smallest = prime;
+            pType smallest = prime;
             smallest = smallest<primeInvert?smallest:primeInvert;
             smallest = smallest<primeFlip?smallest:primeFlip;
             //Note: May include two types..
@@ -272,7 +277,7 @@ primeType PrimerTool::calculatePrimeType(unsigned long long prime, unsigned long
             retStoragePrime = smallest;
         }
         else{
-            unsigned long long smallest = prime;
+            pType smallest = prime;
             smallest = smallest<primeInvert?smallest:primeInvert;
             smallest = smallest<primeFlip?smallest:primeFlip;
             smallest = smallest<primeInvertFlip?smallest:primeInvertFlip;
@@ -298,14 +303,14 @@ void PrimerTool::assertLog(bool test,string s){
         exit(0);
     }
 }
-bool PrimerTool::containsPrime(unsigned long long prime){
+bool PrimerTool::containsPrime(pType prime){
     bool foundPrime = false;
     
     if(BINARY_SEARCH){
         foundPrime = std::binary_search(m_primeList.begin(),m_primeList.end(),prime);
     }
     else{
-        std::vector<unsigned long long>::iterator it;
+        std::vector<pType>::iterator it;
         it = std::find(m_primeList.begin(),m_primeList.end(),prime);
         if(it != m_primeList.end()){
             foundPrime = true;
@@ -330,7 +335,7 @@ void PrimerTool::verifyCount(){
 }
 #pragma mark - Machine Diagnosis
 void PrimerTool::verifyMachine(){
-    unsigned long long maxNumber = ULLONG_MAX;
+    pType maxNumber = ULLONG_MAX;
     cout<<"Upper Limit: "<<maxNumber<<endl;
 }
 #pragma mark - Tests
@@ -342,9 +347,9 @@ void PrimerTool::testPrimer(){
 #pragma mark Data Verification
 void PrimerTool::runDataTest(){
     
-    unsigned long long primeInvert = invert(4306063679,33);
-    unsigned long long primeFlip = flip(4306063679,33);
-    unsigned long long primeInvertFlip = invertFlip(4306063679,33);
+    pType primeInvert = invert(4306063679,33);
+    pType primeFlip = flip(4306063679,33);
+    pType primeInvertFlip = invertFlip(4306063679,33);
     assertLog(primeInvert == 8578838209,"Invalid invert conversion!");
     assertLog(primeFlip == 8473881089,"Invalid flip conversion!");
     assertLog(primeInvertFlip == 4411020799,"Invalid invertFlip conversion!");
@@ -359,7 +364,7 @@ void PrimerTool::runDataTest(){
     
     
     //Test unsigned long long conversion
-    unsigned long long longResult;
+    pType longResult;
     
     //11001001
     //201i == 10110111 == 183
@@ -406,15 +411,15 @@ void PrimerTool::runDataTest(){
 }
 
 #pragma mark Unsigned Long Long
- unsigned long long PrimerTool::invert(unsigned long long number, int width){
-    unsigned long long mask = powl(2,width) - 1;
-    unsigned long long primeMask = powl(2,width-1) + 1;
-    unsigned long long invertedNumber = (~number) & mask;
+ pType PrimerTool::invert(pType number, int width){
+    pType mask = powl(2,width) - 1;
+    pType primeMask = powl(2,width-1) + 1;
+    pType invertedNumber = (~number) & mask;
     invertedNumber = invertedNumber | primeMask;
     return invertedNumber;
 }
-unsigned long long PrimerTool::flip(unsigned long long number, int width){
-    unsigned long long flippedNumber = 0;
+pType PrimerTool::flip(pType number, int width){
+    pType flippedNumber = 0;
     while(number > 0){
         unsigned int digit = number & 1;
         flippedNumber = flippedNumber << 1; //Ok to flip on first entry becuase initialized to '0'
@@ -423,40 +428,40 @@ unsigned long long PrimerTool::flip(unsigned long long number, int width){
     }
     return flippedNumber;
 }
- unsigned long long PrimerTool::invertFlip(unsigned long long number,int width){
-    unsigned long long invertValue = invert(number,width);
+ pType PrimerTool::invertFlip(pType number,int width){
+    pType invertValue = invert(number,width);
     return flip(invertValue,width);
 }
 #pragma mark - Random investigation
-vector<unsigned long long>
-PrimerTool::createRandomInput(int digits, unsigned long long bucketSize){
+vector<pType>
+PrimerTool::createRandomInput(int digits, pType bucketSize){
     //Calculate a min, max, number of elements
-    unsigned long long initNumb = powl(2,digits-1);
-    unsigned long long maxNumb = powl(2, digits)-1;
+    pType initNumb = powl(2,digits-1);
+    pType maxNumb = powl(2, digits)-1;
     //Creat array with all available candidtate (between min/max, not even)
-    vector<unsigned long long> numberPool;
-    for(unsigned long long number = initNumb+1; number<=maxNumb; number = number+2){
+    vector<pType> numberPool;
+    for(pType number = initNumb+1; number<=maxNumb; number = number+2){
         numberPool.push_back(number);
     }
 
     random_shuffle ( numberPool.begin(), numberPool.end() );    //Randomize
-    vector<unsigned long long> primePool(numberPool.begin(),numberPool.begin()+bucketSize); //Take Subset
+    vector<pType> primePool(numberPool.begin(),numberPool.begin()+bucketSize); //Take Subset
     sort(primePool.begin(),primePool.end());    //Order
     return primePool;
 }
-unsigned long long PrimerTool::primeNumbersPerGroup(int width){
-    unsigned long long values[] = {2,2,5,7,13,23,43,75,137,
+pType PrimerTool::primeNumbersPerGroup(int width){
+    pType values[] = {2,2,5,7,13,23,43,75,137,
                                    255,464,872,1612,3030,5709,10749,20390,
                                    38635,73586,140336,268216,513708,985818,1894120,
                                    3645744,7027290,13561907,26207278,50697537,98182656};
     int index = width - 3; //We only analyze starting with width = 3 digits
     //assertLog(index< values.size(),@"Unsupported length");
-    unsigned long long retVal = values[index];
+    pType retVal = values[index];
     return retVal;
 }
 
 #pragma mark - Flip(*) investigation
-string PrimerTool::analyzePrimes_FlipSpecial(vector<unsigned long long>primes, int width){
+string PrimerTool::analyzePrimes_FlipSpecial(vector<pType>primes, int width){
     //Store the primes in data controlled storage
     m_primeList = primes;
     m_primeWidth = width;
@@ -469,10 +474,10 @@ string PrimerTool::analyzePrimes_FlipSpecial(vector<unsigned long long>primes, i
 string PrimerTool::analyzeFlipSpecial(){
     string result;
     int count = 0;
-    for_each(m_primeList.begin(), m_primeList.end(), [this,&count](unsigned long long& prime){
-        unsigned long long primeInvert = invert(prime, m_primeWidth);
-        unsigned long long primeFlip = flip(prime, m_primeWidth);
-        unsigned long long primeInvertFlip = invertFlip(prime, m_primeWidth);
+    for_each(m_primeList.begin(), m_primeList.end(), [this,&count](pType& prime){
+        pType primeInvert = invert(prime, m_primeWidth);
+        pType primeFlip = flip(prime, m_primeWidth);
+        pType primeInvertFlip = invertFlip(prime, m_primeWidth);
         
         
         bool hasInvert = containsPrime(primeInvert);
@@ -488,7 +493,7 @@ string PrimerTool::analyzeFlipSpecial(){
     return result;
 }
 #pragma mark - Master(*) investigation
-string PrimerTool::analyzePrimes_MasterSpecial(vector<unsigned long long>primes, int width){
+string PrimerTool::analyzePrimes_MasterSpecial(vector<pType>primes, int width){
     //Store the primes in data controlled storage
     m_primeList = primes;
     m_primeWidth = width;
@@ -501,18 +506,18 @@ string PrimerTool::analyzePrimes_MasterSpecial(vector<unsigned long long>primes,
 string PrimerTool::analyzeMasterSpecial(){
     string result;
 
-    set <unsigned long long, less <unsigned long long> > masterSpecialPrimes; //Flip == self
-    set <unsigned long long, less <unsigned long long> > masterSpecialPrimes_Flip; //Flip == self
+    set <pType, less <pType> > masterSpecialPrimes; //Flip == self
+    set <pType, less <pType> > masterSpecialPrimes_Flip; //Flip == self
     
-    set <unsigned long long, less <unsigned long long> > masterSpecialPrimes_even; //Flip == self
+    set <pType, less <pType> > masterSpecialPrimes_even; //Flip == self
     
-    for_each(m_primeList.begin(), m_primeList.end(), [this,&masterSpecialPrimes,&masterSpecialPrimes_Flip,&masterSpecialPrimes_even](unsigned long long& prime){
-        unsigned long long primeInvert = invert(prime, m_primeWidth);
-        unsigned long long primeFlip = flip(prime, m_primeWidth);
-        unsigned long long primeInvertFlip = invertFlip(prime, m_primeWidth);
+    for_each(m_primeList.begin(), m_primeList.end(), [this,&masterSpecialPrimes,&masterSpecialPrimes_Flip,&masterSpecialPrimes_even](pType& prime){
+        pType primeInvert = invert(prime, m_primeWidth);
+        pType primeFlip = flip(prime, m_primeWidth);
+        pType primeInvertFlip = invertFlip(prime, m_primeWidth);
         
         //Use the smallest value as the storage prime
-        unsigned long long storagePrime = prime;
+        pType storagePrime = prime;
         storagePrime = storagePrime<primeInvert?storagePrime:primeInvert;
         storagePrime = storagePrime<primeFlip?storagePrime:primeFlip;
         
@@ -544,7 +549,7 @@ string PrimerTool::analyzeMasterSpecial(){
     return result;
 }
 #pragma mark - Twin Prime investigation
-string PrimerTool::analyzePrimes_Twins(vector<unsigned long long>primes, int width){
+string PrimerTool::analyzePrimes_Twins(vector<pType>primes, int width){
     //Store the primes in data controlled storage
     m_primeList = primes;
     m_primeWidth = width;
@@ -557,8 +562,8 @@ string PrimerTool::analyzePrimes_Twins(vector<unsigned long long>primes, int wid
 string PrimerTool::analyzeTwins(){
     string result;
     int count = 0;
-    for_each(m_primeList.begin(), m_primeList.end(), [this,&count](unsigned long long& primeA){
-        for_each(m_primeList.begin(), m_primeList.end(), [this,&count,&primeA](unsigned long long& primeB){
+    for_each(m_primeList.begin(), m_primeList.end(), [this,&count](pType& primeA){
+        for_each(m_primeList.begin(), m_primeList.end(), [this,&count,&primeA](pType& primeB){
             if(primeA != primeB){
                 if(isTwinPrime(primeA, primeB, m_primeWidth)) count++;
             }
@@ -567,20 +572,276 @@ string PrimerTool::analyzeTwins(){
     result = to_string(m_primeWidth)+","+to_string(count/2);
     return result;
 }
-bool PrimerTool::isTwinPrime(unsigned long long prime1, unsigned long long prime2, int width){
+bool PrimerTool::isTwinPrime(pType prime1, pType prime2, int width){
     //Twin prime is defined as having only one binary digit different
     //In the case of primer research, we neglect MSB and LSB
-    unsigned long long mask = powl(2,width-1) - 1;
-    unsigned long long primeA = (prime1 & mask) >> 1;
-    unsigned long long primeB = (prime2 & mask) >> 1;
+    pType mask = powl(2,width-1) - 1;
+    pType primeA = (prime1 & mask) >> 1;
+    pType primeB = (prime2 & mask) >> 1;
     //int result = common_bits(primeA, primeB);
-    unsigned long long temp = primeA^primeB;
+    pType temp = primeA^primeB;
     int result = countBits(temp);
     return (result == 1);
 }
 //Recursively count the number of bits that are 1
-int PrimerTool::countBits(unsigned long long a){
+int PrimerTool::countBits(pType a){
     if (a == 0) return 0;
     return ((a&1) == 1) + countBits(a>>1);
 }
+#pragma mark - Binary File Storage/Search
 
+#define BINARY_WIDTH 36
+void PrimerTool::createBinaryFile(int width){
+    primesieve::iterator it;
+    
+    string outputFileName = string(OUTPUT_DIR)+"LargePrimeFile.bin";
+    ofstream outfile;
+    outfile.open(outputFileName,ios::binary | ios::out);
+    pType number=0;
+    
+    FILE* fp = fopen(outputFileName.c_str(), "wb");
+    while(number<powl(2,width-1)){
+        number = it.next_prime();
+    }
+    while(number<powl(2,width)){
+        fwrite(&number, 1, sizeof(pType), fp);
+        number = it.next_prime();
+    }
+    outfile.close();
+}
+
+bool PrimerTool::searchBinaryFile(int width,pType searchNumber){
+    string outputFileName = string(OUTPUT_DIR)+"LargePrimeFile34.bin";
+    
+    FILE* fp = fopen(outputFileName.c_str(), "rb");
+    assert(fp);
+    
+    pType start = 0;
+    pType middle = 0;
+    pType end = 0;
+    
+    long startIndex = 0;
+    long middleIndex = 0;
+    long endIndex = 0;
+    
+    int bufferSize = sizeof(pType);
+    
+    pType buffer[1];
+    pType mask = powl(2,width) - 1;
+    //TODO: Not sure the mask is necessary
+    long pos;
+    
+    fseek(fp, startIndex, SEEK_SET); // seek to begining
+    fread(buffer, 1, sizeof(pType), fp);
+    start = buffer[0] & mask;
+    
+    //Seek to middle
+    fseek(fp, 0, SEEK_END);
+    pos = ftell(fp);
+    long lines = pos / (bufferSize); //1 for the \n
+    endIndex = pos - bufferSize;
+    lines /= 2;
+    middleIndex = lines*bufferSize;
+    
+    // Position stream at the middle.
+    fseek(fp, middleIndex, SEEK_SET);
+    fread(buffer, 1, sizeof(pType), fp);
+    middle = buffer[0] & mask;
+    
+    //Seek to end
+    fseek(fp,endIndex,SEEK_SET);
+    fread(buffer, 1, sizeof(pType), fp);
+    end = buffer[0] & mask;
+    
+    bool found = false;
+    bool stop = false;
+    while (!found && !stop){
+        
+        if(searchNumber == start || searchNumber == middle || searchNumber == end){
+            found = true;
+        }
+        else {
+            if(searchNumber > middle){
+                startIndex = middleIndex;
+                endIndex = endIndex;
+            }
+            else{
+                startIndex = startIndex;
+                endIndex = middleIndex;
+            }
+            //Recalculate the middle index
+            long tempindex = ((endIndex+bufferSize)-startIndex);
+            tempindex = tempindex/(bufferSize);
+            tempindex = tempindex/2;
+            tempindex = tempindex*(bufferSize);
+            middleIndex = startIndex+tempindex;
+            
+            //Read Values
+            fseek(fp, startIndex, SEEK_SET); // seek to begining
+            fread(buffer, 1, sizeof(pType), fp);
+            start = buffer[0] & mask;
+            
+            fseek(fp, middleIndex, SEEK_SET); // seek to middle
+            fread(buffer, 1, sizeof(pType), fp);
+            middle = buffer[0] & mask;
+            
+            fseek(fp, endIndex, SEEK_SET); // seek to end
+            fread(buffer, 1, sizeof(pType), fp);
+            end = buffer[0] & mask;
+            
+            if(middle == start || middle == end || searchNumber < start || searchNumber > end){
+                stop = true;
+            }
+        }
+    }
+    fclose(fp);
+    return found;
+}
+
+/*
+ cout<<"The number "<<searchNumber<<" was ";
+ if(!found){ cout<<"NOT ";}
+ cout<<"found."<<endl;
+ 
+ pType searchNumber = number;
+ //searchNumber = 72;
+ //searchNumber = 73;
+ searchNumber = 113;
+ searchNumber = 109;
+ searchNumber = 108;
+ 
+ searchNumber = 8390531;
+ //searchNumber = 32909;
+ //searchNumber = 268435361;
+ //searchNumber = 2147484223;
+ searchNumber = 9323381141;
+ */
+
+
+
+
+
+void PrimerTool::testBinarySearch_createfile(){
+    primesieve::iterator it;
+    
+    string outputFileName = string(OUTPUT_DIR)+"LargePrimeFile.txt";
+    string outputFileNameDecimal = string(OUTPUT_DIR)+"LargePrimeFile_d.txt";
+    ofstream outfile;
+    ofstream outfile2;
+    outfile.open(outputFileName);
+    outfile2.open(outputFileNameDecimal);
+    int width = BINARY_WIDTH;
+    pType number=0;
+    while(number<powl(2,width-1)){
+        number = it.next_prime();
+    }
+    while(number<powl(2,width)){
+        outfile<<bitset<BINARY_WIDTH>(number).to_string()<<endl;
+        outfile2<<number<<endl;
+        number = it.next_prime();
+    }
+    outfile.close();
+}
+
+void PrimerTool::testBinarySearch_file(){
+    string outputFileName = string(OUTPUT_DIR)+"LargePrimeFile.txt";
+    
+    FILE* fp = fopen(outputFileName.c_str(), "r");
+    assert(fp);
+    
+    pType start = 0;
+    pType middle = 0;
+    pType end = 0;
+    
+    long startIndex = 0;
+    long middleIndex = 0;
+    long endIndex = 0;
+    
+    int width = BINARY_WIDTH;
+    int bufferSize = sizeof(char)*width+sizeof('\n');
+    char buffer[bufferSize]; //Max number of digits
+    
+    long pos;
+    
+    startIndex = 0;
+    fseek(fp, 0, SEEK_SET); // seek to begining
+    fread(buffer,bufferSize, 1, fp);
+    start = stoull(buffer, nullptr, 2);
+    
+    //Seek to middle
+    fseek(fp, 0, SEEK_END);
+    pos = ftell(fp);
+    long lines = pos / (width+1); //1 for the \n
+    endIndex = pos - bufferSize;
+    lines /= 2;
+    middleIndex = lines*bufferSize;
+    // Position stream at the middle.
+    fseek(fp, middleIndex, SEEK_SET);
+    fread(buffer, bufferSize, 1, fp);
+    middle = stoull(buffer, nullptr, 2);
+    
+    //Seek to end
+    //fseek(fp, -bufferSize, SEEK_END);
+    fseek(fp,endIndex,SEEK_SET);
+    fread(buffer, bufferSize, 1, fp);
+    end = stoull(buffer, nullptr, 2);
+    
+    
+    bool found = false;
+    bool stop = false;
+    pType searchNumber = 67;
+    //searchNumber = 72;
+    //searchNumber = 73;
+    //searchNumber = 113;
+    //searchNumber = 109;
+    //searchNumber = 108;
+    
+    //searchNumber = 32909;
+    searchNumber = 268435361;
+    searchNumber = 2147484223;
+    while (!found && !stop){
+        
+        if(searchNumber == start || searchNumber == middle || searchNumber == end){
+            found = true;
+        }
+        else if(searchNumber > middle){
+            startIndex = middleIndex;
+            endIndex = endIndex;
+            
+        }
+        else{
+            startIndex = startIndex;
+            endIndex = middleIndex;
+            
+        }
+        if(!found){
+            
+            long tempindex = ((endIndex+bufferSize)-startIndex);
+            tempindex = tempindex/(width+1);
+            tempindex = tempindex/2;
+            tempindex = tempindex*(width+1);
+            middleIndex = startIndex+tempindex;
+            
+            //Read Values
+            fseek(fp, startIndex, SEEK_SET); // seek to begining
+            fread(buffer,bufferSize, 1, fp);
+            start = stoull(buffer, nullptr, 2);
+            
+            fseek(fp, middleIndex, SEEK_SET); // seek to middle
+            fread(buffer,bufferSize, 1, fp);
+            middle = stoull(buffer, nullptr, 2);
+            
+            fseek(fp, endIndex, SEEK_SET); // seek to end
+            fread(buffer,bufferSize, 1, fp);
+            end = stoull(buffer, nullptr, 2);
+            
+            if(middle == start || middle == end || searchNumber < start || searchNumber > end){
+                stop = true;
+            }
+        }
+    }
+    fclose(fp);
+    cout<<"The number "<<searchNumber<<" was ";
+    if(!found){ cout<<"NOT ";}
+    cout<<"found."<<endl;
+}
