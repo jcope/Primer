@@ -14,12 +14,14 @@
 #define LOG_DATA_FILE_VERBOSE 0
 #define LOG_DATA_FILE_VERBOSE_FULL 0
 
-#define MIN_BINARY_WIDTH 3
-#define MAX_BINARY_WIDTH 32
+#define MIN_BINARY_WIDTH 27
+#define MAX_BINARY_WIDTH 28
 
 #define OUTPUT_FILE "PrimerOutput.txt"
 
-#define BINARY_SEARCH 1 //Only use if we know the input will be ordered
+//Type of search- only select one
+#define BINARY_SEARCH 0 //Only use if we know the input will be ordered
+#define FILE_SEARCH 1
 
 //2^ ()
 

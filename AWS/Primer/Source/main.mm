@@ -41,7 +41,7 @@ void printTime(string s);
 
 int main(int argc, const char * argv[]) {
     //if random looping analysis
-    int loopCnt = 0;
+    int loopCnt = 127;
     while(loopCnt < 128){
     
     @autoreleasepool{
@@ -50,14 +50,17 @@ int main(int argc, const char * argv[]) {
         //pTool->testPrimer();
         
         
-        pTool->createBinaryFile(34);
+        //pTool->createBinaryFile(27);
+        pTool->initializeBinaryFileSearch(27);
+        /*
         bool found = false;
         found = pTool->searchBinaryFile(34, 9323381141);
         cout<<"The number "<<9323381141<<" was ";
         if(!found){ cout<<"NOT ";}
         cout<<"found."<<endl;
+        */
+        //return 0;
         
-        return 0;
         
         printTime("Start Time: ");
         
@@ -135,7 +138,7 @@ int main(int argc, const char * argv[]) {
         printTime("End Time: ");
         
     }//Autorelease poool
-    if(RANDOM) loopCnt++;
+    loopCnt++;
     }
     return 0;
 }

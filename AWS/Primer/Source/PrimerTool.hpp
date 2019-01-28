@@ -13,6 +13,8 @@
 #include <vector>
 #include <set>
 
+#define FILE_BUFFER_SEARCH_SIZE 32768
+
 typedef unsigned long long pType;
 
 using namespace std;
@@ -26,6 +28,10 @@ public:
     
     bool searchBinaryFile(int width,pType number);
     void createBinaryFile(int width);
+    void initializeBinaryFileSearch(int width);
+    void useSearchCache(pType searchNumber,
+                        pType* start, pType* middle, pType* end,
+                        long* startIndex, long* middleIndex, long* endIndex);
     
     //Main utility function
     string analyzePrimes(vector<pType>primes, int width);
@@ -58,6 +64,9 @@ private:                      // begin private section
     set <pType, less <pType> > m_invertPrimes; //Invert
     
     set <pType, less <pType> > m_nullPrimes; //None of the above
+    
+    pType m_BSF_values[FILE_BUFFER_SEARCH_SIZE];
+    long m_BSF_indexes[FILE_BUFFER_SEARCH_SIZE];
     
     pType invert(pType number, int width);
     pType flip(pType number, int width);
