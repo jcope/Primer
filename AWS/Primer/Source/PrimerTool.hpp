@@ -13,7 +13,11 @@
 #include <vector>
 #include <set>
 
-#define FILE_BUFFER_SEARCH_SIZE 32768
+//#define FILE_BUFFER_SEARCH_SIZE 32768
+//#define FILE_BUFFER_SEARCH_SIZE 131072
+#define FILE_BUFFER_SEARCH_SIZE 542288
+
+
 
 typedef unsigned long long pType;
 
@@ -65,6 +69,7 @@ private:                      // begin private section
     
     set <pType, less <pType> > m_nullPrimes; //None of the above
     
+    FILE* m_fp;
     pType m_BSF_values[FILE_BUFFER_SEARCH_SIZE];
     long m_BSF_indexes[FILE_BUFFER_SEARCH_SIZE];
     

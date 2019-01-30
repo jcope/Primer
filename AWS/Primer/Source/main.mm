@@ -50,8 +50,8 @@ int main(int argc, const char * argv[]) {
         //pTool->testPrimer();
         
         
-        //pTool->createBinaryFile(27);
-        pTool->initializeBinaryFileSearch(27);
+        //pTool->createBinaryFile(31);
+        pTool->initializeBinaryFileSearch(34);
         /*
         bool found = false;
         found = pTool->searchBinaryFile(34, 9323381141);

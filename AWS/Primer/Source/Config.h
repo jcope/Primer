@@ -14,8 +14,8 @@
 #define LOG_DATA_FILE_VERBOSE 0
 #define LOG_DATA_FILE_VERBOSE_FULL 0
 
-#define MIN_BINARY_WIDTH 27
-#define MAX_BINARY_WIDTH 28
+#define MIN_BINARY_WIDTH 34
+#define MAX_BINARY_WIDTH 35
 
 #define OUTPUT_FILE "PrimerOutput.txt"
 

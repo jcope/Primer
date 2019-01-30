@@ -18,7 +18,8 @@
 #include <cstdlib>      // std::rand, std::srand
 #include <primesieve.hpp>
 
-PrimerTool::PrimerTool(){ 
+PrimerTool::PrimerTool(){
+
     srand ( unsigned ( time(0) ) );
 }    
 PrimerTool::~PrimerTool(){
@@ -613,11 +614,10 @@ void PrimerTool::createBinaryFile(int width){
 }
 void PrimerTool::initializeBinaryFileSearch(int width){
     //
-   
     string outputFileName = string(OUTPUT_DIR)+"LargePrimeFile"+to_string(width)+".bin";
     
-    FILE* fp = fopen(outputFileName.c_str(), "rb");
-    assert(fp);
+    m_fp = fopen(outputFileName.c_str(), "rb");
+    assert(m_fp);
     
     long endIndex = 0;
     long pos;
@@ -626,8 +626,8 @@ void PrimerTool::initializeBinaryFileSearch(int width){
     pType mask = powl(2,width) - 1;
     
     //Seek to middle
-    fseek(fp, 0, SEEK_END);
-    pos = ftell(fp);
+    fseek(m_fp, 0, SEEK_END);
+    pos = ftell(m_fp);
     endIndex = pos - bufferSize;
     
     long stepSize = endIndex/(FILE_BUFFER_SEARCH_SIZE-1);
@@ -637,21 +637,17 @@ void PrimerTool::initializeBinaryFileSearch(int width){
     
     for(int count = 0;count < FILE_BUFFER_SEARCH_SIZE-1; count++){
         long fileIndex = stepSize*count;
-        fseek(fp, fileIndex, SEEK_SET); // seek to begining
-        fread(buffer, 1, sizeof(pType), fp);
+        fseek(m_fp, fileIndex, SEEK_SET); // seek to begining
+        fread(buffer, 1, sizeof(pType), m_fp);
         m_BSF_values[count] = buffer[0] & mask;
         m_BSF_indexes[count] = fileIndex;
     }
     //Ensure the last index is correctly populated
-    fseek(fp, endIndex, SEEK_SET); // seek to begining
-    fread(buffer, 1, sizeof(pType), fp);
+    fseek(m_fp, endIndex, SEEK_SET); // seek to begining
+    fread(buffer, 1, sizeof(pType), m_fp);
     m_BSF_values[FILE_BUFFER_SEARCH_SIZE-1] = buffer[0] & mask;
     m_BSF_indexes[FILE_BUFFER_SEARCH_SIZE-1] = endIndex;
-    /*
-    for(int i=0;i<FILE_BUFFER_SEARCH_SIZE;i++){
-        cout<<m_BSF_values[i]<<","<<m_BSF_indexes[i]<<endl;
-    }
-    */
+    
 }
 void PrimerTool::useSearchCache(pType searchNumber,
                                 pType* start, pType* middle, pType* end,
@@ -665,47 +661,35 @@ void PrimerTool::useSearchCache(pType searchNumber,
     long middleIndex = 0;
     long endIndex = 0;
     */
-    int lowerIndex = 0;
-    int upperIndex = 0;
+    long lowerIndex = 0;
+    long upperIndex = FILE_BUFFER_SEARCH_SIZE-1;
+    long midIndex = (upperIndex-lowerIndex)/2;
     bool set = false;
-    //pType value = m_BSF_values[FILE_BUFFER_SEARCH_SIZE-1];
-    for(int i=0;i<FILE_BUFFER_SEARCH_SIZE-1 && !set;i++){
-        if(searchNumber<m_BSF_values[i+1]){
-            //Arbitrary set the end as the cache middle, unless at end of cache
-            if(i+2<FILE_BUFFER_SEARCH_SIZE){
-                *start = m_BSF_values[i];
-                *middle = m_BSF_values[i+1];
-                *end = m_BSF_values[i+2];
-                *startIndex = m_BSF_indexes[i];
-                *middleIndex = m_BSF_indexes[i+1];
-                *endIndex = m_BSF_indexes[i+2];
-                set = true;
-            }
-            else{
-                *start = m_BSF_values[i-1];
-                *middle = m_BSF_values[i];
-                *end = m_BSF_values[i+1];
-                *startIndex = m_BSF_indexes[i-1];
-                *middleIndex = m_BSF_indexes[i];
-                *endIndex = m_BSF_indexes[i+1];
-                set = true;
-            }
+    
+    //for(int i=0;i<FILE_BUFFER_SEARCH_SIZE-1 && !set;i++){
+    while(!set){
+        if(searchNumber > m_BSF_values[midIndex]){
+            lowerIndex = midIndex;
+            upperIndex = upperIndex;
         }
-    }
-    if(!set){
-        *start = m_BSF_values[FILE_BUFFER_SEARCH_SIZE-3];
-        *middle = m_BSF_values[FILE_BUFFER_SEARCH_SIZE-2];
-        *end = m_BSF_values[FILE_BUFFER_SEARCH_SIZE-1];
-        *startIndex = m_BSF_indexes[FILE_BUFFER_SEARCH_SIZE-3];
-        *middleIndex = m_BSF_indexes[FILE_BUFFER_SEARCH_SIZE-2];
-        *endIndex = m_BSF_indexes[FILE_BUFFER_SEARCH_SIZE-1];
+        else{
+            lowerIndex = lowerIndex;
+            upperIndex = midIndex;
+        }
+        midIndex = (upperIndex-lowerIndex)/2 + lowerIndex;
+        if((upperIndex-lowerIndex)<=3){
+            *start = m_BSF_values[lowerIndex];
+            *middle = m_BSF_values[midIndex];
+            *end = m_BSF_values[upperIndex];
+            *startIndex = m_BSF_indexes[lowerIndex];
+            *middleIndex = m_BSF_indexes[midIndex];
+            *endIndex = m_BSF_indexes[upperIndex];
+            set = true;
+        }
     }
 }
 bool PrimerTool::searchBinaryFile(int width,pType searchNumber){
-    string outputFileName = string(OUTPUT_DIR)+"LargePrimeFile"+to_string(width)+".bin";
-    
-    FILE* fp = fopen(outputFileName.c_str(), "rb");
-    assert(fp);
+    assert(m_fp);
     
     pType start = 0;
     pType middle = 0;
@@ -718,34 +702,34 @@ bool PrimerTool::searchBinaryFile(int width,pType searchNumber){
     int bufferSize = sizeof(pType);
     
     pType buffer[1];
-    pType mask = powl(2,width) - 1;
+    //pType mask = powl(2,width) - 1;
     //TODO: Not sure the mask is necessary
     
     if(FILE_SEARCH){
         useSearchCache(searchNumber, &start, &middle, &end, &startIndex, &middleIndex, &endIndex);
     }
     else{
-        fseek(fp, startIndex, SEEK_SET); // seek to begining
-        fread(buffer, 1, sizeof(pType), fp);
-        start = buffer[0] & mask;
+        fseek(m_fp, startIndex, SEEK_SET); // seek to begining
+        fread(buffer, 1, sizeof(pType), m_fp);
+        start = buffer[0];
         
         //Seek to middle
-        fseek(fp, 0, SEEK_END);
-        long pos = ftell(fp);
+        fseek(m_fp, 0, SEEK_END);
+        long pos = ftell(m_fp);
         long lines = pos / (bufferSize); //1 for the \n
         endIndex = pos - bufferSize;
         lines /= 2;
         middleIndex = lines*bufferSize;
         
         // Position stream at the middle.
-        fseek(fp, middleIndex, SEEK_SET);
-        fread(buffer, 1, sizeof(pType), fp);
-        middle = buffer[0] & mask;
+        fseek(m_fp, middleIndex, SEEK_SET);
+        fread(buffer, 1, sizeof(pType), m_fp);
+        middle = buffer[0];
         
         //Seek to end
-        fseek(fp,endIndex,SEEK_SET);
-        fread(buffer, 1, sizeof(pType), fp);
-        end = buffer[0] & mask;
+        fseek(m_fp,endIndex,SEEK_SET);
+        fread(buffer, 1, sizeof(pType), m_fp);
+        end = buffer[0];
     }
     
     bool found = false;
@@ -772,23 +756,22 @@ bool PrimerTool::searchBinaryFile(int width,pType searchNumber){
             middleIndex = startIndex+tempindex;
             
             //Read Values
-            fseek(fp, startIndex, SEEK_SET); // seek to begining
-            fread(buffer, 1, sizeof(pType), fp);
-            start = buffer[0] & mask;
+            fseek(m_fp, startIndex, SEEK_SET); // seek to begining
+            fread(buffer, 1, sizeof(pType), m_fp);
+            start = buffer[0];
             
-            fseek(fp, middleIndex, SEEK_SET); // seek to middle
-            fread(buffer, 1, sizeof(pType), fp);
-            middle = buffer[0] & mask;
+            fseek(m_fp, middleIndex, SEEK_SET); // seek to middle
+            fread(buffer, 1, sizeof(pType), m_fp);
+            middle = buffer[0];
             
-            fseek(fp, endIndex, SEEK_SET); // seek to end
-            fread(buffer, 1, sizeof(pType), fp);
-            end = buffer[0] & mask;
+            fseek(m_fp, endIndex, SEEK_SET); // seek to end
+            fread(buffer, 1, sizeof(pType), m_fp);
+            end = buffer[0];
             
             if(middle == start || middle == end || searchNumber < start || searchNumber > end){
                 stop = true;
             }
         }
     }
-    fclose(fp);
     return found;
 }
