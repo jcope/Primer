@@ -25,6 +25,10 @@ PrimerTool::PrimerTool(){
 PrimerTool::~PrimerTool(){
     
 }
+void PrimerTool::setBinaryWidth(int width){
+    m_primeWidth = width;
+    initBuckets();
+}
 void PrimerTool::initBuckets(){
     m_grandMasterPrimes.clear();
     m_masterPrimes.clear();
@@ -36,7 +40,9 @@ void PrimerTool::initBuckets(){
     m_invertPrimes.clear();
     m_nullPrimes.clear();
 }
-
+string PrimerTool::generateOutput(){
+    return outputResults();
+}
 string PrimerTool::analyzePrimes(vector<pType>primes, int width){
     //Store the primes in data controlled storage
     m_primeList = primes;
@@ -153,21 +159,24 @@ string PrimerTool::setDescription(set <pType, less <pType> > primeSet){
     retStr.erase(retStr.end());
     return retStr;
 }
+void PrimerTool::analyzeNextPrime(pType prime){
+    pType storagePrime = 0;
+    primeType pType = calculatePrimeType(prime,&storagePrime);
+    
+    if(pType == grandMasterPRIME) m_grandMasterPrimes.insert(storagePrime);
+    else if(pType == masterPRIME) m_masterPrimes.insert(storagePrime);
+    else if(pType == specialMasterPRIME) m_specialMasterPrimes.insert(storagePrime);
+    else if(pType == grandPRIME) m_grandPrimes.insert(storagePrime);
+    else if(pType == specialGrandPRIME) m_specialGrandPrimes.insert(storagePrime);
+    else if(pType == flipPRIME) m_flipPrimes.insert(storagePrime);
+    else if(pType == specialFlipPRIME) m_specialFlipPrimes.insert(storagePrime);
+    else if(pType == invertPRIME) m_invertPrimes.insert(storagePrime);
+    else if(pType == nullPRIME) m_nullPrimes.insert(storagePrime);
+    else assertLog(false,"Unknown Type");
+}
 void PrimerTool::analyzePrimeNumberList(){
     for_each(m_primeList.begin(), m_primeList.end(), [this](pType& prime){
-        pType storagePrime = 0;
-        primeType pType = calculatePrimeType(prime,&storagePrime);
-
-        if(pType == grandMasterPRIME) m_grandMasterPrimes.insert(storagePrime);
-        else if(pType == masterPRIME) m_masterPrimes.insert(storagePrime);
-        else if(pType == specialMasterPRIME) m_specialMasterPrimes.insert(storagePrime);
-        else if(pType == grandPRIME) m_grandPrimes.insert(storagePrime);
-        else if(pType == specialGrandPRIME) m_specialGrandPrimes.insert(storagePrime);
-        else if(pType == flipPRIME) m_flipPrimes.insert(storagePrime);
-        else if(pType == specialFlipPRIME) m_specialFlipPrimes.insert(storagePrime);
-        else if(pType == invertPRIME) m_invertPrimes.insert(storagePrime);
-        else if(pType == nullPRIME) m_nullPrimes.insert(storagePrime);
-        else assertLog(false,"Unknown Type");
+        analyzeNextPrime(prime);
     });
 }
 primeType PrimerTool::calculatePrimeType(pType prime, pType* sPrime){

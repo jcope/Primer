@@ -30,12 +30,17 @@ public:
     ~PrimerTool();
     void testPrimer();
     
+    
+    void setBinaryWidth(int width);
+    void analyzeNextPrime(pType prime);
+    string generateOutput();
     bool searchBinaryFile(int width,pType number);
     void createBinaryFile(int width);
     void initializeBinaryFileSearch(int width);
     void useSearchCache(pType searchNumber,
                         pType* start, pType* middle, pType* end,
                         long* startIndex, long* middleIndex, long* endIndex);
+    
     
     //Main utility function
     string analyzePrimes(vector<pType>primes, int width);

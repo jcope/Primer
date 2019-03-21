@@ -22,5 +22,13 @@
       <ContextState
          contextName = "PrimerTool::testBinarySearch_file():PrimerTool.cpp">
       </ContextState>
+      <ContextState
+         contextName = "PrimerTool::initializeBinaryFileSearch(int):PrimerTool.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "values">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
    </ContextStates>
 </VariablesViewState>

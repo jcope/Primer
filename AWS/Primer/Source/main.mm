@@ -50,8 +50,8 @@ int main(int argc, const char * argv[]) {
         //pTool->testPrimer();
         
         
-        //pTool->createBinaryFile(31);
-        pTool->initializeBinaryFileSearch(34);
+        //pTool->createBinaryFile(32);
+        pTool->initializeBinaryFileSearch(32);
         /*
         bool found = false;
         found = pTool->searchBinaryFile(34, 9323381141);
@@ -102,14 +102,24 @@ int main(int argc, const char * argv[]) {
             max = powl(2,binaryWidth)-1; //Calculate the max bucket
             cout<<"****************************"<<endl;
             cout<<"Binary width: "<<binaryWidth<<endl;
-            cout<<"Analyzing for max: "<<binaryWidth<<endl;
+            if(FILE_SEARCH){
+                startTime = time(0);
+                pTool->setBinaryWidth(binaryWidth);
+            }
             if(! RANDOM){
             BOOL analyze = false;
             //Collect the data
             while(!analyze){
                 if (_prime <= max) {
-                    _primeList.push_back(_prime);
-                    _prime = it.next_prime();
+                    //Sequential or group search.
+                    if(! FILE_SEARCH){
+                        _primeList.push_back(_prime);
+                        _prime = it.next_prime();
+                    }
+                    else{
+                        pTool->analyzeNextPrime(_prime);
+                        _prime = it.next_prime();
+                    }
                 }
                 else{
                     analyze = true;
@@ -120,11 +130,17 @@ int main(int argc, const char * argv[]) {
             _primeList = pTool->createRandomInput(binaryWidth, primeCount);
             }
             //Analyze
-            cout<<"Count: "<<_primeList.size()<< " primes (between "<< uint64_t(powl(2,binaryWidth-1)) <<" and "<< max <<")"<<endl;
-            startTime = time(0);
-            string output = pTool->analyzePrimes(_primeList,binaryWidth);
-            //string output = pTool->analyzePrimes_Twins(_primeList,binaryWidth);
-            //string output = pTool->analyzePrimes_MasterSpecial(_primeList,binaryWidth);
+            string output = "";
+            if(FILE_SEARCH){
+                output = pTool->generateOutput();
+            }
+            else{
+                cout<<"Count: "<<_primeList.size()<< " primes (between "<< uint64_t(powl(2,binaryWidth-1)) <<" and "<< max <<")"<<endl;
+                startTime = time(0);
+                output = pTool->analyzePrimes(_primeList,binaryWidth);
+                //string output = pTool->analyzePrimes_Twins(_primeList,binaryWidth);
+                //string output = pTool->analyzePrimes_MasterSpecial(_primeList,binaryWidth);
+            }
             
             outfile<<output<<endl;
             double totalTime = difftime(time(0),startTime);
