@@ -11,17 +11,17 @@
 
 #define LOG_DATA_CONSOLE 1
 #define LOG_DATA_FILE 1
-#define LOG_DATA_FILE_VERBOSE 0
-#define LOG_DATA_FILE_VERBOSE_FULL 0
+#define LOG_DATA_FILE_VERBOSE 1
+#define LOG_DATA_FILE_VERBOSE_FULL 1
 
-#define MIN_BINARY_WIDTH 32
-#define MAX_BINARY_WIDTH 33
+#define MIN_BINARY_WIDTH 3
+#define MAX_BINARY_WIDTH 16
 
 #define OUTPUT_FILE "PrimerOutput.txt"
 
 //Type of search- only select one
-#define BINARY_SEARCH 0 //Only use if we know the input will be ordered
-#define FILE_SEARCH 1
+#define BINARY_SEARCH 1 //Only use if we know the input will be ordered
+#define FILE_SEARCH 0
 
 //2^ ()
 
