@@ -34,8 +34,8 @@
 		3F9D09421DD51D8D00074276 /* Primer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Primer.m; sourceTree = "<group>"; };
 		3FCFE2BF21704D6E004AC4C8 /* primesieve.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = primesieve.hpp; sourceTree = "<group>"; };
 		3FCFE2C021704D6E004AC4C8 /* primesieve.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = primesieve.h; sourceTree = "<group>"; };
-		3FCFE2C1217050E9004AC4C8 /* PrimerTool.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PrimerTool.cpp; path = ../../AWS/Primer/Source/PrimerTool.cpp; sourceTree = "<group>"; };
-		3FCFE2C2217050E9004AC4C8 /* PrimerTool.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = PrimerTool.hpp; path = ../../AWS/Primer/Source/PrimerTool.hpp; sourceTree = "<group>"; };
+		3FCFE2C1217050E9004AC4C8 /* PrimerTool.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PrimerTool.cpp; sourceTree = "<group>"; };
+		3FCFE2C2217050E9004AC4C8 /* PrimerTool.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PrimerTool.hpp; sourceTree = "<group>"; };
 		3FDCF41C216D62410012237F /* project.pbxproj */ = {isa = PBXFileReference; lastKnownFileType = text.pbxproject; name = project.pbxproj; path = Primer.xcodeproj/project.pbxproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -54,8 +54,6 @@
 		3F9D09251DD514A800074276 = {
 			isa = PBXGroup;
 			children = (
-				3FCFE2C1217050E9004AC4C8 /* PrimerTool.cpp */,
-				3FCFE2C2217050E9004AC4C8 /* PrimerTool.hpp */,
 				3F697A781FB9030000C424C3 /* output */,
 				3F9D09381DD51D8D00074276 /* Primer */,
 				3F9D092F1DD514A900074276 /* Products */,
@@ -75,23 +73,17 @@
 			isa = PBXGroup;
 			children = (
 				3FCFE2BD21704D6E004AC4C8 /* 3rdParty */,
-				3F9D09391DD51D8D00074276 /* Build */,
 				3F9D093A1DD51D8D00074276 /* Source */,
 			);
 			name = Primer;
-			path = ../../AWS/Primer;
-			sourceTree = "<group>";
-		};
-		3F9D09391DD51D8D00074276 /* Build */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Build;
-			sourceTree = "<group>";
+			path = /Users/jeremy/Projects/Primer/Primer;
+			sourceTree = "<absolute>";
 		};
 		3F9D093A1DD51D8D00074276 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				3FCFE2C1217050E9004AC4C8 /* PrimerTool.cpp */,
+				3FCFE2C2217050E9004AC4C8 /* PrimerTool.hpp */,
 				3F9D093B1DD51D8D00074276 /* Config.h */,
 				3F9D093C1DD51D8D00074276 /* main.mm */,
 				3F9D09411DD51D8D00074276 /* Primer.h */,
@@ -166,6 +158,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 3F9D09251DD514A800074276;
