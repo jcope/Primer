@@ -6,8 +6,8 @@
 //  Copyright © 2016 Emma Technologies, L.L.C. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import <iostream> // Definition of cin, cout etc.
+//#import <Foundation/Foundation.h>
+//#import <iostream> // Definition of cin, cout etc.
 
 #include <primesieve.hpp>
 #include <iostream>
@@ -44,7 +44,7 @@ int main(int argc, const char * argv[]) {
     int loopCnt = 127;
     while(loopCnt < 128){
     
-    @autoreleasepool{
+   // @autoreleasepool{
 
         PrimerTool* pTool = new PrimerTool();
         //pTool->testPrimer();
@@ -108,7 +108,7 @@ int main(int argc, const char * argv[]) {
                 pTool->setBinaryWidth(binaryWidth);
             }
             if(! RANDOM){
-            BOOL analyze = false;
+            bool analyze = false;
             //Collect the data
             while(!analyze){
                 if (_prime <= max) {
@@ -154,7 +154,7 @@ int main(int argc, const char * argv[]) {
         outfile.close();
         printTime("End Time: ");
         
-    }//Autorelease poool
+    //}//Autorelease poool
     loopCnt++;
     }
     return 0;
