@@ -735,32 +735,34 @@ bool PrimerTool::searchBinaryFile(int width,pType searchNumber){
     //pType mask = powl(2,width) - 1;
     //TODO: Not sure the mask is necessary
     
-    if(FILE_SEARCH){
-        useSearchCache(searchNumber, &start, &middle, &end, &startIndex, &middleIndex, &endIndex);
-    }
-    else{
-        fseek(m_fp, startIndex, SEEK_SET); // seek to begining
-        fread(buffer, 1, sizeof(pType), m_fp);
-        start = buffer[0];
-        
-        //Seek to middle
-        fseek(m_fp, 0, SEEK_END);
-        long pos = ftell(m_fp);
-        long lines = pos / (bufferSize); //1 for the \n
-        endIndex = pos - bufferSize;
-        lines /= 2;
-        middleIndex = lines*bufferSize;
-        
-        // Position stream at the middle.
-        fseek(m_fp, middleIndex, SEEK_SET);
-        fread(buffer, 1, sizeof(pType), m_fp);
-        middle = buffer[0];
-        
-        //Seek to end
-        fseek(m_fp,endIndex,SEEK_SET);
-        fread(buffer, 1, sizeof(pType), m_fp);
-        end = buffer[0];
-    }
+    //Either use the cache lookup for starting indexes, or initialize with entire file/block. Saving for future help.
+    //Search cache eleminates the first x steps of binary file lookup, having pre-populated the values in cache. Minimizing file i/o.
+    //Use search cache
+    useSearchCache(searchNumber, &start, &middle, &end, &startIndex, &middleIndex, &endIndex);
+
+    //Initialize to entier file/block
+    fseek(m_fp, startIndex, SEEK_SET); // seek to begining
+    fread(buffer, 1, sizeof(pType), m_fp);
+    start = buffer[0];
+    
+    //Seek to middle
+    fseek(m_fp, 0, SEEK_END);
+    long pos = ftell(m_fp);
+    long lines = pos / (bufferSize); //1 for the \n
+    endIndex = pos - bufferSize;
+    lines /= 2;
+    middleIndex = lines*bufferSize;
+    
+    // Position stream at the middle.
+    fseek(m_fp, middleIndex, SEEK_SET);
+    fread(buffer, 1, sizeof(pType), m_fp);
+    middle = buffer[0];
+    
+    //Seek to end
+    fseek(m_fp,endIndex,SEEK_SET);
+    fread(buffer, 1, sizeof(pType), m_fp);
+    end = buffer[0];
+    
     
     bool found = false;
     bool stop = false;
