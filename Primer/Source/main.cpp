@@ -28,18 +28,58 @@ void programStart();
 void checkProgram();
 void printHeader();
 
+int main_developer();
 int main_primer();
 int main_random();
 
 
 int main(int argc, const char * argv[]) {
     programStart();
+    //return main_developer();
     return main_primer();
     //return main_random();
 }
+
+int main_developer(){
+    PrimerTool* pTool = new PrimerTool();
+    pTool->createBinaryFile(25);
+    return 0;
+    
+    
+    //PrimerTool* pTool = new PrimerTool();
+   // pTool->createBinaryFile(34);
+    int testWidth = 8;
+    pTool->initializeBinaryFileSearch(testWidth);
+    pTool->setBinaryWidth(testWidth);
+    pTool->readBinaryFile();
+    
+   // return 0;
+    primesieve::iterator it;
+    uint64_t _prime = it.next_prime(); //Read the initial prime
+    uint64_t min = powl(2,testWidth-1)-1;
+    uint64_t max = powl(2,testWidth)-1; //Calculate the max bucket
+    
+    while(_prime<=min){
+        _prime = it.next_prime();
+    }
+    int count = 0;
+    bool found = false;
+    while(_prime<max){
+        found = pTool->searchBinaryFile(_prime);
+        if(!found){
+            cout<<"The number "<<_prime<<" was ";
+            if(!found){ cout<<"NOT ";}
+            cout<<"found."<<endl;
+        }
+        count++;
+        _prime= it.next_prime();
+    }
+    cout<<count<<endl;
+    return 0;
+}
 int main_primer(){
     PrimerTool* pTool = new PrimerTool();
-          
+    
     primesieve::iterator it;
     uint64_t _prime = it.next_prime(); //Read the initial prime
     vector<pType> _primeList;
@@ -78,10 +118,14 @@ int main_primer(){
         cout<<"Binary width: "<<binaryWidth<<endl;
         if(FILE_SEARCH){
             startTime = time(0);
+            //pTool->createBinaryFile(binaryWidth);
+            pTool->initializeBinaryFileSearch(binaryWidth);
             pTool->setBinaryWidth(binaryWidth);
         }
 
         bool analyze = false;
+        
+        //pTool->searchBinaryFile(191);
         
         //Collect the data
         while(!analyze){

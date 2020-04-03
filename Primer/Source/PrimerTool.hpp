@@ -13,9 +13,6 @@
 #include <vector>
 #include <set>
 
-//#define FILE_BUFFER_SEARCH_SIZE 32768
-//#define FILE_BUFFER_SEARCH_SIZE 131072
-#define FILE_BUFFER_SEARCH_SIZE 542288
 
 typedef unsigned long long pType;
 
@@ -46,8 +43,10 @@ public:
     void setBinaryWidth(int width);
     void analyzeNextPrime(pType prime);
     string generateOutput();
-    bool searchBinaryFile(int width,pType number);
+    bool searchBinaryFile(pType number);
     void createBinaryFile(int width);
+    bool searchBinaryFile2(int width, pType number);
+    void createBinaryFile2(int width);
     void initializeBinaryFileSearch(int width);
     void useSearchCache(pType searchNumber,
                         pType* start, pType* middle, pType* end,
@@ -67,6 +66,7 @@ public:
     pType primeNumbersPerGroup(int width);
     //Verify MasterSpecial Conjecture
     string analyzePrimes_MasterSpecial(vector<pType>primes, int width);
+    void readBinaryFile();
     
 private:                      // begin private section
     int m_primeWidth;
@@ -120,6 +120,8 @@ private:                      // begin private section
     //Tests
     void runDataTest();
     void runPerformaceTest();
+    
+
 };
 
 
