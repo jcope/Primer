@@ -17,9 +17,21 @@
 //#define FILE_BUFFER_SEARCH_SIZE 131072
 #define FILE_BUFFER_SEARCH_SIZE 542288
 
-
-
 typedef unsigned long long pType;
+
+typedef enum{
+    grandMasterPRIME,
+    masterPRIME,
+    specialMasterPRIME,
+    grandPRIME,
+    specialGrandPRIME,
+    flipPRIME,
+    specialFlipPRIME,
+    invertPRIME,
+    nullPRIME,
+    unknownPRIME,
+}primeType;
+
 
 using namespace std;
 
@@ -104,6 +116,7 @@ private:                      // begin private section
     void assertLog(bool test,string s);
     //Verification
     void verifyMachine();
+    void verifyConfig();
     //Tests
     void runDataTest();
     void runPerformaceTest();

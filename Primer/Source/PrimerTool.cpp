@@ -349,14 +349,34 @@ void PrimerTool::verifyCount(){
 #pragma mark - Machine Diagnosis
 void PrimerTool::verifyMachine(){
     pType maxNumber = ULLONG_MAX;
-    cout<<"Upper Limit: "<<maxNumber<<endl;
+    cout<<"Upper Program Limit: "<<maxNumber<<endl;
+    pType maxSearch = powl(2,MAX_BINARY_WIDTH);
+    assertLog(maxSearch<maxNumber,"Machine cannot search for numbers this big");
 }
 #pragma mark - Tests
 void PrimerTool::testPrimer(){
+    verifyConfig();
     verifyMachine();
     runDataTest();
 }
-
+void PrimerTool::verifyConfig(){
+    //Min and max search
+    cout << "Running program from 2 ^ ("<< MIN_BINARY_WIDTH<< " to " << MAX_BINARY_WIDTH<<")"<<endl;
+    //Search Algorithm
+    if(BINARY_SEARCH && FILE_SEARCH){
+        cout << "Only one file search permitted!" << endl;
+        exit(0);
+    }
+    else if(FILE_SEARCH){
+        cout<< "Using File Search Algorithm" <<endl;
+    }
+    else if(BINARY_SEARCH){
+        cout<< "Using Binary Search Algorithm" <<endl;
+    }
+    else{
+        cout<< "Using std::find Search Algorithm" <<endl;
+    }
+}
 #pragma mark Data Verification
 void PrimerTool::runDataTest(){
     
@@ -464,11 +484,12 @@ PrimerTool::createRandomInput(int digits, pType bucketSize){
 }
 pType PrimerTool::primeNumbersPerGroup(int width){
     pType values[] = {2,2,5,7,13,23,43,75,137,
-                                   255,464,872,1612,3030,5709,10749,20390,
-                                   38635,73586,140336,268216,513708,985818,1894120,
-                                   3645744,7027290,13561907,26207278,50697537,98182656};
+                    255,464,872,1612,3030,5709,10749,20390,
+                    38635,73586,140336,268216,513708,985818,1894120,
+                    3645744,7027290,13561907,26207278,50697537,98182656};
+    int length = (sizeof(values)/sizeof(*values));
     int index = width - 3; //We only analyze starting with width = 3 digits
-    //assertLog(index< values.size(),@"Unsupported length");
+    assertLog(index < length,"Unsupported length");
     pType retVal = values[index];
     return retVal;
 }
