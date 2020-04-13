@@ -15,6 +15,9 @@
 #include <fstream>
 #include <sstream>
 #include <time.h>
+#include <chrono>
+#include <thread>
+
 //Third Party
 #include <primesieve.hpp>
 //Primer
@@ -25,220 +28,139 @@ using namespace std;
 void printTime(string s);
 
 void programStart();
+void checkConfig();
 void checkProgram();
 void printHeader();
 
-int main_developer();
 int main_primer();
 int main_random();
 
+runtime_exe _runMode = _STANDARD;
+int _minWidth = MIN_BINARY_WIDTH;
+int _maxWidth = MAX_BINARY_WIDTH;
 
 int main(int argc, const char * argv[]) {
     programStart();
-    //return main_developer();
-    return main_primer();
-    //return main_random();
+    if(_runMode == _RANDOM){
+        return main_random();
+    }
+    else{
+        return main_primer();
+    }
 }
 
-int main_developer(){
-    PrimerTool* pTool = new PrimerTool();
-    pTool->createBinaryFile(25);
-    return 0;
-    
-    
-    //PrimerTool* pTool = new PrimerTool();
-   // pTool->createBinaryFile(34);
-    int testWidth = 8;
-    pTool->initializeBinaryFileSearch(testWidth);
-    pTool->setBinaryWidth(testWidth);
-    pTool->readBinaryFile();
-    
-   // return 0;
-    primesieve::iterator it;
-    uint64_t _prime = it.next_prime(); //Read the initial prime
-    uint64_t min = powl(2,testWidth-1)-1;
-    uint64_t max = powl(2,testWidth)-1; //Calculate the max bucket
-    
-    while(_prime<=min){
-        _prime = it.next_prime();
-    }
-    int count = 0;
-    bool found = false;
-    while(_prime<max){
-        found = pTool->searchBinaryFile(_prime);
-        if(!found){
-            cout<<"The number "<<_prime<<" was ";
-            if(!found){ cout<<"NOT ";}
-            cout<<"found."<<endl;
-        }
-        count++;
-        _prime= it.next_prime();
-    }
-    cout<<count<<endl;
-    return 0;
-}
 int main_primer(){
     PrimerTool* pTool = new PrimerTool();
+    pTool->setupDataHeaders(string(OUTPUT_DIR)+string(OUTPUT_FILE));
+    
+    uint64_t min;
+    uint64_t max;
+    time_t startTime = 0;
+    vector<pType> _primeList;
     
     primesieve::iterator it;
     uint64_t _prime = it.next_prime(); //Read the initial prime
-    vector<pType> _primeList;
-          
-    //Write to file
-    string outputFileName = string(OUTPUT_DIR)+string(OUTPUT_FILE);
-    ofstream outfile;
-    outfile.open(outputFileName);
-          
-    if(LOG_DATA_FILE){
-        outfile<<"Digits,Number of Primes,";
-        outfile<<"Grand Master Primes,";
-        outfile<<"Master Primes,Special Master Primes,";
-        outfile<<"Grand Primes,Special Grand Primes,";
-        outfile<<"Flip Primes,Special Flip Primes,";
-        outfile<<"Invert Primes,";
-        outfile<<"Null Primes"<<endl;
-    }
-          
-    uint64_t max;
-
+    
     //Filter out the minimums
-    uint64_t min;
-    min = powl(2,MIN_BINARY_WIDTH-1)-1;
+    min = powl(2,_minWidth-1)-1;
     while(_prime<=min){
         _prime = it.next_prime();
     }
-    cout<<"Starting with Prime: "<<_prime<<endl;
     
+    cout<<"Starting with Prime: "<<_prime<<endl;
     printTime("Start Time: ");
-    time_t startTime;
           
-    for(int binaryWidth=MIN_BINARY_WIDTH;binaryWidth<MAX_BINARY_WIDTH;binaryWidth++){ //Cyclce through all the different buckets
+    for(int binaryWidth=_minWidth;binaryWidth<_maxWidth;binaryWidth++){ //Cyclce through all the different buckets
         max = powl(2,binaryWidth)-1; //Calculate the max bucket
         cout<<"****************************"<<endl;
         cout<<"Binary width: "<<binaryWidth<<endl;
-        if(FILE_SEARCH){
+        if(_runMode == _FILE_SEARCH){
             startTime = time(0);
-            //pTool->createBinaryFile(binaryWidth);
+            pTool->createBinaryFile(binaryWidth);
             pTool->initializeBinaryFileSearch(binaryWidth);
             pTool->setBinaryWidth(binaryWidth);
         }
 
-        bool analyze = false;
-        
-        //pTool->searchBinaryFile(191);
-        
         //Collect the data
-        while(!analyze){
-            if (_prime <= max) {
-                //Sequential or group search.
-                if(! FILE_SEARCH){
-                    _primeList.push_back(_prime);
-                    _prime = it.next_prime();
-                }
-                else{
-                    pTool->analyzeNextPrime(_prime);
-                    _prime = it.next_prime();
-                }
+        while(_prime <= max) {
+            //Sequential or group search.
+            if(_runMode == _FILE_SEARCH){
+                pTool->analyzeNextPrime(_prime);
+                _prime = it.next_prime();
             }
             else{
-                analyze = true;
+                _primeList.push_back(_prime);
+                _prime = it.next_prime();
             }
         }
 
         //Analyze the bucket data
-        string output = "";
-        if(FILE_SEARCH){
-            output = pTool->generateOutput();
+        if(_runMode == _FILE_SEARCH){
+            //Analysis is performed as primes are parsed, entire group has been pre-generated into file.
+            pTool->generateOutput();
         }
         else{
             cout<<"Count: "<<_primeList.size()<< " primes (between "<< uint64_t(powl(2,binaryWidth-1)) <<" and "<< max <<")"<<endl;
             startTime = time(0);
-            output = pTool->analyzePrimes(_primeList,binaryWidth);
-            //string output = pTool->analyzePrimes_Twins(_primeList,binaryWidth);
-            //string output = pTool->analyzePrimes_MasterSpecial(_primeList,binaryWidth);
+            pTool->analyzePrimes(_primeList,binaryWidth);
         }
-              
-        outfile<<output<<endl;
+                      
         double totalTime = difftime(time(0),startTime);
         cout<<"Total Time: "<<totalTime<<" seconds."<<endl;
-
+        
         //Clean up for next run
         _primeList.clear();
-              
     }
-    outfile.close();
     printTime("End Time: ");
     return 0;
 }
 
-int main_ramdom(){
+//Runs the primer search algorithm on randomized sets of known size (same size as equivalent prime grouping)
+int main_random(){
     int loopCnt = 0;
     while(loopCnt < 128){
         PrimerTool* pTool = new PrimerTool();
         
-         primesieve::iterator it;
-         uint64_t _prime = it.next_prime(); //Read the initial prime
-         vector<pType> _primeList;
+        //Write to file
+        string outputFileName = string(OUTPUT_DIR)+"/RandomLoop/"+to_string(loopCnt)+string(OUTPUT_FILE);
+        pTool->setupDataHeaders(outputFileName);
          
-         //Write to file
-         string outputFileName = string(OUTPUT_DIR)+"/RandomLoop/"+to_string(loopCnt)+string(OUTPUT_FILE);
-         ofstream outfile;
-         outfile.open(outputFileName);
-         
-         if(LOG_DATA_FILE){
-             outfile<<"Digits,Number of Primes,";
-             outfile<<"Grand Master Primes,";
-             outfile<<"Master Primes,Special Master Primes,";
-             outfile<<"Grand Primes,Special Grand Primes,";
-             outfile<<"Flip Primes,Special Flip Primes,";
-             outfile<<"Invert Primes,";
-             outfile<<"Null Primes"<<endl;
-         }
-         
-         uint64_t max;
-         
-         //Filter out the minimums
-         uint64_t min;
-         min = powl(2,MIN_BINARY_WIDTH-1)-1;
-         while(_prime<=min){
-             _prime = it.next_prime();
-         }
-         cout<<"Starting with Prime: "<<_prime<<endl;
+        uint64_t max;
+        uint64_t min;
+        vector<pType> _primeList;
+                
+        primesieve::iterator it;
+        uint64_t _prime = it.next_prime(); //Read the initial prime
         
-         printTime("Start Time: ");
-         time_t startTime;
+        //Filter out the minimums
+        min = powl(2,_minWidth-1)-1;
+        while(_prime<=min){
+            _prime = it.next_prime();
+        }
+        cout<<"Starting with Prime: "<<_prime<<endl;
+        
+        printTime("Start Time: ");
+        time_t startTime;
          
-         for(int binaryWidth=MIN_BINARY_WIDTH;binaryWidth<MAX_BINARY_WIDTH;binaryWidth++){ //Cyclce through all the different buckets
-             max = powl(2,binaryWidth)-1; //Calculate the max bucket
-             cout<<"****************************"<<endl;
-             cout<<"Binary width: "<<binaryWidth<<endl;
-             if(FILE_SEARCH){
-                 startTime = time(0);
-                 pTool->setBinaryWidth(binaryWidth);
-             }
-             pType primeCount = pTool->primeNumbersPerGroup(binaryWidth);
-             _primeList = pTool->createRandomInput(binaryWidth, primeCount);
+        for(int binaryWidth=_minWidth;binaryWidth<_maxWidth;binaryWidth++){ //Cyclce through all the different buckets
+            max = powl(2,binaryWidth)-1; //Calculate the max bucket
+            cout<<"****************************"<<endl;
+            cout<<"Binary width: "<<binaryWidth<<endl;
+
+            pType primeCount = pTool->primeNumbersPerGroup(binaryWidth);
+            _primeList = pTool->createRandomInput(binaryWidth, primeCount);
              
-             //Analyze
-             string output = "";
-             if(FILE_SEARCH){
-                 output = pTool->generateOutput();
-             }
-             else{
-                 cout<<"Count: "<<_primeList.size()<< " primes (between "<< uint64_t(powl(2,binaryWidth-1)) <<" and "<< max <<")"<<endl;
-                 startTime = time(0);
-                 output = pTool->analyzePrimes(_primeList,binaryWidth);
-             }
+            //Analyze
+            cout<<"Count: "<<_primeList.size()<< " primes (between "<< uint64_t(powl(2,binaryWidth-1)) <<" and "<< max <<")"<<endl;
+            startTime = time(0);
+            pTool->analyzePrimes(_primeList,binaryWidth);
+            
+            double totalTime = difftime(time(0),startTime);
+            cout<<"Total Time: "<<totalTime<<" seconds."<<endl;
              
-             outfile<<output<<endl;
-             double totalTime = difftime(time(0),startTime);
-             cout<<"Total Time: "<<totalTime<<" seconds."<<endl;
-             
-             //Clean up for next run
-             _primeList.clear();
-             
+            //Clean up for next run
+            _primeList.clear();
          }
-         outfile.close();
          printTime("End Time: ");
          loopCnt++;
     }
@@ -247,15 +169,36 @@ int main_ramdom(){
 //
 void programStart(){
     printHeader();
+    checkConfig();
     checkProgram();
     cout<<"****************************"<<endl;
 }
-void checkProgram(){
-    PrimerTool* pTool = new PrimerTool();
-    pTool->testPrimer();
-}
 void printHeader(){
     cout << "**** Welcome to Primer ****" << endl;
+}
+void checkConfig(){
+    //Min and max search
+    cout << "Running program from 2 ^ ("<< _minWidth << " to " << _maxWidth <<")"<<endl;
+    //Search Algorithm
+    string runString = "";
+    switch (_runMode) {
+        case _BASIC: runString = "Using std::find search algorithm"; break;
+        case _STANDARD:
+        case _BINARY_SEARCH: runString = "Using binary search algorithm"; break;
+        case _FILE_SEARCH: runString = "Using file storage search algorithm"; break;
+        case _RANDOM: runString = "Using random analysis algorithm"; break;
+        case _TWIN: runString = "Using twin prime slgorithm"; break;
+        case _MASTER_SPECIAL: runString = "Using master special investigation algorithm"; break;
+        case _FLIP_SPECIAL: runString = "Using file special investigation algorithm"; break;
+        default:
+            break;
+    }
+    cout << runString << endl;
+}
+void checkProgram(){
+    PrimerTool* pTool = new PrimerTool();
+    pTool->testPrimer(_maxWidth);
+    delete pTool;
 }
 void printTime(string s){
     //Print Current Time

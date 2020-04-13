@@ -12,22 +12,28 @@
 #define LOG_DATA_CONSOLE 1
 #define LOG_DATA_FILE 1
 #define LOG_DATA_FILE_VERBOSE 1
-#define LOG_DATA_FILE_VERBOSE_FULL 1
 
-#define MIN_BINARY_WIDTH 25
-#define MAX_BINARY_WIDTH 26
+#define MIN_BINARY_WIDTH 3
+#define MAX_BINARY_WIDTH 22
 
 #define OUTPUT_DIR "/Users/Jeremy/Projects/Primer/Output/"
 #define OUTPUT_FILE "PrimerOutput.txt"
 
-//Search Algorithm. Default is std::find
-#define BINARY_SEARCH 0 //Only use if we know the input will be ordered
-#define FILE_SEARCH 1
+typedef enum{
+    _BASIC,         //'basic'           std::find, used when the set is unordered
+    _STANDARD,      //'standard',       default, uses binary search
+    _BINARY_SEARCH, //'binarysearch'    requires a known ordered set, not to be used with random algorithm
+    _FILE_SEARCH,   //'filesearch'
+    _RANDOM,        //'randomsearch'
+    _TWIN,          //'twinsearch'
+    _MASTER_SPECIAL,//'mastersearch'
+    _FLIP_SPECIAL,  //'flipsearch'
+}runtime_exe;
 
-
+//Must be a multiple of 2^n
 //#define FILE_BUFFER_SEARCH_SIZE 4
-#define FILE_BUFFER_SEARCH_SIZE 32768
+//#define FILE_BUFFER_SEARCH_SIZE 32768
 //#define FILE_BUFFER_SEARCH_SIZE 131072
-//#define FILE_BUFFER_SEARCH_SIZE 542288
+#define FILE_BUFFER_SEARCH_SIZE 542288
 
 #endif /* Config_h */

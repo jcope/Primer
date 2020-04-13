@@ -10,6 +10,7 @@
 #define PrimerTool_hpp
 
 #include "Config.h"
+#include <string>
 #include <vector>
 #include <set>
 
@@ -36,25 +37,21 @@ class PrimerTool   {
     
 public:
     PrimerTool();
+    PrimerTool(runtime_exe mode);
     ~PrimerTool();
-    void testPrimer();
+    void testPrimer(int maxBinaryWidth);
     
-    
+    void setupDataHeaders(string filename);
     void setBinaryWidth(int width);
-    void analyzeNextPrime(pType prime);
     string generateOutput();
-    bool searchBinaryFile(pType number);
-    void createBinaryFile(int width);
-    bool searchBinaryFile2(int width, pType number);
-    void createBinaryFile2(int width);
-    void initializeBinaryFileSearch(int width);
-    void useSearchCache(pType searchNumber,
-                        pType* start, pType* middle, pType* end,
-                        long* startIndex, long* middleIndex, long* endIndex);
-    
     
     //Main utility function
     string analyzePrimes(vector<pType>primes, int width);
+    
+    void createBinaryFile(int width);
+    void initializeBinaryFileSearch(int width);
+    void testFile(int width);
+    void analyzeNextPrime(pType prime);
     
     //Twin Primes
     string analyzePrimes_Twins(vector<pType>primes, int width);
@@ -66,66 +63,65 @@ public:
     pType primeNumbersPerGroup(int width);
     //Verify MasterSpecial Conjecture
     string analyzePrimes_MasterSpecial(vector<pType>primes, int width);
-    void readBinaryFile();
     
-private:                      // begin private section
+private:
+    runtime_exe m_runMode;
     int m_primeWidth;
     vector<pType> m_primeList;
+    string m_outputFilename;
     
     set <pType, less <pType> > m_grandMasterPrimes; //Flip, Inverse, and FlipInverse unique primes
     set <pType, less <pType> > m_masterPrimes; //Flip and Inverse are unique
     set <pType, less <pType> > m_specialMasterPrimes; //Flip and inverse are prime, but equal
-    
     set <pType, less <pType> > m_grandPrimes; //Flip/Invert
     set <pType, less <pType> > m_specialGrandPrimes; //Flip/Invert; Flip == Invert
-    
     set <pType, less <pType> > m_flipPrimes; //Flip
     set <pType, less <pType> > m_specialFlipPrimes; //Flip == self
-    
     set <pType, less <pType> > m_invertPrimes; //Invert
-    
     set <pType, less <pType> > m_nullPrimes; //None of the above
     
-    FILE* m_fp;
-    pType m_BSF_values[FILE_BUFFER_SEARCH_SIZE];
-    long m_BSF_indexes[FILE_BUFFER_SEARCH_SIZE];
-    
+    //Core utility functions
     pType invert(pType number, int width);
     pType flip(pType number, int width);
     pType invertFlip(pType number, int width);
-    int common_bits(pType a, pType b);
-    int countBits(pType a);
+    primeType calculatePrimeType(pType prime, pType* sPrime);
     
     void initBuckets();
     bool containsPrime(pType prime);
-   
-    void analyzePrimeNumberList();
-    string analyzeFlipSpecial();
-    string analyzeMasterSpecial();
-    string analyzeTwins();
     
-    primeType calculatePrimeType(pType prime, pType* sPrime);
+    void analyzePrimeNumberList();
+    
+    //File search utilties
+    FILE* m_fp;
+    pType m_BSF_values[FILE_BUFFER_SEARCH_SIZE];
+    long m_BSF_indexes[FILE_BUFFER_SEARCH_SIZE];
+    bool searchBinaryFile(pType number);
+    void useSearchCache(pType searchNumber,
+                       pType* start, pType* middle, pType* end,
+                       long* startIndex, long* middleIndex, long* endIndex);
+        
+    //Twin investigation
+    string analyzeTwins();
+    int common_bits(pType a, pType b);
+    int countBits(pType a);
     bool isTwinPrime(pType prime1, pType prime2, int width);
     
-    void verifyCount();
+    //Other investigations
+    string analyzeFlipSpecial();
+    string analyzeMasterSpecial();
     
+    void verifyCount();
     string outputResults();
     string setDescription(set <pType, less <pType> > primeSet);
     
     void log(string s);
     void assertLog(bool test,string s);
+    
     //Verification
-    void verifyMachine();
-    void verifyConfig();
+    void verifyMachine(int maxBinaryWidth);
     //Tests
     void runDataTest();
     void runPerformaceTest();
-    
-
 };
-
-
-
-
 
 #endif /* Primer_hpp */

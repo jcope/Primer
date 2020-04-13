@@ -18,12 +18,14 @@
 #include <cstdlib>      // std::rand, std::srand
 #include <primesieve.hpp>
 
-PrimerTool::PrimerTool(){
+PrimerTool::PrimerTool(): PrimerTool(_STANDARD){}
 
-    srand ( unsigned ( time(0) ) );
-}    
 PrimerTool::~PrimerTool(){
     
+}
+PrimerTool::PrimerTool(runtime_exe mode){
+    srand ( unsigned ( time(0) ) );
+    m_runMode = mode;
 }
 void PrimerTool::setBinaryWidth(int width){
     m_primeWidth = width;
@@ -49,12 +51,40 @@ string PrimerTool::analyzePrimes(vector<pType>primes, int width){
     m_primeWidth = width;
     initBuckets();
     
-    analyzePrimeNumberList();
-
-    verifyCount(); //Will Assert if false
-    string result = outputResults();
-    
+    string result = "";
+    if(m_runMode == _TWIN){
+        result = analyzeTwins();
+    }
+    else if(m_runMode == _MASTER_SPECIAL){
+        result = analyzeMasterSpecial();
+    }
+    else if(m_runMode == _FLIP_SPECIAL){
+        result = analyzeFlipSpecial();
+    }
+    else{ //Default, standard analysis
+        analyzePrimeNumberList();
+        verifyCount(); //Will Assert if false
+        result = outputResults();
+    }
     return result;
+}
+void PrimerTool::setupDataHeaders(string filename){
+    m_outputFilename = filename;
+    if(LOG_DATA_FILE){
+        //Write to file
+        ofstream outfile;
+        outfile.open(m_outputFilename);
+    
+        outfile<<"Digits,Primes,";
+        outfile<<"Grand Master,";
+        outfile<<"Master,*Master,";
+        outfile<<"Grand,*Grand,";
+        outfile<<"Flip,*Flip,";
+        outfile<<"Invert,";
+        outfile<<"Null"<<endl;
+        
+        outfile.close();
+    }
 }
 string PrimerTool::outputResults(){
     if(LOG_DATA_CONSOLE){
@@ -148,6 +178,14 @@ string PrimerTool::outputResults(){
     
     str+=","+to_string(m_nullPrimes.size());
 
+    if(LOG_DATA_FILE){
+        //Write to file
+        ofstream outfile;
+        outfile.open(m_outputFilename);
+        outfile<<str;
+        outfile.close();
+    }
+    
     return str;
 }
 string PrimerTool::setDescription(set <pType, less <pType> > primeSet){
@@ -181,35 +219,21 @@ void PrimerTool::analyzePrimeNumberList(){
 }
 primeType PrimerTool::calculatePrimeType(pType prime, pType* sPrime){
     primeType retPrimeType = unknownPRIME;
-    pType retStoragePrime;
+    pType retStoragePrime = 0;
     
     pType primeInvert = invert(prime, m_primeWidth);
     pType primeFlip = flip(prime, m_primeWidth);
     pType primeInvertFlip = invertFlip(prime, m_primeWidth);
     
-    
     bool hasInvert = containsPrime(primeInvert);
     bool hasFlip = containsPrime(primeFlip);
     bool hasInvertFlip = containsPrime(primeInvertFlip);
-    
-    
-    
     
     //Count the number of primes in the set
     int primeSetCnt = 1; //Start with atleast 1 prime (initial entry)
     if(hasInvert)primeSetCnt++;
     if(hasFlip)primeSetCnt++;
     if(hasInvertFlip)primeSetCnt++;
-    
-    //TODO: Add only the lowest value
-    /*
-     pType basePrime = 0;
-     basePrime = [self calculateBasePrime:prime
-     invertPrime:(hasInvert?primeInvert:0)
-     flipPrime:(hasFlip?primeInvertFlip:0)
-     invertFlipPrime:(hasInvertFlip?primeInvertFlip:0)];
-     basePrime = prime;
-     */
     
     //Categorize the prime
     if(primeSetCnt == 1){
@@ -316,13 +340,13 @@ void PrimerTool::assertLog(bool test,string s){
 bool PrimerTool::containsPrime(pType prime){
     bool foundPrime = false;
     
-    if(BINARY_SEARCH){
+    if(m_runMode == _BINARY_SEARCH || m_runMode == _STANDARD){
         foundPrime = std::binary_search(m_primeList.begin(),m_primeList.end(),prime);
     }
-    else if(FILE_SEARCH){
+    else if(m_runMode == _FILE_SEARCH){
         foundPrime = searchBinaryFile(prime);
     }
-    else{
+    else{ //Can be explicitly used by using _BASIC runtime mode. Also used by _RANDOM during un-ordered analysis
         std::vector<pType>::iterator it;
         it = std::find(m_primeList.begin(),m_primeList.end(),prime);
         if(it != m_primeList.end()){
@@ -347,35 +371,16 @@ void PrimerTool::verifyCount(){
     assertLog(analyzedCnt == m_primeList.size(),"Mismatch in number of primes analyzed versus counted!!");
 }
 #pragma mark - Machine Diagnosis
-void PrimerTool::verifyMachine(){
+void PrimerTool::verifyMachine(int maxBinaryWidth){
     pType maxNumber = ULLONG_MAX;
     cout<<"Upper Program Limit: "<<maxNumber<<endl;
-    pType maxSearch = powl(2,MAX_BINARY_WIDTH);
+    pType maxSearch = powl(2,maxBinaryWidth);
     assertLog(maxSearch<maxNumber,"Machine cannot search for numbers this big");
 }
 #pragma mark - Tests
-void PrimerTool::testPrimer(){
-    verifyConfig();
-    verifyMachine();
+void PrimerTool::testPrimer(int maxBinaryWidth){
+    verifyMachine(maxBinaryWidth);
     runDataTest();
-}
-void PrimerTool::verifyConfig(){
-    //Min and max search
-    cout << "Running program from 2 ^ ("<< MIN_BINARY_WIDTH<< " to " << MAX_BINARY_WIDTH<<")"<<endl;
-    //Search Algorithm
-    if(BINARY_SEARCH && FILE_SEARCH){
-        cout << "Only one file search permitted!" << endl;
-        exit(0);
-    }
-    else if(FILE_SEARCH){
-        cout<< "Using File Search Algorithm" <<endl;
-    }
-    else if(BINARY_SEARCH){
-        cout<< "Using Binary Search Algorithm" <<endl;
-    }
-    else{
-        cout<< "Using std::find Search Algorithm" <<endl;
-    }
 }
 #pragma mark Data Verification
 void PrimerTool::runDataTest(){
@@ -495,16 +500,6 @@ pType PrimerTool::primeNumbersPerGroup(int width){
 }
 
 #pragma mark - Flip(*) investigation
-string PrimerTool::analyzePrimes_FlipSpecial(vector<pType>primes, int width){
-    //Store the primes in data controlled storage
-    m_primeList = primes;
-    m_primeWidth = width;
-    initBuckets();
-    
-    string result = analyzeFlipSpecial();
-    
-    return result;
-}
 string PrimerTool::analyzeFlipSpecial(){
     string result;
     int count = 0;
@@ -527,16 +522,6 @@ string PrimerTool::analyzeFlipSpecial(){
     return result;
 }
 #pragma mark - Master(*) investigation
-string PrimerTool::analyzePrimes_MasterSpecial(vector<pType>primes, int width){
-    //Store the primes in data controlled storage
-    m_primeList = primes;
-    m_primeWidth = width;
-    initBuckets();
-    
-    string result = analyzeMasterSpecial();
-    
-    return result;
-}
 string PrimerTool::analyzeMasterSpecial(){
     string result;
 
@@ -583,16 +568,6 @@ string PrimerTool::analyzeMasterSpecial(){
     return result;
 }
 #pragma mark - Twin Prime investigation
-string PrimerTool::analyzePrimes_Twins(vector<pType>primes, int width){
-    //Store the primes in data controlled storage
-    m_primeList = primes;
-    m_primeWidth = width;
-    initBuckets();
-    
-    string result = analyzeTwins();
-    
-    return result;
-}
 string PrimerTool::analyzeTwins(){
     string result;
     int count = 0;
@@ -628,8 +603,6 @@ void PrimerTool::createBinaryFile(int width){
     primesieve::iterator it;
     
     string outputFileName = string(OUTPUT_DIR)+"LargePrimeFile"+to_string(width)+".bin";
-    ofstream outfile;
-    outfile.open(outputFileName,ios::binary | ios::out);
     pType number=0;
     
     FILE* fp = fopen(outputFileName.c_str(), "wb");
@@ -637,14 +610,13 @@ void PrimerTool::createBinaryFile(int width){
         number = it.next_prime();
     }
     while(number<powl(2,width)){
-        fwrite(&number, sizeof(pType), 1, fp);
+        fwrite(&number, 1, sizeof(pType), fp);
         number = it.next_prime();
     }
-    outfile.close();
+    fclose(fp);
 }
 //Search cache eleminates the first x steps of binary file lookup, having pre-populated the values in cache. Minimizing file i/o.
 void PrimerTool::initializeBinaryFileSearch(int width){
-    //
     string outputFileName = string(OUTPUT_DIR)+"LargePrimeFile"+to_string(width)+".bin";
     
     m_fp = fopen(outputFileName.c_str(), "rb");
@@ -680,6 +652,35 @@ void PrimerTool::initializeBinaryFileSearch(int width){
     m_BSF_indexes[FILE_BUFFER_SEARCH_SIZE-1] = endIndex;
     
 }
+void PrimerTool::testFile(int width){
+    
+    string outputFileName = string(OUTPUT_DIR)+"LargePrimeFile"+to_string(width)+".bin";
+    
+    
+    
+    
+    FILE* fp = fopen(outputFileName.c_str(), "rb");
+    long pos;
+    long endIndex;
+    pType buffer[1];
+    int bufferSize = sizeof(pType);
+    
+    //End index
+    fseek(fp, 0, SEEK_END);
+    pos = ftell(fp);
+    cout<<"Filesize: "<<pos<<" size."<<endl;
+    endIndex = pos - bufferSize;
+    int count=0;
+    pos = 0;
+    while(pos<=endIndex){
+        fseek(fp, pos, SEEK_SET); // seek to begining
+        fread(buffer, 1, sizeof(pType), fp);
+        pos+=bufferSize;
+        count++;
+    }
+    cout<<"There were "<<count<<" primes."<<endl;
+    fclose(fp);
+}
 void PrimerTool::useSearchCache(pType searchNumber,
                                 pType* start, pType* middle, pType* end,
                                 long* startIndex, long* middleIndex, long* endIndex){
@@ -710,28 +711,6 @@ void PrimerTool::useSearchCache(pType searchNumber,
         }
     }
 }
-void PrimerTool::readBinaryFile(){
-    string outputFileName = string(OUTPUT_DIR)+"LargePrimeFile"+to_string(m_primeWidth)+".bin";
-    pType buffer[1];
-    pType mask = powl(2,m_primeWidth) - 1;
-    int bufferSize = sizeof(pType);
-    pType _prime = 0;
-    m_fp = fopen(outputFileName.c_str(), "rb");
-    assert(m_fp);
-    
-    fseek(m_fp, 0, SEEK_END);
-    long pos = ftell(m_fp);
-    long endIndex = pos - bufferSize;
-    
-    long seekIndex = 0;
-    while(seekIndex<=endIndex){
-        fseek(m_fp, seekIndex, SEEK_SET); // seek to begining
-        fread(buffer, 1, sizeof(pType), m_fp);
-        _prime = buffer[0] & mask;
-        cout<<_prime<<endl;
-        seekIndex += bufferSize;
-    }
-}
 bool PrimerTool::searchBinaryFile(pType searchNumber){
     assert(m_fp);
     
@@ -743,7 +722,6 @@ bool PrimerTool::searchBinaryFile(pType searchNumber){
     long middleIndex = 0;
     long endIndex = 0;
     
-
     useSearchCache(searchNumber, &start, &middle, &end, &startIndex, &middleIndex, &endIndex);
  
     pType buffer[1];
@@ -791,120 +769,5 @@ bool PrimerTool::searchBinaryFile(pType searchNumber){
             }
         }
     }
-    if(false){
-               cout<<"The number "<<searchNumber<<" was ";
-               if(!found){ cout<<"NOT ";}
-               cout<<"found."<<endl;
-           }
-    return found;
-}
-
-#pragma mark - Binary File Storage/Search HELP
-
-#define BINARY_WIDTH 36
-void PrimerTool::createBinaryFile2(int width){
-    primesieve::iterator it;
-    
-    string outputFileName = string(OUTPUT_DIR)+"LargePrimeFile.bin";
-    ofstream outfile;
-    outfile.open(outputFileName,ios::binary | ios::out);
-    pType number=0;
-    
-    FILE* fp = fopen(outputFileName.c_str(), "wb");
-    while(number<powl(2,width-1)){
-        number = it.next_prime();
-    }
-    while(number<powl(2,width)){
-        fwrite(&number, 1, sizeof(pType), fp);
-        number = it.next_prime();
-    }
-    outfile.close();
-}
-
-bool PrimerTool::searchBinaryFile2(int width,pType searchNumber){
-    string outputFileName = string(OUTPUT_DIR)+"LargePrimeFile34.bin";
-    
-    FILE* fp = fopen(outputFileName.c_str(), "rb");
-    assert(fp);
-    
-    pType start = 0;
-    pType middle = 0;
-    pType end = 0;
-    
-    long startIndex = 0;
-    long middleIndex = 0;
-    long endIndex = 0;
-    
-    int bufferSize = sizeof(pType);
-    
-    pType buffer[1];
-    pType mask = powl(2,width) - 1;
-    //TODO: Not sure the mask is necessary
-    long pos;
-    
-    fseek(fp, startIndex, SEEK_SET); // seek to begining
-    fread(buffer, 1, sizeof(pType), fp);
-    start = buffer[0] & mask;
-    
-    //Seek to middle
-    fseek(fp, 0, SEEK_END);
-    pos = ftell(fp);
-    long lines = pos / (bufferSize); //1 for the \n
-    endIndex = pos - bufferSize;
-    lines /= 2;
-    middleIndex = lines*bufferSize;
-    
-    // Position stream at the middle.
-    fseek(fp, middleIndex, SEEK_SET);
-    fread(buffer, 1, sizeof(pType), fp);
-    middle = buffer[0] & mask;
-    
-    //Seek to end
-    fseek(fp,endIndex,SEEK_SET);
-    fread(buffer, 1, sizeof(pType), fp);
-    end = buffer[0] & mask;
-    
-    bool found = false;
-    bool stop = false;
-    while (!found && !stop){
-        
-        if(searchNumber == start || searchNumber == middle || searchNumber == end){
-            found = true;
-        }
-        else {
-            if(searchNumber > middle){
-                startIndex = middleIndex;
-                endIndex = endIndex;
-            }
-            else{
-                startIndex = startIndex;
-                endIndex = middleIndex;
-            }
-            //Recalculate the middle index
-            long tempindex = ((endIndex+bufferSize)-startIndex);
-            tempindex = tempindex/(bufferSize);
-            tempindex = tempindex/2;
-            tempindex = tempindex*(bufferSize);
-            middleIndex = startIndex+tempindex;
-            
-            //Read Values
-            fseek(fp, startIndex, SEEK_SET); // seek to begining
-            fread(buffer, 1, sizeof(pType), fp);
-            start = buffer[0] & mask;
-            
-            fseek(fp, middleIndex, SEEK_SET); // seek to middle
-            fread(buffer, 1, sizeof(pType), fp);
-            middle = buffer[0] & mask;
-            
-            fseek(fp, endIndex, SEEK_SET); // seek to end
-            fread(buffer, 1, sizeof(pType), fp);
-            end = buffer[0] & mask;
-            
-            if(middle == start || middle == end || searchNumber < start || searchNumber > end){
-                stop = true;
-            }
-        }
-    }
-    fclose(fp);
     return found;
 }
