@@ -35,7 +35,7 @@ void printHeader();
 int main_primer();
 int main_random();
 
-runtime_exe _runMode = _STANDARD;
+runtime_exe _runMode = _FILE_SEARCH;
 int _minWidth = MIN_BINARY_WIDTH;
 int _maxWidth = MAX_BINARY_WIDTH;
 
@@ -50,7 +50,7 @@ int main(int argc, const char * argv[]) {
 }
 
 int main_primer(){
-    PrimerTool* pTool = new PrimerTool();
+    PrimerTool* pTool = new PrimerTool(_runMode);
     pTool->setupDataHeaders(string(OUTPUT_DIR)+string(OUTPUT_FILE));
     
     uint64_t min;
@@ -96,7 +96,7 @@ int main_primer(){
 
         //Analyze the bucket data
         if(_runMode == _FILE_SEARCH){
-            //Analysis is performed as primes are parsed, entire group has been pre-generated into file.
+            //Analysis is already completed- performed as primes are parsed, entire group has been pre-generated into file.
             pTool->generateOutput();
         }
         else{
@@ -119,7 +119,7 @@ int main_primer(){
 int main_random(){
     int loopCnt = 0;
     while(loopCnt < 128){
-        PrimerTool* pTool = new PrimerTool();
+        PrimerTool* pTool = new PrimerTool(_runMode);
         
         //Write to file
         string outputFileName = string(OUTPUT_DIR)+"/RandomLoop/"+to_string(loopCnt)+string(OUTPUT_FILE);

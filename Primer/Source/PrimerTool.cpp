@@ -29,6 +29,7 @@ PrimerTool::PrimerTool(runtime_exe mode){
 }
 void PrimerTool::setBinaryWidth(int width){
     m_primeWidth = width;
+    m_totalAnalyzedCnt = 0;
     initBuckets();
 }
 void PrimerTool::initBuckets(){
@@ -43,6 +44,7 @@ void PrimerTool::initBuckets(){
     m_nullPrimes.clear();
 }
 string PrimerTool::generateOutput(){
+    verifyCount();
     return outputResults();
 }
 string PrimerTool::analyzePrimes(vector<pType>primes, int width){
@@ -94,7 +96,7 @@ string PrimerTool::outputResults(){
         str+="----------------------------------------\n";
         str+="Digits: " + to_string(m_primeWidth) + "\n";
         
-        str+="Total Primes: "+ to_string(m_primeList.size());
+        str+="Total Primes: "+ to_string(getTotalAnalyzedCount());
         str+="\n--------------------\n";
         str+="Grand Master Primes: " + to_string(m_grandMasterPrimes.size());
         str+="\nMaster Primes: " + to_string(m_masterPrimes.size());
@@ -119,7 +121,7 @@ string PrimerTool::outputResults(){
         //Generate and write all outputs
         str += "Digit Width: "+to_string(m_primeWidth);
         str += "\nMax Prime: "+to_string(powl(2, m_primeWidth)-1);
-        str += "\nTotal Primes: "+to_string(m_primeList.size());
+        str += "\nTotal Primes: "+to_string(getTotalAnalyzedCount());
         str += dataBreak;
         //Grand/Master/Special
         str += "\nGrand Master Primes: "+setDescription(m_grandMasterPrimes);
@@ -161,7 +163,7 @@ string PrimerTool::outputResults(){
     //Null Primes
     str+=to_string(m_primeWidth);
     
-    str+=","+to_string(m_primeList.size());
+    str+=","+to_string(getTotalAnalyzedCount());
     
     str+=","+to_string(m_grandMasterPrimes.size());
     
@@ -188,6 +190,16 @@ string PrimerTool::outputResults(){
     
     return str;
 }
+unsigned long PrimerTool::getTotalAnalyzedCount(){
+    unsigned long count = 0;
+    if(m_runMode == _FILE_SEARCH){
+        count = m_totalAnalyzedCnt;
+    }
+    else{
+        count = m_primeList.size();
+    }
+    return count;
+}
 string PrimerTool::setDescription(set <pType, less <pType> > primeSet){
     string retStr = "";
     set<pType>::iterator it;
@@ -211,6 +223,8 @@ void PrimerTool::analyzeNextPrime(pType prime){
     else if(pType == invertPRIME) m_invertPrimes.insert(storagePrime);
     else if(pType == nullPRIME) m_nullPrimes.insert(storagePrime);
     else assertLog(false,"Unknown Type");
+    
+    if(m_runMode == _FILE_SEARCH) m_totalAnalyzedCnt++;
 }
 void PrimerTool::analyzePrimeNumberList(){
     for_each(m_primeList.begin(), m_primeList.end(), [this](pType& prime){
@@ -368,7 +382,7 @@ void PrimerTool::verifyCount(){
     m_invertPrimes.size()*2+\
     m_nullPrimes.size();
     
-    assertLog(analyzedCnt == m_primeList.size(),"Mismatch in number of primes analyzed versus counted!!");
+    assertLog(analyzedCnt == getTotalAnalyzedCount(),"Mismatch in number of primes analyzed versus counted!!");
 }
 #pragma mark - Machine Diagnosis
 void PrimerTool::verifyMachine(int maxBinaryWidth){
@@ -617,16 +631,18 @@ void PrimerTool::createBinaryFile(int width){
 }
 //Search cache eleminates the first x steps of binary file lookup, having pre-populated the values in cache. Minimizing file i/o.
 void PrimerTool::initializeBinaryFileSearch(int width){
-    string outputFileName = string(OUTPUT_DIR)+"LargePrimeFile"+to_string(width)+".bin";
+    setBinaryWidth(width);
     
-    m_fp = fopen(outputFileName.c_str(), "rb");
+    string inputFileName = string(OUTPUT_DIR)+"LargePrimeFile"+to_string(m_primeWidth)+".bin";
+    
+    m_fp = fopen(inputFileName.c_str(), "rb");
     assert(m_fp);
     
     long endIndex = 0;
     long pos;
     pType buffer[1];
     int bufferSize = sizeof(pType);
-    pType mask = powl(2,width) - 1;
+    pType mask = powl(2,m_primeWidth) - 1;
     
     //Seek to middle
     fseek(m_fp, 0, SEEK_END);
@@ -636,7 +652,6 @@ void PrimerTool::initializeBinaryFileSearch(int width){
     long stepSize = endIndex/(FILE_BUFFER_SEARCH_SIZE-1);
     //Ensure step size is a multipe of bufferSize
     stepSize = stepSize - stepSize%bufferSize;
-    
     
     for(int count = 0;count < FILE_BUFFER_SEARCH_SIZE-1; count++){
         long fileIndex = stepSize*count;
@@ -651,13 +666,10 @@ void PrimerTool::initializeBinaryFileSearch(int width){
     m_BSF_values[FILE_BUFFER_SEARCH_SIZE-1] = buffer[0] & mask;
     m_BSF_indexes[FILE_BUFFER_SEARCH_SIZE-1] = endIndex;
     
+    //Keep the file reference open so we don't open/close too frequently when searching the file
 }
 void PrimerTool::testFile(int width){
-    
     string outputFileName = string(OUTPUT_DIR)+"LargePrimeFile"+to_string(width)+".bin";
-    
-    
-    
     
     FILE* fp = fopen(outputFileName.c_str(), "rb");
     long pos;

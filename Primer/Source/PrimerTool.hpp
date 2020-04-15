@@ -90,8 +90,10 @@ private:
     bool containsPrime(pType prime);
     
     void analyzePrimeNumberList();
+    unsigned long getTotalAnalyzedCount();
     
     //File search utilties
+    unsigned long m_totalAnalyzedCnt;
     FILE* m_fp;
     pType m_BSF_values[FILE_BUFFER_SEARCH_SIZE];
     long m_BSF_indexes[FILE_BUFFER_SEARCH_SIZE];
