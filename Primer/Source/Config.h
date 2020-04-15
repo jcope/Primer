@@ -14,16 +14,19 @@
 #define LOG_DATA_FILE_VERBOSE 1
 
 #define MIN_BINARY_WIDTH 3
-#define MAX_BINARY_WIDTH 8
+#define MAX_BINARY_WIDTH 16
 
 #define OUTPUT_DIR "/Users/Jeremy/Projects/Primer/Output/"
 #define OUTPUT_FILE "PrimerOutput.txt"
+
+#define NUM_RANDOM_TRIALS 128
 
 typedef enum{
     _BASIC,         //'basic'           std::find, used when the set is unordered
     _STANDARD,      //'standard',       default, uses binary search
     _BINARY_SEARCH, //'binarysearch'    requires a known ordered set, not to be used with random algorithm
-    _FILE_SEARCH,   //'filesearch'
+    _FILE_SEARCH,   //'filesearch'      best used when binary width > 32 , ie very large data sets
+    //The following are used to supplement the initial research
     _RANDOM,        //'randomsearch'
     _TWIN,          //'twinsearch'
     _MASTER_SPECIAL,//'mastersearch'

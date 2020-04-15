@@ -25,12 +25,12 @@
 #import "PrimerTool.hpp"
 
 using namespace std;
-void printTime(string s);
 
 void programStart();
 void checkConfig();
 void checkProgram();
 void printHeader();
+void printTime(string s);
 
 int main_primer();
 int main_random();
@@ -58,8 +58,8 @@ int main_primer(){
     uint64_t _prime = it.next_prime(); //Read the initial prime
     
     //Filter out the minimums
-    uint64_t min = powl(2,_minWidth-1)-1;
-    while(_prime<=min){
+    uint64_t min = powl(2,_minWidth-1); //Minus 1 to include the min width group
+    while(_prime<min){
         _prime = it.next_prime();
     }
     cout<<"Starting with Prime: "<<_prime<<endl;
@@ -118,7 +118,7 @@ int main_primer(){
 //Runs the primer search algorithm on randomized sets of known size (same size as equivalent prime grouping)
 int main_random(){
     int loopCnt = 0;
-    while(loopCnt < 128){
+    while(loopCnt < NUM_RANDOM_TRIALS){
         PrimerTool* pTool = new PrimerTool(_runMode);
         
         //Write to file
@@ -130,8 +130,8 @@ int main_random(){
         uint64_t _prime = it.next_prime(); //Read the initial prime
         
         //Filter out the minimums
-        uint64_t min = powl(2,_minWidth-1)-1;
-        while(_prime<=min){
+        uint64_t min = powl(2,_minWidth-1); //Minus 1 to include the min width group
+        while(_prime<min){
             _prime = it.next_prime();
         }
         cout<<"Starting with Prime: "<<_prime<<endl;
@@ -150,6 +150,7 @@ int main_random(){
             startTime = time(0);
             pTool->analyzePrimes(_primeList,binaryWidth);
             
+            //Calculate and display run time
             double totalTime = difftime(time(0),startTime);
             cout<<"Total Time: "<<totalTime<<" seconds."<<endl;
              
@@ -196,13 +197,11 @@ void checkProgram(){
     delete pTool;
 }
 void printTime(string s){
-    //Print Current Time
-    time_t     now = time(0);
-    struct tm  tstruct;
-    char       buf[80];
+    //Append and log the current time to the input string
+    time_t now = time(0);
+    struct tm tstruct;
+    char buf[80];
     tstruct = *localtime(&now);
-    // Visit http://en.cppreference.com/w/cpp/chrono/c/strftime
-    // for more information about date/time format
     strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
     cout << s << buf << endl;
 }

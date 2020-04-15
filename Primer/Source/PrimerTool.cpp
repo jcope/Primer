@@ -43,10 +43,6 @@ void PrimerTool::initBuckets(){
     m_invertPrimes.clear();
     m_nullPrimes.clear();
 }
-string PrimerTool::generateOutput(){
-    verifyCount();
-    return outputResults();
-}
 string PrimerTool::analyzePrimes(vector<pType>primes, int width){
     //Store the primes in data controlled storage
     m_primeList = primes;
@@ -69,131 +65,6 @@ string PrimerTool::analyzePrimes(vector<pType>primes, int width){
         result = outputResults();
     }
     return result;
-}
-void PrimerTool::setupDataHeaders(string filename){
-    m_outputFilename = filename;
-    if(LOG_DATA_FILE){
-        //Write to file
-        ofstream outfile;
-        outfile.open(m_outputFilename);
-    
-        outfile<<"Digits,Primes,";
-        outfile<<"Grand Master,";
-        outfile<<"Master,*Master,";
-        outfile<<"Grand,*Grand,";
-        outfile<<"Flip,*Flip,";
-        outfile<<"Invert,";
-        outfile<<"Null"<<endl;
-        
-        outfile.close();
-    }
-}
-void PrimerTool::logDataHeaders(int binaryWidth){
-    uint64_t min = powl(2,binaryWidth-1);
-    uint64_t max = powl(2,binaryWidth)-1; //Calculate the max bucket
-    cout<<"****************************************"<<endl;
-    cout<<"Binary width: "<<binaryWidth<<endl;
-    cout<<"Analyzing from: "<<min<<" to "<<max<<endl;
-    cout<<"Size: "<<max-min<<" numbers"<<endl;
-}
-string PrimerTool::outputResults(){
-    if(LOG_DATA_CONSOLE){
-        string str;
-        str.reserve(100);
-        //Print out the sumsx        
-        str+="Total Primes: "+ to_string(getTotalAnalyzedCount());
-        str+="\n--------------------\n";
-        str+="Grand Master Primes: " + to_string(m_grandMasterPrimes.size());
-        str+="\nMaster Primes: " + to_string(m_masterPrimes.size());
-        str+="\nSpecial Master Primes: " + to_string(m_specialMasterPrimes.size());
-        str+="\nGrand Primes: " + to_string(m_grandPrimes.size());
-        str+="\nSpeical Grand Primes: " + to_string(m_specialGrandPrimes.size());
-        str+="\nFlip Primes: " + to_string(m_flipPrimes.size());
-        str+="\nSpecial Flip Primes: " + to_string(m_specialFlipPrimes.size());
-        str+="\nInvert Primes: " + to_string(m_invertPrimes.size());
-        str+="\nNull Primes: " + to_string(m_nullPrimes.size());
-        str+="\n----------------------------------------";
-        log(str);
-    }
-    
-    if(LOG_DATA_FILE_VERBOSE){
-        string str;
-        str.reserve(300);
-        
-        string fileName = string(OUTPUT_DIR)+"/"+to_string(m_primeWidth)+"_"+string(OUTPUT_FILE);
-        string dataBreak = "\n----------------------";
-        
-        //Generate and write all outputs
-        str += "Digit Width: "+to_string(m_primeWidth);
-        str += "\nMax Prime: "+to_string(powl(2, m_primeWidth)-1);
-        str += "\nTotal Primes: "+to_string(getTotalAnalyzedCount());
-        str += dataBreak;
-        //Grand/Master/Special
-        str += "\nGrand Master Primes: "+setDescription(m_grandMasterPrimes);
-        str += dataBreak;
-        str += "\nMaster Primes: "+setDescription(m_masterPrimes);
-        str += "\nSpecial Master Primes: %@"+setDescription(m_specialMasterPrimes);
-        str += dataBreak;
-        str += "\nGrand Primes: %@"+setDescription(m_grandPrimes);
-        str += "\nSpecial Grand Primes: %@"+setDescription(m_specialGrandPrimes);
-        str += dataBreak;
-        //Flip
-        str += "\nFlip Primes: %@"+setDescription(m_flipPrimes);
-        str += "\nSpecial Flip Primes: %@"+setDescription(m_specialFlipPrimes);
-        str += dataBreak;
-        //Invert
-        str += "\nInvert Primes: %@"+setDescription(m_invertPrimes);
-        str += dataBreak;
-        //Null Primes
-        str += "\nNull Primes: %@"+setDescription(m_nullPrimes);
-        
-        //Write to file
-        ofstream outfile;
-        outfile.open(fileName);
-        outfile<<str;
-        outfile.close();
-    }
-    
-    
-    //Create the output string
-    string str;
-    str.reserve(300);
-    
-    //Digits,Number of Primes,
-    //Grand Master Primes,
-    //Master Primes, Special Master Primes,
-    //Grand Primes, Special Grand Primes,
-    //Flip Primes, Special Flip Primes,
-    //Invert Primes,
-    //Null Primes
-    str+=to_string(m_primeWidth);
-    
-    str+=","+to_string(getTotalAnalyzedCount());
-    
-    str+=","+to_string(m_grandMasterPrimes.size());
-    
-    str+=","+to_string(m_masterPrimes.size());
-    str+=","+to_string(m_specialMasterPrimes.size());
-    
-    str+=","+to_string(m_grandPrimes.size());
-    str+=","+to_string(m_specialGrandPrimes.size());
-    
-    str+=","+to_string(m_flipPrimes.size());
-    str+=","+to_string(m_specialFlipPrimes.size());
-    
-    str+=","+to_string(m_invertPrimes.size());
-    
-    str+=","+to_string(m_nullPrimes.size());
-
-    if(LOG_DATA_FILE){
-        //Write to file
-        ofstream outfile;
-        outfile.open(m_outputFilename);
-        outfile<<str;
-        outfile.close();
-    }
-    
-    return str;
 }
 unsigned long PrimerTool::getTotalAnalyzedCount(){
     unsigned long count = 0;
@@ -346,16 +217,7 @@ primeType PrimerTool::calculatePrimeType(pType prime, pType* sPrime){
     *sPrime = retStoragePrime;
     return retPrimeType;
 }
-void PrimerTool::log(string s){
-    cout<<s<<endl;
-}
-void PrimerTool::assertLog(bool test,string s){
-    if(!test){
-        cout<<s<<endl;
-        cout<<"Terminating program due to above error."<<endl;
-        exit(0);
-    }
-}
+
 bool PrimerTool::containsPrime(pType prime){
     bool foundPrime = false;
     
@@ -388,6 +250,183 @@ void PrimerTool::verifyCount(){
     m_nullPrimes.size();
     
     assertLog(analyzedCnt == getTotalAnalyzedCount(),"Mismatch in number of primes analyzed versus counted!!");
+}
+#pragma mark - Core
+ pType PrimerTool::invert(pType number, int width){
+    pType mask = powl(2,width) - 1;
+    pType primeMask = powl(2,width-1) + 1;
+    pType invertedNumber = (~number) & mask;
+    invertedNumber = invertedNumber | primeMask;
+    return invertedNumber;
+}
+pType PrimerTool::flip(pType number, int width){
+    pType flippedNumber = 0;
+    while(number > 0){
+        unsigned int digit = number & 1;
+        flippedNumber = flippedNumber << 1; //Ok to flip on first entry becuase initialized to '0'
+        flippedNumber += digit;
+        number = number >> 1;
+    }
+    return flippedNumber;
+}
+ pType PrimerTool::invertFlip(pType number,int width){
+    pType invertValue = invert(number,width);
+    return flip(invertValue,width);
+}
+#pragma mark - Output
+string PrimerTool::generateOutput(){
+    verifyCount();
+    return outputResults();
+}
+void PrimerTool::setupDataHeaders(string filename){
+    m_outputFilename = filename;
+    if(LOG_DATA_FILE){
+        //Write to file
+        ofstream outfile;
+        outfile.open(m_outputFilename);
+        outfile<<"Digits,Primes,";
+        if(m_runMode == _FLIP_SPECIAL){
+            outfile<<"*Flip"<<endl;
+        }
+        else if(m_runMode == _TWIN){
+            outfile<<"Twins"<<endl;
+        }
+        else if(m_runMode == _MASTER_SPECIAL){
+            outfile<<"Count,*MasterFlip,*MasterInvertFlip,*MasterEven"<<endl;
+        }
+        else{ //Standard analysis output
+            outfile<<"Grand Master,";
+            outfile<<"Master,*Master,";
+            outfile<<"Grand,*Grand,";
+            outfile<<"Flip,*Flip,";
+            outfile<<"Invert,";
+            outfile<<"Null"<<endl;
+        }
+        outfile.close();
+    }
+}
+void PrimerTool::logDataHeaders(int binaryWidth){
+    uint64_t min = powl(2,binaryWidth-1);
+    uint64_t max = powl(2,binaryWidth)-1; //Calculate the max bucket
+    cout<<"****************************************"<<endl;
+    cout<<"Binary width: "<<binaryWidth<<endl;
+    if(m_runMode == _RANDOM){
+        cout<<"Using numbers from: "<<min<<" to "<<max<<endl;
+        cout<<"Group size: "<< to_string(primeNumbersPerGroup(binaryWidth));
+    }
+    else{
+        cout<<"Analyzing from: "<<min<<" to "<<max<<endl;
+        cout<<"Size: "<<max-min+1<<" numbers"<<endl;
+    }
+}
+string PrimerTool::outputResults(){
+    if(LOG_DATA_CONSOLE){
+        string str;
+        str.reserve(100);
+        //Print out the sumsx
+        if(m_runMode != _RANDOM) str+="Total Primes: "+ to_string(getTotalAnalyzedCount());
+        str+="\n--------------------\n";
+        str+="Grand Master Primes: " + to_string(m_grandMasterPrimes.size());
+        str+="\nMaster Primes: " + to_string(m_masterPrimes.size());
+        str+="\nSpecial Master Primes: " + to_string(m_specialMasterPrimes.size());
+        str+="\nGrand Primes: " + to_string(m_grandPrimes.size());
+        str+="\nSpeical Grand Primes: " + to_string(m_specialGrandPrimes.size());
+        str+="\nFlip Primes: " + to_string(m_flipPrimes.size());
+        str+="\nSpecial Flip Primes: " + to_string(m_specialFlipPrimes.size());
+        str+="\nInvert Primes: " + to_string(m_invertPrimes.size());
+        str+="\nNull Primes: " + to_string(m_nullPrimes.size());
+        str+="\n----------------------------------------";
+        log(str);
+    }
+    
+    if(LOG_DATA_FILE_VERBOSE){
+        string str;
+        str.reserve(300);
+        
+        string fileName = string(OUTPUT_DIR)+"/"+to_string(m_primeWidth)+"_"+string(OUTPUT_FILE);
+        string dataBreak = "\n----------------------";
+        
+        //Generate and write all outputs
+        str += "Digit Width: "+to_string(m_primeWidth);
+        str += "\nMax Prime: "+to_string(powl(2, m_primeWidth)-1);
+        str += "\nTotal Primes: "+to_string(getTotalAnalyzedCount());
+        str += dataBreak;
+        //Grand/Master/Special
+        str += "\nGrand Master Primes: "+setDescription(m_grandMasterPrimes);
+        str += dataBreak;
+        str += "\nMaster Primes: "+setDescription(m_masterPrimes);
+        str += "\nSpecial Master Primes: %@"+setDescription(m_specialMasterPrimes);
+        str += dataBreak;
+        str += "\nGrand Primes: %@"+setDescription(m_grandPrimes);
+        str += "\nSpecial Grand Primes: %@"+setDescription(m_specialGrandPrimes);
+        str += dataBreak;
+        //Flip
+        str += "\nFlip Primes: %@"+setDescription(m_flipPrimes);
+        str += "\nSpecial Flip Primes: %@"+setDescription(m_specialFlipPrimes);
+        str += dataBreak;
+        //Invert
+        str += "\nInvert Primes: %@"+setDescription(m_invertPrimes);
+        str += dataBreak;
+        //Null Primes
+        str += "\nNull Primes: %@"+setDescription(m_nullPrimes);
+        
+        //Write to file
+        ofstream outfile;
+        outfile.open(fileName);
+        outfile<<str;
+        outfile.close();
+    }
+    
+    
+    //Create the output string
+    string str;
+    str.reserve(300);
+    
+    //Digits,Number of Primes,
+    //Grand Master Primes,
+    //Master Primes, Special Master Primes,
+    //Grand Primes, Special Grand Primes,
+    //Flip Primes, Special Flip Primes,
+    //Invert Primes,
+    //Null Primes
+    str+=to_string(m_primeWidth);
+    
+    str+=","+to_string(getTotalAnalyzedCount());
+    
+    str+=","+to_string(m_grandMasterPrimes.size());
+    
+    str+=","+to_string(m_masterPrimes.size());
+    str+=","+to_string(m_specialMasterPrimes.size());
+    
+    str+=","+to_string(m_grandPrimes.size());
+    str+=","+to_string(m_specialGrandPrimes.size());
+    
+    str+=","+to_string(m_flipPrimes.size());
+    str+=","+to_string(m_specialFlipPrimes.size());
+    
+    str+=","+to_string(m_invertPrimes.size());
+    
+    str+=","+to_string(m_nullPrimes.size());
+
+    if(LOG_DATA_FILE){
+        //Write to file
+        ofstream outfile;
+        outfile.open(m_outputFilename, ofstream::out | ofstream::app);
+        outfile<<str<<endl;
+        outfile.close();
+    }
+    
+    return str;
+}
+void PrimerTool::log(string s){
+    cout<<s<<endl;
+}
+void PrimerTool::assertLog(bool test,string s){
+    if(!test){
+        cout<<s<<endl;
+        cout<<"Terminating program due to above error."<<endl;
+        exit(0);
+    }
 }
 #pragma mark - Machine Diagnosis
 void PrimerTool::verifyMachine(int maxBinaryWidth){
@@ -466,29 +505,6 @@ void PrimerTool::runDataTest(){
     
     log("Data Test Passed.");
 }
-
-#pragma mark Unsigned Long Long
- pType PrimerTool::invert(pType number, int width){
-    pType mask = powl(2,width) - 1;
-    pType primeMask = powl(2,width-1) + 1;
-    pType invertedNumber = (~number) & mask;
-    invertedNumber = invertedNumber | primeMask;
-    return invertedNumber;
-}
-pType PrimerTool::flip(pType number, int width){
-    pType flippedNumber = 0;
-    while(number > 0){
-        unsigned int digit = number & 1;
-        flippedNumber = flippedNumber << 1; //Ok to flip on first entry becuase initialized to '0'
-        flippedNumber += digit;
-        number = number >> 1;
-    }
-    return flippedNumber;
-}
- pType PrimerTool::invertFlip(pType number,int width){
-    pType invertValue = invert(number,width);
-    return flip(invertValue,width);
-}
 #pragma mark - Random investigation
 vector<pType>
 PrimerTool::createRandomInput(int digits, pType bucketSize){
@@ -519,6 +535,7 @@ pType PrimerTool::primeNumbersPerGroup(int width){
 }
 
 #pragma mark - Flip(*) investigation
+//Counts the number of Flip Specials per each group
 string PrimerTool::analyzeFlipSpecial(){
     string result;
     int count = 0;
@@ -537,19 +554,55 @@ string PrimerTool::analyzeFlipSpecial(){
             count++;
         }
     });
-    result = to_string(m_primeWidth)+","+to_string(count);
-    return result;
+    return outputFlipSpecial(count);
+}
+string PrimerTool::outputFlipSpecial(int count){
+    //Verify Conjecture 1
+    if(m_primeWidth%2==0 && count!=0){
+        cout<<"There exists no flip special prime number with binary even width."<<endl;
+        exit(10);
+    }
+    
+    if(LOG_DATA_CONSOLE){
+        string str;
+        str.reserve(100);
+        //Print out the sumsx
+        str+="Total Primes: "+ to_string(getTotalAnalyzedCount());
+        str+="\nSpecial Flip Primes: " + to_string(count);
+        str+="\n----------------------------------------";
+        log(str);
+    }
+    
+    //Create the output string
+    string str;
+    str.reserve(300);
+    
+    //Digits,Number of Primes,
+    //Special Flip Primes,
+    str+=to_string(m_primeWidth);
+    str+=","+to_string(getTotalAnalyzedCount());
+    str+=","+to_string(count);
+    
+    if(LOG_DATA_FILE){
+        //Write to file
+        ofstream outfile;
+        outfile.open(m_outputFilename, ofstream::out | ofstream::app);
+        outfile<<str<<endl;
+        outfile.close();
+    }
+    
+    return str;
 }
 #pragma mark - Master(*) investigation
 string PrimerTool::analyzeMasterSpecial(){
     string result;
 
-    set <pType, less <pType> > masterSpecialPrimes; //Flip == self
-    set <pType, less <pType> > masterSpecialPrimes_Flip; //Flip == self
+    set <pType, less <pType> > masterSpecialPrimes_Flip; //Flip == self || Invert == self // Only happens for Odd, invert never happens
+    set <pType, less <pType> > masterSpecialPrimes_InvertFlip; //InvertFlip == self //Only happens for Even
     
-    set <pType, less <pType> > masterSpecialPrimes_even; //Flip == self
+    set <pType, less <pType> > masterSpecialPrimes_even; //Flip == self, only for even binary width - Conjecture 2: Never observed to happen
     
-    for_each(m_primeList.begin(), m_primeList.end(), [this,&masterSpecialPrimes,&masterSpecialPrimes_Flip,&masterSpecialPrimes_even](pType& prime){
+    for_each(m_primeList.begin(), m_primeList.end(), [this,&masterSpecialPrimes_Flip,&masterSpecialPrimes_InvertFlip,&masterSpecialPrimes_even](pType& prime){
         pType primeInvert = invert(prime, m_primeWidth);
         pType primeFlip = flip(prime, m_primeWidth);
         pType primeInvertFlip = invertFlip(prime, m_primeWidth);
@@ -566,10 +619,10 @@ string PrimerTool::analyzeMasterSpecial(){
         //If this meets the condiditon for a Master*
         if(hasInvert && hasFlip && hasInvertFlip){
             if(prime == primeInvertFlip){
-                masterSpecialPrimes_Flip.insert(storagePrime);
+                masterSpecialPrimes_InvertFlip.insert(storagePrime);
             }
             else if(prime == primeInvert || prime == primeFlip){
-                masterSpecialPrimes.insert(storagePrime);
+                masterSpecialPrimes_Flip.insert(storagePrime);
             }
         }
         //Lets do a different type of analysis
@@ -581,10 +634,54 @@ string PrimerTool::analyzeMasterSpecial(){
             }
         }
     });
-    unsigned long count = masterSpecialPrimes.size()+masterSpecialPrimes_Flip.size();
-    result = to_string(m_primeWidth)+","+to_string(count)+","+to_string(masterSpecialPrimes.size())+","+to_string(masterSpecialPrimes_Flip.size())+","+to_string(masterSpecialPrimes_even.size());
+    unsigned long count = masterSpecialPrimes_Flip.size()+masterSpecialPrimes_InvertFlip.size();
+    //result = to_string(m_primeWidth)+","+to_string(count)+","+to_string(masterSpecialPrimes.size())+","+to_string(masterSpecialPrimes_Flip.size())+","+to_string(masterSpecialPrimes_even.size());
     
-    return result;
+    return outputMasterSpecial(count, masterSpecialPrimes_Flip.size(), masterSpecialPrimes_InvertFlip.size(), masterSpecialPrimes_even.size());
+}
+string PrimerTool::outputMasterSpecial(unsigned long count, unsigned long masterSpecialFlip, unsigned long masterSpecialInvertFlip, unsigned long masterSpecialEven){
+    //Verify Conjecture 2
+    if(m_primeWidth%2==0 && masterSpecialEven!=0){
+        exit(12);
+    }
+        
+    
+    if(LOG_DATA_CONSOLE){
+        string str;
+        str.reserve(100);
+        //Print out the sumsx
+        str+="Total Primes: "+ to_string(getTotalAnalyzedCount());
+        str+="\nCount: " + to_string(count);
+        str+="\n*Master (Flip/Invert Identity): " + to_string(masterSpecialFlip);
+        str+="\n*Master (InvertFlip Identity): " + to_string(masterSpecialInvertFlip);
+        str+="\n*Master (Flip Identity w/ Even Width): " + to_string(masterSpecialEven);
+        str+="\n----------------------------------------";
+        log(str);
+    }
+    
+    //Create the output string
+    string str;
+    str.reserve(300);
+    
+    //Digits,Number of Primes,
+    //Count,
+    
+    str+=to_string(m_primeWidth);
+    str+=","+to_string(getTotalAnalyzedCount());
+    str+=","+to_string(count);
+    str+=","+to_string(masterSpecialFlip);
+    str+=","+to_string(masterSpecialInvertFlip);
+    str+=","+to_string(masterSpecialEven);
+    
+    if(LOG_DATA_FILE){
+        //Write to file
+        ofstream outfile;
+        outfile.open(m_outputFilename, ofstream::out | ofstream::app);
+        outfile<<str<<endl;
+        outfile.close();
+    }
+    
+    return str;
 }
 #pragma mark - Twin Prime investigation
 string PrimerTool::analyzeTwins(){
@@ -597,8 +694,40 @@ string PrimerTool::analyzeTwins(){
             }
         });
     });
-    result = to_string(m_primeWidth)+","+to_string(count/2);
-    return result;
+    //We divide by 2 because each match was paired twice (not efficient search)
+    return outputTwinInvestigation(count/2);
+}
+string PrimerTool::outputTwinInvestigation(int count){
+    
+    if(LOG_DATA_CONSOLE){
+        string str;
+        str.reserve(100);
+        //Print out the sumsx
+        str+="Total Primes: "+ to_string(getTotalAnalyzedCount());
+        str+="\nTwin Primes: " + to_string(count);
+        str+="\n----------------------------------------";
+        log(str);
+    }
+    
+    //Create the output string
+    string str;
+    str.reserve(300);
+    
+    //Digits,Number of Primes,
+    //Special Flip Primes,
+    str+=to_string(m_primeWidth);
+    str+=","+to_string(getTotalAnalyzedCount());
+    str+=","+to_string(count);
+    
+    if(LOG_DATA_FILE){
+        //Write to file
+        ofstream outfile;
+        outfile.open(m_outputFilename, ofstream::out | ofstream::app);
+        outfile<<str<<endl;
+        outfile.close();
+    }
+    
+    return str;
 }
 bool PrimerTool::isTwinPrime(pType prime1, pType prime2, int width){
     //Twin prime is defined as having only one binary digit different

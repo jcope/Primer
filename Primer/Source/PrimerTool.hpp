@@ -105,13 +105,18 @@ private:
         
     //Twin investigation
     string analyzeTwins();
+    string outputTwinInvestigation(int count);
     int common_bits(pType a, pType b);
     int countBits(pType a);
     bool isTwinPrime(pType prime1, pType prime2, int width);
     
     //Other investigations
+    //Conjecture 1
     string analyzeFlipSpecial();
+    string outputFlipSpecial(int count);
+    //Conjecture 2
     string analyzeMasterSpecial();
+    string outputMasterSpecial(unsigned long count, unsigned long masterSpecialFlip, unsigned long masterSpecialInvertFlip, unsigned long masterSpecialEven);
     
     void verifyCount();
     string outputResults();
