@@ -42,6 +42,7 @@ public:
     void testPrimer(int maxBinaryWidth);
     
     void setupDataHeaders(string filename);
+    void logDataHeaders(int binaryWidth);
     void setBinaryWidth(int width);
     string generateOutput();
     

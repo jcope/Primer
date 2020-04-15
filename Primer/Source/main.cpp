@@ -35,7 +35,7 @@ void printHeader();
 int main_primer();
 int main_random();
 
-runtime_exe _runMode = _FILE_SEARCH;
+runtime_exe _runMode = _STANDARD;
 int _minWidth = MIN_BINARY_WIDTH;
 int _maxWidth = MAX_BINARY_WIDTH;
 
@@ -52,35 +52,35 @@ int main(int argc, const char * argv[]) {
 int main_primer(){
     PrimerTool* pTool = new PrimerTool(_runMode);
     pTool->setupDataHeaders(string(OUTPUT_DIR)+string(OUTPUT_FILE));
-    
-    uint64_t min;
-    uint64_t max;
-    time_t startTime = 0;
-    vector<pType> _primeList;
-    
+        
+    //Create the Prime Number generator
     primesieve::iterator it;
     uint64_t _prime = it.next_prime(); //Read the initial prime
     
     //Filter out the minimums
-    min = powl(2,_minWidth-1)-1;
+    uint64_t min = powl(2,_minWidth-1)-1;
     while(_prime<=min){
         _prime = it.next_prime();
     }
-    
     cout<<"Starting with Prime: "<<_prime<<endl;
     printTime("Start Time: ");
+    
+    uint64_t max;
+    time_t startTime = 0;
+    vector<pType> _primeList;
           
     for(int binaryWidth=_minWidth;binaryWidth<_maxWidth;binaryWidth++){ //Cyclce through all the different buckets
-        max = powl(2,binaryWidth)-1; //Calculate the max bucket
-        cout<<"****************************"<<endl;
-        cout<<"Binary width: "<<binaryWidth<<endl;
+        pTool->logDataHeaders(binaryWidth);
+        
         if(_runMode == _FILE_SEARCH){
             startTime = time(0);
             pTool->createBinaryFile(binaryWidth);
             pTool->initializeBinaryFileSearch(binaryWidth);
             pTool->setBinaryWidth(binaryWidth);
         }
-
+        
+        max = powl(2,binaryWidth)-1; //Calculate the max bucket
+        
         //Collect the data
         while(_prime <= max) {
             //Sequential or group search.
@@ -100,11 +100,11 @@ int main_primer(){
             pTool->generateOutput();
         }
         else{
-            cout<<"Count: "<<_primeList.size()<< " primes (between "<< uint64_t(powl(2,binaryWidth-1)) <<" and "<< max <<")"<<endl;
             startTime = time(0);
             pTool->analyzePrimes(_primeList,binaryWidth);
         }
-                      
+        
+        //Calculate and display run time
         double totalTime = difftime(time(0),startTime);
         cout<<"Total Time: "<<totalTime<<" seconds."<<endl;
         
@@ -124,34 +124,29 @@ int main_random(){
         //Write to file
         string outputFileName = string(OUTPUT_DIR)+"/RandomLoop/"+to_string(loopCnt)+string(OUTPUT_FILE);
         pTool->setupDataHeaders(outputFileName);
-         
-        uint64_t max;
-        uint64_t min;
-        vector<pType> _primeList;
                 
+        //Create the Prime number generator
         primesieve::iterator it;
         uint64_t _prime = it.next_prime(); //Read the initial prime
         
         //Filter out the minimums
-        min = powl(2,_minWidth-1)-1;
+        uint64_t min = powl(2,_minWidth-1)-1;
         while(_prime<=min){
             _prime = it.next_prime();
         }
         cout<<"Starting with Prime: "<<_prime<<endl;
-        
         printTime("Start Time: ");
+        
         time_t startTime;
-         
+        vector<pType> _primeList;
+        
         for(int binaryWidth=_minWidth;binaryWidth<_maxWidth;binaryWidth++){ //Cyclce through all the different buckets
-            max = powl(2,binaryWidth)-1; //Calculate the max bucket
-            cout<<"****************************"<<endl;
-            cout<<"Binary width: "<<binaryWidth<<endl;
-
+            pTool->logDataHeaders(binaryWidth);
+            
             pType primeCount = pTool->primeNumbersPerGroup(binaryWidth);
             _primeList = pTool->createRandomInput(binaryWidth, primeCount);
              
             //Analyze
-            cout<<"Count: "<<_primeList.size()<< " primes (between "<< uint64_t(powl(2,binaryWidth-1)) <<" and "<< max <<")"<<endl;
             startTime = time(0);
             pTool->analyzePrimes(_primeList,binaryWidth);
             
@@ -171,10 +166,10 @@ void programStart(){
     printHeader();
     checkConfig();
     checkProgram();
-    cout<<"****************************"<<endl;
+    cout<<"****************************************"<<endl;
 }
 void printHeader(){
-    cout << "**** Welcome to Primer ****" << endl;
+    cout << "********   Welcome to Primer   *********" << endl;
 }
 void checkConfig(){
     //Min and max search
@@ -196,7 +191,7 @@ void checkConfig(){
     cout << runString << endl;
 }
 void checkProgram(){
-    PrimerTool* pTool = new PrimerTool();
+    PrimerTool* pTool = new PrimerTool(_runMode);
     pTool->testPrimer(_maxWidth);
     delete pTool;
 }

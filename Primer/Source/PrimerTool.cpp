@@ -88,14 +88,19 @@ void PrimerTool::setupDataHeaders(string filename){
         outfile.close();
     }
 }
+void PrimerTool::logDataHeaders(int binaryWidth){
+    uint64_t min = powl(2,binaryWidth-1);
+    uint64_t max = powl(2,binaryWidth)-1; //Calculate the max bucket
+    cout<<"****************************************"<<endl;
+    cout<<"Binary width: "<<binaryWidth<<endl;
+    cout<<"Analyzing from: "<<min<<" to "<<max<<endl;
+    cout<<"Size: "<<max-min<<" numbers"<<endl;
+}
 string PrimerTool::outputResults(){
     if(LOG_DATA_CONSOLE){
         string str;
         str.reserve(100);
-        //Print out the sumsx
-        str+="----------------------------------------\n";
-        str+="Digits: " + to_string(m_primeWidth) + "\n";
-        
+        //Print out the sumsx        
         str+="Total Primes: "+ to_string(getTotalAnalyzedCount());
         str+="\n--------------------\n";
         str+="Grand Master Primes: " + to_string(m_grandMasterPrimes.size());

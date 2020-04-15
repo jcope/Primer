@@ -13,8 +13,8 @@
 #define LOG_DATA_FILE 1
 #define LOG_DATA_FILE_VERBOSE 1
 
-#define MIN_BINARY_WIDTH 15
-#define MAX_BINARY_WIDTH 18
+#define MIN_BINARY_WIDTH 3
+#define MAX_BINARY_WIDTH 8
 
 #define OUTPUT_DIR "/Users/Jeremy/Projects/Primer/Output/"
 #define OUTPUT_FILE "PrimerOutput.txt"
