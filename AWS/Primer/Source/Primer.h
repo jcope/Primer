@@ -13,19 +13,19 @@
     int m_primeWidth;
     
     NSArray* m_primeList;
-    NSMutableSet* m_grandMasterPrimes; //Flip, Inverse, and FlipInverse unique primes
-    NSMutableSet* m_masterPrimes; //Flip and Inverse are unique
-    NSMutableSet* m_specialMasterPrimes; //Flip and inverse are prime, but equal
+    NSMutableArray* m_grandMasterPrimes; //Flip, Inverse, and FlipInverse unique primes
+    NSMutableArray* m_masterPrimes; //Flip and Inverse are unique
+    NSMutableArray* m_specialMasterPrimes; //Flip and inverse are prime, but equal
     
-    NSMutableSet* m_grandPrimes; //Flip/Invert
-    NSMutableSet* m_specialGrandPrimes; //Flip/Invert; Flip == Invert
+    NSMutableArray* m_grandPrimes; //Flip/Invert
+    NSMutableArray* m_specialGrandPrimes; //Flip/Invert; Flip == Invert
     
-    NSMutableSet* m_flipPrimes; //Flip
-    NSMutableSet* m_specialFlipPrimes; //Flip == self
+    NSMutableArray* m_flipPrimes; //Flip
+    NSMutableArray* m_specialFlipPrimes; //Flip == self
     
-    NSMutableSet* m_invertPrimes; //Invert
+    NSMutableArray* m_invertPrimes; //Invert
     
-    NSMutableSet* m_nullPrimes; //None of the above
+    NSMutableArray* m_nullPrimes; //None of the above
 }
 
 typedef enum{
@@ -81,19 +81,19 @@ typedef enum{
 
 @property (nonatomic, retain) NSArray* m_primeList;
 
-@property (nonatomic, retain) NSMutableSet* m_grandMasterPrimes; //Flip, Inverse, and FlipInverse unique primes
+@property (nonatomic, retain) NSMutableArray* m_grandMasterPrimes; //Flip, Inverse, and FlipInverse unique primes
 
-@property (nonatomic, retain) NSMutableSet* m_masterPrimes; //Flip and Inverse are unique
-@property (nonatomic, retain) NSMutableSet* m_specialMasterPrimes; //Flip and inverse are prime, but equal
+@property (nonatomic, retain) NSMutableArray* m_masterPrimes; //Flip and Inverse are unique
+@property (nonatomic, retain) NSMutableArray* m_specialMasterPrimes; //Flip and inverse are prime, but equal
 
-@property (nonatomic, retain) NSMutableSet* m_grandPrimes; //Flip/Invert
-@property (nonatomic, retain) NSMutableSet* m_specialGrandPrimes; //Flip/Invert; Flip == Invert
+@property (nonatomic, retain) NSMutableArray* m_grandPrimes; //Flip/Invert
+@property (nonatomic, retain) NSMutableArray* m_specialGrandPrimes; //Flip/Invert; Flip == Invert
 
-@property (nonatomic, retain) NSMutableSet* m_flipPrimes; //Flip
-@property (nonatomic, retain) NSMutableSet* m_specialFlipPrimes; //Flip == self
+@property (nonatomic, retain) NSMutableArray* m_flipPrimes; //Flip
+@property (nonatomic, retain) NSMutableArray* m_specialFlipPrimes; //Flip == self
 
-@property (nonatomic, retain) NSMutableSet* m_invertPrimes; //Invert
+@property (nonatomic, retain) NSMutableArray* m_invertPrimes; //Invert
 
-@property (nonatomic, retain) NSMutableSet* m_nullPrimes; //None of the above
+@property (nonatomic, retain) NSMutableArray* m_nullPrimes; //None of the above
 
 @end

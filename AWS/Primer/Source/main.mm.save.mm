@@ -12,8 +12,6 @@
 #include <primesieve.hpp>
 #include <iostream>
 #include <vector>
-#include <set>
-#include <iterator>
 
 #include <unistd.h>
 #include <string>
@@ -39,27 +37,6 @@ void testPrimeLibs(void);
 
 int main(int argc, const char * argv[]) {
     @autoreleasepool{
-        // empty set container
-        set <unsigned long long, less <unsigned long long> > gquiz1;
-        
-        // insert elements in random order
-        gquiz1.insert(40);
-        gquiz1.insert(30);
-        gquiz1.insert(60);
-        gquiz1.insert(20);
-        gquiz1.insert(50);
-        gquiz1.insert(50); // only one 50 will be added to the set
-        gquiz1.insert(10);
-        
-        // printing set gquiz1
-        set <unsigned long long, greater <unsigned long long> > :: iterator itr;
-        cout << "\nThe set gquiz1 is : ";
-        for (itr = gquiz1.begin(); itr != gquiz1.end(); ++itr)
-        {
-            cout << '\t' << *itr;
-        }
-        cout << endl;
-        
         
 	    //Print Current Time
         time_t     now = time(0);
@@ -80,8 +57,6 @@ int main(int argc, const char * argv[]) {
         //[primer runPerformaceTest];
         //exit(0);
         
-        primesieve::iterator it;
-        uint64_t _prime = it.next_prime(); //Read the initial prime
         
         
         //Test input file
@@ -104,7 +79,7 @@ int main(int argc, const char * argv[]) {
             outfile<<"Invert Primes,";
             outfile<<"Null Primes"<<endl;
         }
-        //NSMutableSet* testPrimeSet = [[NSMutableSet alloc] init];
+        
         NSMutableArray* primeNumbers = [[NSMutableArray alloc] initWithCapacity:20];
         
         long long max;
@@ -115,11 +90,10 @@ int main(int argc, const char * argv[]) {
         //Filter out the minimums
         unsigned long long min;
         min = pow(2,MIN_BINARY_WIDTH-1)-1;
-        while(_prime<=min){
-            _prime = it.next_prime();
-            //inputFile>>data;
+        while(data<=min){
+            inputFile>>data;
         }
-        NSLog(@"Starting with Prime: %lld",_prime);
+        NSLog(@"Starting with Prime: %lld",data);
         
         
         for(int binaryWidth=MIN_BINARY_WIDTH;binaryWidth<MAX_BINARY_WIDTH;binaryWidth++){ //Cyclce through all the different buckets
@@ -128,12 +102,13 @@ int main(int argc, const char * argv[]) {
             NSLog(@"Binary width: %d",binaryWidth);
             NSLog(@"Analyzing for max: %lld",max);
             BOOL analyze = false;
-            while(!analyze){
+            while(!analyze && !endOfFile){
                
-                if (_prime <= max) {
-                    [primeNumbers addObject:@(_prime)];
-                    //[testPrimeSet addObject:@(_prime)];
-                    _prime = it.next_prime();
+                if (data <= max) {
+                    [primeNumbers addObject:@(data)];
+                    if(!(inputFile>>data)){ //Read the next line
+                        endOfFile = true;
+                    }
                 }
                 else{
                     analyze = true;
@@ -141,7 +116,6 @@ int main(int argc, const char * argv[]) {
                 
                 if(analyze && [primeNumbers count] > 0){ //Bucket is full, go analyze
                     NSLog(@"Count: %lu primes (between %.f and %lld)",(unsigned long)[primeNumbers count],pow(2,binaryWidth-1),max);
-                   // NSLog(@"Array count: %lu - Set count: %lu",(unsigned long)[primeNumbers count],(unsigned long)[testPrimeSet count]);
                     //NSLog(@"Primes: %@",[primeNumbers description]);
                     
                     //What effect does randomizing the data have on our algorithm?

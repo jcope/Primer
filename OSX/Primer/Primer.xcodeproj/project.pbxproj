@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3F3D39EF216D63D5008397C6 /* libprimesieve.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F3D39EE216D63D5008397C6 /* libprimesieve.a */; };
 		3F9D09431DD51DEF00074276 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3F9D093C1DD51D8D00074276 /* main.mm */; };
 		3F9D09441DD51DEF00074276 /* NSArray+PrimeDesc.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F9D093E1DD51D8D00074276 /* NSArray+PrimeDesc.m */; };
 		3F9D09451DD51DEF00074276 /* NSString+FileIO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F9D09401DD51D8D00074276 /* NSString+FileIO.m */; };
@@ -26,6 +27,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		3F3D39EE216D63D5008397C6 /* libprimesieve.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libprimesieve.a; path = ../../../../../../usr/local/lib/libprimesieve.a; sourceTree = "<group>"; };
 		3F697A781FB9030000C424C3 /* output */ = {isa = PBXFileReference; lastKnownFileType = folder; name = output; path = ../../output; sourceTree = "<group>"; };
 		3F9D092E1DD514A900074276 /* Primer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Primer; sourceTree = BUILT_PRODUCTS_DIR; };
 		3F9D093B1DD51D8D00074276 /* Config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
@@ -36,6 +38,7 @@
 		3F9D09401DD51D8D00074276 /* NSString+FileIO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSString+FileIO.m"; sourceTree = "<group>"; };
 		3F9D09411DD51D8D00074276 /* Primer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Primer.h; sourceTree = "<group>"; };
 		3F9D09421DD51D8D00074276 /* Primer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Primer.m; sourceTree = "<group>"; };
+		3FDCF41C216D62410012237F /* project.pbxproj */ = {isa = PBXFileReference; lastKnownFileType = text.pbxproject; name = project.pbxproj; path = Primer.xcodeproj/project.pbxproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -43,6 +46,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3F3D39EF216D63D5008397C6 /* libprimesieve.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -55,6 +59,7 @@
 				3F697A781FB9030000C424C3 /* output */,
 				3F9D09381DD51D8D00074276 /* Primer */,
 				3F9D092F1DD514A900074276 /* Products */,
+				3FDCF41B216D62410012237F /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -98,6 +103,15 @@
 			path = Source;
 			sourceTree = "<group>";
 		};
+		3FDCF41B216D62410012237F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3F3D39EE216D63D5008397C6 /* libprimesieve.a */,
+				3FDCF41C216D62410012237F /* project.pbxproj */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -124,7 +138,7 @@
 		3F9D09261DD514A800074276 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0900;
+				LastUpgradeCheck = 1000;
 				ORGANIZATIONNAME = "Emma Technologies, L.L.C.";
 				TargetAttributes = {
 					3F9D092D1DD514A800074276 = {
@@ -178,6 +192,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -185,6 +200,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -212,10 +228,13 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = /usr/local/include;
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = /usr/local/include;
 			};
 			name = Debug;
 		};
@@ -232,6 +251,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -239,6 +259,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -260,9 +281,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = /usr/local/include;
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = /usr/local/include;
 			};
 			name = Release;
 		};
