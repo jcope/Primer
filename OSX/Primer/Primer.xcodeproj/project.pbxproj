@@ -8,10 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		3F3D39EF216D63D5008397C6 /* libprimesieve.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F3D39EE216D63D5008397C6 /* libprimesieve.a */; };
-		3F9D09431DD51DEF00074276 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3F9D093C1DD51D8D00074276 /* main.mm */; };
-		3F9D09441DD51DEF00074276 /* NSArray+PrimeDesc.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F9D093E1DD51D8D00074276 /* NSArray+PrimeDesc.m */; };
-		3F9D09451DD51DEF00074276 /* NSString+FileIO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F9D09401DD51D8D00074276 /* NSString+FileIO.m */; };
-		3F9D09461DD51DEF00074276 /* Primer.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F9D09421DD51D8D00074276 /* Primer.m */; };
+		3F9D09431DD51DEF00074276 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F9D093C1DD51D8D00074276 /* main.cpp */; };
+		3FCFE2C3217050E9004AC4C8 /* PrimerTool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3FCFE2C1217050E9004AC4C8 /* PrimerTool.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -31,13 +29,11 @@
 		3F697A781FB9030000C424C3 /* output */ = {isa = PBXFileReference; lastKnownFileType = folder; name = output; path = ../../output; sourceTree = "<group>"; };
 		3F9D092E1DD514A900074276 /* Primer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Primer; sourceTree = BUILT_PRODUCTS_DIR; };
 		3F9D093B1DD51D8D00074276 /* Config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
-		3F9D093C1DD51D8D00074276 /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
-		3F9D093D1DD51D8D00074276 /* NSArray+PrimeDesc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSArray+PrimeDesc.h"; sourceTree = "<group>"; };
-		3F9D093E1DD51D8D00074276 /* NSArray+PrimeDesc.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSArray+PrimeDesc.m"; sourceTree = "<group>"; };
-		3F9D093F1DD51D8D00074276 /* NSString+FileIO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSString+FileIO.h"; sourceTree = "<group>"; };
-		3F9D09401DD51D8D00074276 /* NSString+FileIO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSString+FileIO.m"; sourceTree = "<group>"; };
-		3F9D09411DD51D8D00074276 /* Primer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Primer.h; sourceTree = "<group>"; };
-		3F9D09421DD51D8D00074276 /* Primer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Primer.m; sourceTree = "<group>"; };
+		3F9D093C1DD51D8D00074276 /* main.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		3FCFE2BF21704D6E004AC4C8 /* primesieve.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = primesieve.hpp; sourceTree = "<group>"; };
+		3FCFE2C021704D6E004AC4C8 /* primesieve.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = primesieve.h; sourceTree = "<group>"; };
+		3FCFE2C1217050E9004AC4C8 /* PrimerTool.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PrimerTool.cpp; sourceTree = "<group>"; };
+		3FCFE2C2217050E9004AC4C8 /* PrimerTool.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PrimerTool.hpp; sourceTree = "<group>"; };
 		3FDCF41C216D62410012237F /* project.pbxproj */ = {isa = PBXFileReference; lastKnownFileType = text.pbxproject; name = project.pbxproj; path = Primer.xcodeproj/project.pbxproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -74,33 +70,39 @@
 		3F9D09381DD51D8D00074276 /* Primer */ = {
 			isa = PBXGroup;
 			children = (
-				3F9D09391DD51D8D00074276 /* Build */,
+				3FCFE2BD21704D6E004AC4C8 /* 3rdParty */,
 				3F9D093A1DD51D8D00074276 /* Source */,
 			);
 			name = Primer;
-			path = ../../AWS/Primer;
-			sourceTree = "<group>";
-		};
-		3F9D09391DD51D8D00074276 /* Build */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Build;
-			sourceTree = "<group>";
+			path = /Users/jeremy/Projects/Primer/Primer;
+			sourceTree = "<absolute>";
 		};
 		3F9D093A1DD51D8D00074276 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				3FCFE2C1217050E9004AC4C8 /* PrimerTool.cpp */,
+				3FCFE2C2217050E9004AC4C8 /* PrimerTool.hpp */,
 				3F9D093B1DD51D8D00074276 /* Config.h */,
-				3F9D093C1DD51D8D00074276 /* main.mm */,
-				3F9D093D1DD51D8D00074276 /* NSArray+PrimeDesc.h */,
-				3F9D093E1DD51D8D00074276 /* NSArray+PrimeDesc.m */,
-				3F9D093F1DD51D8D00074276 /* NSString+FileIO.h */,
-				3F9D09401DD51D8D00074276 /* NSString+FileIO.m */,
-				3F9D09411DD51D8D00074276 /* Primer.h */,
-				3F9D09421DD51D8D00074276 /* Primer.m */,
+				3F9D093C1DD51D8D00074276 /* main.cpp */,
 			);
 			path = Source;
+			sourceTree = "<group>";
+		};
+		3FCFE2BD21704D6E004AC4C8 /* 3rdParty */ = {
+			isa = PBXGroup;
+			children = (
+				3FCFE2BE21704D6E004AC4C8 /* include */,
+			);
+			path = 3rdParty;
+			sourceTree = "<group>";
+		};
+		3FCFE2BE21704D6E004AC4C8 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				3FCFE2BF21704D6E004AC4C8 /* primesieve.hpp */,
+				3FCFE2C021704D6E004AC4C8 /* primesieve.h */,
+			);
+			path = include;
 			sourceTree = "<group>";
 		};
 		3FDCF41B216D62410012237F /* Frameworks */ = {
@@ -138,7 +140,7 @@
 		3F9D09261DD514A800074276 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1000;
+				LastUpgradeCheck = 1140;
 				ORGANIZATIONNAME = "Emma Technologies, L.L.C.";
 				TargetAttributes = {
 					3F9D092D1DD514A800074276 = {
@@ -149,10 +151,11 @@
 			};
 			buildConfigurationList = 3F9D09291DD514A800074276 /* Build configuration list for PBXProject "Primer" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = 3F9D09251DD514A800074276;
 			productRefGroup = 3F9D092F1DD514A900074276 /* Products */;
@@ -169,10 +172,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3F9D09431DD51DEF00074276 /* main.mm in Sources */,
-				3F9D09441DD51DEF00074276 /* NSArray+PrimeDesc.m in Sources */,
-				3F9D09451DD51DEF00074276 /* NSString+FileIO.m in Sources */,
-				3F9D09461DD51DEF00074276 /* Primer.m in Sources */,
+				3F9D09431DD51DEF00074276 /* main.cpp in Sources */,
+				3FCFE2C3217050E9004AC4C8 /* PrimerTool.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -183,6 +184,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -242,6 +244,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -293,6 +296,7 @@
 		3F9D09361DD514A900074276 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -300,6 +304,7 @@
 		3F9D09371DD514A900074276 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

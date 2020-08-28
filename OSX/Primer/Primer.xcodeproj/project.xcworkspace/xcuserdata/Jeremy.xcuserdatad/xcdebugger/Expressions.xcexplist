@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "GLOBAL">
+         <PersistentStrings>
+            <PersistentString
+               value = "endIndex">
+            </PersistentString>
+            <PersistentString
+               value = "middleIndex">
+            </PersistentString>
+            <PersistentString
+               value = "startIndex">
+            </PersistentString>
+            <PersistentString
+               value = "start">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "PrimerTool::testBinarySearch_file():PrimerTool.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "PrimerTool::initializeBinaryFileSearch(int):PrimerTool.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "values">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>
