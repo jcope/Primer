@@ -29,18 +29,24 @@ using namespace std;
 void programStart();
 void checkConfig();
 void checkProgram();
+void runPerformanceMemory();
+void runPerformanceFile();
 void printHeader();
 void printTime(string s);
 
 int main_primer();
 int main_random();
 
-runtime_exe _runMode = _STANDARD;
+runtime_exe _runMode = _FILE_SEARCH;
 int _minWidth = MIN_BINARY_WIDTH;
 int _maxWidth = MAX_BINARY_WIDTH;
 
 int main(int argc, const char * argv[]) {
     programStart();
+    runPerformanceMemory();
+    runPerformanceFile();
+    return 0;
+    
     if(_runMode == _RANDOM){
         return main_random();
     }
@@ -86,6 +92,7 @@ int main_primer(){
             //Sequential or group search.
             if(_runMode == _FILE_SEARCH){
                 pTool->analyzeNextPrime(_prime);
+                pTool->printProgress(startTime);
                 _prime = it.next_prime();
             }
             else{
@@ -204,4 +211,80 @@ void printTime(string s){
     tstruct = *localtime(&now);
     strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
     cout << s << buf << endl;
+}
+void runPerformanceMemory(){
+    cout<<"** Memory Performance Test ***"<<endl;
+    cout<<"Using baseline binary width: 27"<<endl;
+    PrimerTool* pTool = new PrimerTool(_BINARY_SEARCH);
+    int binaryWidth = 27;
+    time_t startTime = 0;
+    vector<pType> _primeList;
+    
+    //Create the Prime Number generator
+    primesieve::iterator it;
+    uint64_t _prime = it.next_prime(); //Read the initial prime
+    
+    //Filter out the minimums
+    uint64_t min = powl(2,binaryWidth-1);
+    while(_prime<min){
+        _prime = it.next_prime();
+    }
+    
+    uint64_t max = powl(2,binaryWidth)-1; //Calculate the max bucket
+    
+    //Collect the data
+    while(_prime <= max) {
+        _primeList.push_back(_prime);
+        _prime = it.next_prime();
+    }
+    
+    startTime = time(0);
+    pTool->testPerformance(_primeList,binaryWidth);
+    //Calculate and display run time
+    double totalTime = difftime(time(0),startTime);
+    cout<<"Total Time: "<<totalTime<<" seconds."<<endl;
+}
+void runPerformanceFile(){
+    cout<<"** File Search Performance Test ***"<<endl;
+    cout<<"Using baseline binary width: 34"<<endl;
+    PrimerTool* pTool = new PrimerTool(_FILE_SEARCH);
+    int binaryWidth = 34;
+    int primeCount = 717267168; //Calculated useing `primecount`
+    time_t startTime = 0;
+    vector<pType> _primeList;
+    
+    //Create the Prime Number generator
+    primesieve::iterator it;
+    uint64_t _prime = it.next_prime(); //Read the initial prime
+    
+    startTime = time(0);
+    //Filter out the minimums
+    uint64_t min = powl(2,binaryWidth-1);
+    while(_prime<min){
+        _prime = it.next_prime();
+    }
+    cout<<"Done Filtering Primes. "<<"("<<difftime(time(0),startTime)<<" sec)"<<endl;
+    
+    startTime = time(0);
+    pTool->createBinaryFile(binaryWidth);
+    pTool->initializeBinaryFileSearch(binaryWidth);
+    pTool->setBinaryWidth(binaryWidth);
+    cout<<"Done Creating File. "<<"("<<difftime(time(0),startTime)<<" sec)"<<endl;
+    
+    startTime = time(0);
+    int testAmount = 100000;
+    int count = 0;
+    while(count <= testAmount) {
+        pTool->analyzeNextPrime(_prime);
+        _prime = it.next_prime();
+        count++;
+    }
+    
+    double runtime = difftime(time(0),startTime);
+    int estRemain = primeCount-count;
+    int estTime = runtime/count * estRemain / 60;
+    
+    cout<<"Runtime: "<<runtime<<" seconds."<<endl;
+    cout<<"Estimate time to complete: "<<estTime<<" minutes."<<endl;
+    
 }

@@ -31,6 +31,7 @@ void PrimerTool::setBinaryWidth(int width){
     m_primeWidth = width;
     m_totalAnalyzedCnt = 0;
     initBuckets();
+    estimateGroupSize();
 }
 void PrimerTool::initBuckets(){
     m_grandMasterPrimes.clear();
@@ -42,6 +43,12 @@ void PrimerTool::initBuckets(){
     m_specialFlipPrimes.clear();
     m_invertPrimes.clear();
     m_nullPrimes.clear();
+}
+//Uses the Prime
+void PrimerTool::estimateGroupSize(){
+    pType min = powl(2,m_primeWidth-1);
+    pType max = powl(2,m_primeWidth);
+    m_primeGroupEstimate = max/log(max) - min/log(min);;
 }
 string PrimerTool::analyzePrimes(vector<pType>primes, int width){
     //Store the primes in data controlled storage
@@ -160,7 +167,7 @@ primeType PrimerTool::calculatePrimeType(pType prime, pType* sPrime){
             }
         }
         else{
-            log("Reached poor logic choice 23.");
+            consoleLog("Reached poor logic choice 23.");
             retStoragePrime = 0;
         }
         
@@ -183,7 +190,7 @@ primeType PrimerTool::calculatePrimeType(pType prime, pType* sPrime){
             retStoragePrime = primeFlip;
         }
         else{
-            log("Reached poor logic choice 93.");
+            consoleLog("Reached poor logic choice 93.");
             retStoragePrime = 0;
         }
     }
@@ -211,7 +218,7 @@ primeType PrimerTool::calculatePrimeType(pType prime, pType* sPrime){
         }
     }
     else{
-        log("Reached poor logic choice 126.");
+        consoleLog("Reached poor logic choice 126.");
         retStoragePrime = 0;
     }
     *sPrime = retStoragePrime;
@@ -276,6 +283,7 @@ pType PrimerTool::flip(pType number, int width){
 #pragma mark - Output
 string PrimerTool::generateOutput(){
     verifyCount();
+    cout<<endl; //File mode prints progress without carrage return. Make sure to start output on new line.
     return outputResults();
 }
 void PrimerTool::setupDataHeaders(string filename){
@@ -316,7 +324,21 @@ void PrimerTool::logDataHeaders(int binaryWidth){
     }
     else{
         cout<<"Analyzing from: "<<min<<" to "<<max<<endl;
-        cout<<"Size: "<<max-min+1<<" numbers"<<endl;
+    }
+}
+void PrimerTool::printProgress(time_t startTime){
+    u_long count = getTotalAnalyzedCount();
+    
+    if(count%10000 == 0 ){
+        double runtime = difftime(time(0),startTime);
+        u_long estRemain = int(m_primeGroupEstimate-count)<=0?0:(m_primeGroupEstimate-count); //Count could be greater
+        int estTime = runtime/count * estRemain;
+        
+        u_long percentage = (count * 100/m_primeGroupEstimate);
+        percentage = percentage>99?99:percentage;
+        cout<<"                                              \r";
+        cout<<percentage<<"% Est time: "<<estTime<<" seconds.\r";
+        cout.flush();
     }
 }
 string PrimerTool::outputResults(){
@@ -336,7 +358,7 @@ string PrimerTool::outputResults(){
         str+="\nInvert Primes: " + to_string(m_invertPrimes.size());
         str+="\nNull Primes: " + to_string(m_nullPrimes.size());
         str+="\n----------------------------------------";
-        log(str);
+        consoleLog(str);
     }
     
     if(LOG_DATA_FILE_VERBOSE){
@@ -418,7 +440,7 @@ string PrimerTool::outputResults(){
     
     return str;
 }
-void PrimerTool::log(string s){
+void PrimerTool::consoleLog(string s){
     cout<<s<<endl;
 }
 void PrimerTool::assertLog(bool test,string s){
@@ -439,6 +461,16 @@ void PrimerTool::verifyMachine(int maxBinaryWidth){
 void PrimerTool::testPrimer(int maxBinaryWidth){
     verifyMachine(maxBinaryWidth);
     runDataTest();
+}
+#pragma mark Performance
+void PrimerTool::testPerformance(vector<pType>primes, int width){
+    //Store the primes in data controlled storage
+    m_primeList = primes;
+    m_primeWidth = width;
+    initBuckets();
+    
+    analyzePrimeNumberList();
+    verifyCount(); //Will Assert if false
 }
 #pragma mark Data Verification
 void PrimerTool::runDataTest(){
@@ -503,7 +535,7 @@ void PrimerTool::runDataTest(){
     result = isTwinPrime(89, 113, 7); //Should not be a twin prime
     assertLog(result==false,"Twin Test Failed6");
     
-    log("Data Test Passed.");
+    consoleLog("Data Test Passed.");
 }
 #pragma mark - Random investigation
 vector<pType>
@@ -570,7 +602,7 @@ string PrimerTool::outputFlipSpecial(int count){
         str+="Total Primes: "+ to_string(getTotalAnalyzedCount());
         str+="\nSpecial Flip Primes: " + to_string(count);
         str+="\n----------------------------------------";
-        log(str);
+        consoleLog(str);
     }
     
     //Create the output string
@@ -656,7 +688,7 @@ string PrimerTool::outputMasterSpecial(unsigned long count, unsigned long master
         str+="\n*Master (InvertFlip Identity): " + to_string(masterSpecialInvertFlip);
         str+="\n*Master (Flip Identity w/ Even Width): " + to_string(masterSpecialEven);
         str+="\n----------------------------------------";
-        log(str);
+        consoleLog(str);
     }
     
     //Create the output string
@@ -706,7 +738,7 @@ string PrimerTool::outputTwinInvestigation(int count){
         str+="Total Primes: "+ to_string(getTotalAnalyzedCount());
         str+="\nTwin Primes: " + to_string(count);
         str+="\n----------------------------------------";
-        log(str);
+        consoleLog(str);
     }
     
     //Create the output string

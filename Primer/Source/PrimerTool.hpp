@@ -45,6 +45,8 @@ public:
     void logDataHeaders(int binaryWidth);
     void setBinaryWidth(int width);
     string generateOutput();
+    void printProgress(time_t startTime);
+    void testPerformance(vector<pType>primes, int width);
     
     //Main utility function
     string analyzePrimes(vector<pType>primes, int width);
@@ -70,6 +72,7 @@ private:
     int m_primeWidth;
     vector<pType> m_primeList;
     string m_outputFilename;
+    int m_primeGroupEstimate; //Used for progress indicator on file search
     
     set <pType, less <pType> > m_grandMasterPrimes; //Flip, Inverse, and FlipInverse unique primes
     set <pType, less <pType> > m_masterPrimes; //Flip and Inverse are unique
@@ -88,6 +91,7 @@ private:
     primeType calculatePrimeType(pType prime, pType* sPrime);
     
     void initBuckets();
+    void estimateGroupSize();
     bool containsPrime(pType prime);
     
     void analyzePrimeNumberList();
@@ -122,7 +126,7 @@ private:
     string outputResults();
     string setDescription(set <pType, less <pType> > primeSet);
     
-    void log(string s);
+    void consoleLog(string s);
     void assertLog(bool test,string s);
     
     //Verification
