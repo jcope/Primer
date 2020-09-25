@@ -35,12 +35,19 @@ void printTime(string s);
 int main_primer();
 int main_random();
 
-runtime_exe _runMode = _STANDARD;
+void createPrimeCountFile();
+void createPrimeReducedCountFile();
+
+runtime_exe _runMode = _FILE_SEARCH;
 int _minWidth = MIN_BINARY_WIDTH;
 int _maxWidth = MAX_BINARY_WIDTH;
 
 int main(int argc, const char * argv[]) {
     programStart();
+    //createPrimeCountFile();
+    createPrimeReducedCountFile();
+    return 0;
+        
     if(_runMode == _RANDOM){
         return main_random();
     }
@@ -204,4 +211,50 @@ void printTime(string s){
     tstruct = *localtime(&now);
     strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
     cout << s << buf << endl;
+}
+void createPrimeCountFile(){
+    //Create the Prime Number generator
+    primesieve::iterator it;
+    
+    string outputFileName = string(OUTPUT_DIR)+"PrimeCountFile.txt";
+    pType number = it.next_prime();
+    pType total = 0;
+    pType count = 2;
+    ofstream outfile;
+    outfile.open(outputFileName, ofstream::out | ofstream::app);
+
+    while(count<1048576){
+    //while(count<100){
+        outfile<<count<<","<<total<<endl;
+        count++;
+        if(count>=number){
+            number = it.next_prime();
+            total++;
+        }
+    }
+    outfile.close();
+}
+void createPrimeReducedCountFile(){
+    //Create the Prime Number generator
+    //Data starts at bit length = 2
+    pType dataSet[] = {1,2,3,5,8,15,27,48,90,167,317,606,1161,2195,4202,8122,15580,30017,57804,111554,216036,417763,808510};
+    pType fullDataSet[] = {2,4,6,11,18,31,54,97,172,309,564,1028,1900,3512,6542,12251,23000,43390,82025,155611,295947,564163};
+    pType number = 0;
+    pType bitLength = 2;
+    
+    string outputFileName = string(OUTPUT_DIR)+"PrimeSetCountFile.txt";
+    ofstream outfile;
+    outfile.open(outputFileName, ofstream::out | ofstream::app);
+    
+    pType data = 0;
+    while(bitLength < 21){
+        data = fullDataSet[bitLength-2]; //dataset starts at index = 2
+        outfile<<number<<","<<data<<endl;
+        number++;
+        pType limit = powl(2,bitLength)-1;
+        if(number>=limit){
+            bitLength++;
+        }
+    }
+    outfile.close();
 }
