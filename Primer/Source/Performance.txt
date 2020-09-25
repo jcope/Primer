@@ -1,0 +1,27 @@
+AWS
+
+** File Search Performance Test ***
+Using baseline binary width: 34
+Done Filtering Primes. (4 sec)
+Done Creating File. (268 sec)
+Runtime: 8 seconds.
+Estimate time to complete: 956 minutes.
+
+Mac Mini Pro
+
+** File Search Performance Test ***
+Using baseline binary width: 34
+Done Filtering Primes. (4 sec)
+Done Creating File. (71 sec)
+Runtime: 16 seconds.
+Estimate time to complete: 1912 minutes.
+
+
+Macbook Air
+
+** File Search Performance Test ***
+Using baseline binary width: 34
+Done Filtering Primes. (4 sec)
+Done Creating File. (108 sec)
+Runtime: 185 seconds.
+Estimate time to complete: 22112 minutes.

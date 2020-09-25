@@ -26,6 +26,7 @@
 
 /* Begin PBXFileReference section */
 		3F3D39EE216D63D5008397C6 /* libprimesieve.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libprimesieve.a; path = ../../../../../../usr/local/lib/libprimesieve.a; sourceTree = "<group>"; };
+		3F5B79362500449A0004BA37 /* Performance.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Performance.txt; sourceTree = "<group>"; };
 		3F697A781FB9030000C424C3 /* output */ = {isa = PBXFileReference; lastKnownFileType = folder; name = output; path = ../../output; sourceTree = "<group>"; };
 		3F9D092E1DD514A900074276 /* Primer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Primer; sourceTree = BUILT_PRODUCTS_DIR; };
 		3F9D093B1DD51D8D00074276 /* Config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
@@ -84,6 +85,7 @@
 				3FCFE2C2217050E9004AC4C8 /* PrimerTool.hpp */,
 				3F9D093B1DD51D8D00074276 /* Config.h */,
 				3F9D093C1DD51D8D00074276 /* main.cpp */,
+				3F5B79362500449A0004BA37 /* Performance.txt */,
 			);
 			path = Source;
 			sourceTree = "<group>";

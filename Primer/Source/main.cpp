@@ -248,8 +248,10 @@ void runPerformanceFile(){
     cout<<"** File Search Performance Test ***"<<endl;
     cout<<"Using baseline binary width: 34"<<endl;
     PrimerTool* pTool = new PrimerTool(_FILE_SEARCH);
-    int binaryWidth = 34;
-    int primeCount = 717267168; //Calculated useing `primecount`
+    //34,717267168
+    //38,10285641778
+    int binaryWidth = 38;
+    long primeCount = 10285641778; //Calculated useing `primecount`
     time_t startTime = 0;
     vector<pType> _primeList;
     
@@ -281,7 +283,7 @@ void runPerformanceFile(){
     }
     
     double runtime = difftime(time(0),startTime);
-    int estRemain = primeCount-count;
+    long estRemain = primeCount-count;
     int estTime = runtime/count * estRemain / 60;
     
     cout<<"Runtime: "<<runtime<<" seconds."<<endl;
