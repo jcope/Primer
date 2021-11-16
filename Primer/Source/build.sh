@@ -1,3 +1,5 @@
+#Create OuputDir
+mkdir ../output
 clang++ -g -Wall -std=c++11 -stdlib=libc++ -c -o PrimerTool.o -I. -I../3rdParty/include PrimerTool.cpp
 #Make Primer lib?
 clang++ -g -Wall -std=c++11 -stdlib=libc++ -c -o main.o -I. main.cpp

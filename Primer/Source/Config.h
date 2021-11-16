@@ -16,7 +16,7 @@
 #define MIN_BINARY_WIDTH 3
 #define MAX_BINARY_WIDTH 16
 
-#define OUTPUT_DIR "/Users/Jeremy/Projects/Primer/Output/"
+#define OUTPUT_DIR "../output/"
 #define OUTPUT_FILE "PrimerOutput.txt"
 
 #define NUM_RANDOM_TRIALS 128
