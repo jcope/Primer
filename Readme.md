@@ -1,15 +1,15 @@
 ## Prime Symmetry Theory
 
 This repository contains software to support research for [Prime Symmetry Theory](http://primesymmetrytheory.com).
-The code is maintained by the author, Jeremy B. Cope, and is provided for
-verification and further research.
+The code is maintained by the author, Jeremy B. Cope, and is provided to the
+community for verification and further research.
 
 ### Theory
 Observations of symmetric patterns in binary representations of prime numbers.
 
 Abstract: *The set of prime numbers can be categorized into subsets based on binary symmetric properties; these properties and subsets are defined, analyzed, and submitted for review.*
 
-[Request A Draft](mailto:"draft@primesymmetrytheory.com")
+[Request A Draft](mailto:draft@primesymmetrytheory.com?subject=Request%20A%20Draft)
 
 ### Developer
 ```
@@ -21,7 +21,8 @@ Requires: clang++, c++11
 
 ###### Config.h
 
-There are many
+There are many options presented in the configuration file. These settings run
+the program in various search modes.
 
 
 

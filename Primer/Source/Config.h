@@ -3,7 +3,7 @@
 //  Primer
 //
 //  Created by Jeremy Cope on 4/21/16.
-//  Copyright © 2016 Emma Technologies, L.L.C. All rights reserved.
+//  Copyright © 2021 Emma Technologies, L.L.C. All rights reserved.
 //
 
 #ifndef Config_h
