@@ -3,7 +3,7 @@
 //  Primer
 //
 //  Created by Jeremy Cope on 3/23/16.
-//  Copyright © 2016 Emma Technologies, L.L.C. All rights reserved.
+//  Copyright © 2021 Emma Technologies, L.L.C. All rights reserved.
 //
 
 #include <iostream>
@@ -52,11 +52,11 @@ int main(int argc, const char * argv[]) {
 int main_primer(){
     PrimerTool* pTool = new PrimerTool(_runMode);
     pTool->setupDataHeaders(string(OUTPUT_DIR)+string(OUTPUT_FILE));
-        
+
     //Create the Prime Number generator
     primesieve::iterator it;
     uint64_t _prime = it.next_prime(); //Read the initial prime
-    
+
     //Filter out the minimums
     uint64_t min = powl(2,_minWidth-1); //Minus 1 to include the min width group
     while(_prime<min){
@@ -64,23 +64,23 @@ int main_primer(){
     }
     cout<<"Starting with Prime: "<<_prime<<endl;
     printTime("Start Time: ");
-    
+
     uint64_t max;
     time_t startTime = 0;
     vector<pType> _primeList;
-          
+
     for(int binaryWidth=_minWidth;binaryWidth<_maxWidth;binaryWidth++){ //Cyclce through all the different buckets
         pTool->logDataHeaders(binaryWidth);
-        
+
         if(_runMode == _FILE_SEARCH){
             startTime = time(0);
             pTool->createBinaryFile(binaryWidth);
             pTool->initializeBinaryFileSearch(binaryWidth);
             pTool->setBinaryWidth(binaryWidth);
         }
-        
+
         max = powl(2,binaryWidth)-1; //Calculate the max bucket
-        
+
         //Collect the data
         while(_prime <= max) {
             //Sequential or group search.
@@ -103,11 +103,11 @@ int main_primer(){
             startTime = time(0);
             pTool->analyzePrimes(_primeList,binaryWidth);
         }
-        
+
         //Calculate and display run time
         double totalTime = difftime(time(0),startTime);
         cout<<"Total Time: "<<totalTime<<" seconds."<<endl;
-        
+
         //Clean up for next run
         _primeList.clear();
     }
@@ -120,15 +120,15 @@ int main_random(){
     int loopCnt = 0;
     while(loopCnt < NUM_RANDOM_TRIALS){
         PrimerTool* pTool = new PrimerTool(_runMode);
-        
+
         //Write to file
         string outputFileName = string(OUTPUT_DIR)+"/RandomLoop/"+to_string(loopCnt)+string(OUTPUT_FILE);
         pTool->setupDataHeaders(outputFileName);
-                
+
         //Create the Prime number generator
         primesieve::iterator it;
         uint64_t _prime = it.next_prime(); //Read the initial prime
-        
+
         //Filter out the minimums
         uint64_t min = powl(2,_minWidth-1); //Minus 1 to include the min width group
         while(_prime<min){
@@ -136,24 +136,24 @@ int main_random(){
         }
         cout<<"Starting with Prime: "<<_prime<<endl;
         printTime("Start Time: ");
-        
+
         time_t startTime;
         vector<pType> _primeList;
-        
+
         for(int binaryWidth=_minWidth;binaryWidth<_maxWidth;binaryWidth++){ //Cyclce through all the different buckets
             pTool->logDataHeaders(binaryWidth);
-            
+
             pType primeCount = pTool->primeNumbersPerGroup(binaryWidth);
             _primeList = pTool->createRandomInput(binaryWidth, primeCount);
-             
+
             //Analyze
             startTime = time(0);
             pTool->analyzePrimes(_primeList,binaryWidth);
-            
+
             //Calculate and display run time
             double totalTime = difftime(time(0),startTime);
             cout<<"Total Time: "<<totalTime<<" seconds."<<endl;
-             
+
             //Clean up for next run
             _primeList.clear();
          }
